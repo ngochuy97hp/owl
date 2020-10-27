@@ -1,4 +1,4 @@
-import { makeTestEnv, makeTestFixture, nextTick } from "./helpers";
+import { makeTestEnv, makeTestFixture, nextTick } from "../tests/helpers";
 import { Component, Env } from "../src/component/component";
 import {
   useState,

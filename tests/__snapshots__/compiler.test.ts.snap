@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`compiler div with content 1`] = `
+"function anonymous(Block, MultiBlock, elem
+) {
+  class Block1 extends Block {
+    static el = elem(\\"<div>foo</div>\\");
+  }
+  
+  return context => {
+    return new Block1();
+  }
+}"
+`;
+
+exports[`compiler empty div 1`] = `
+"function anonymous(Block, MultiBlock, elem
+) {
+  class Block1 extends Block {
+    static el = elem(\\"<div></div>\\");
+  }
+  
+  return context => {
+    return new Block1();
+  }
+}"
+`;
+
+exports[`compiler empty string 1`] = `
+"function anonymous(Block, MultiBlock, elem
+) {
+  class Block1 extends Block {
+    static el = elem(\\"\\");
+  }
+  
+  return context => {
+    return new Block1();
+  }
+}"
+`;
+
+exports[`compiler multiple root nodes 1`] = `
+"function anonymous(Block, MultiBlock, elem
+) {
+  class Block1 extends Block {
+    static el = elem(\\"<div>foo</div>\\");
+  }
+  class Block2 extends Block {
+    static el = elem(\\"<span>hey</span>\\");
+  }
+  
+  return context => {
+    return new MultiBlock([new Block1(), new Block2()]);
+  }
+}"
+`;
+
+exports[`compiler simple string 1`] = `
+"function anonymous(Block, MultiBlock, elem
+) {
+  class Block1 extends Block {
+    static el = elem(\\"hello vdom\\");
+  }
+  
+  return context => {
+    return new Block1();
+  }
+}"
+`;
+
+exports[`compiler simple string in t tag 1`] = `
+"function anonymous(Block, MultiBlock, elem
+) {
+  class Block1 extends Block {
+    static el = elem(\\"hello vdom\\");
+  }
+  
+  return context => {
+    return new Block1();
+  }
+}"
+`;

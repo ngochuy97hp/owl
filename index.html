@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OWL Test</title>
+</head>
+<body>
+<script>
+
+function compileTemplate() {
+  // build b1 base node
+  const b1 = document.createElement('div');
+  const tmp1 = document.createElement('p');
+  b1.appendChild(tmp1);
+
+  // take htmlelement, texts and return targets
+  function updateB1(node, texts) {
+      node.firstChild.textContent = texts[0];
+  }
+
+  function anchorsB1(node) {
+      return [node];
+  }
+
+  // build b2 base node
+  const b2 = document.createElement('p');
+  b2.appendChild(document.createTextNode('Boom'));
+  
+  function templateFn(context) {
+    const b1 = { idx: 0, texts: [context.value], children: []};
+    if (context.condition) {
+      b1.children.push({idx: 1})
+    }
+    return b1;
+  }
+
+  return {
+    blocks: [
+        { template: b1, update: updateB1, anchors: anchorsB1},
+        { template: b2, target: 0, update: () => {}}
+    ],
+    render: templateFn
+  };
+
+}
+
+function mount(root, blocks, parent) {
+    const block = blocks[root.idx];
+    mountBlock(root, block, parent);
+    
+    function mountBlock(tree, block, parent) {
+        const el = block.template.cloneNode(true);
+        tree.el = el;
+        block.update(el, tree.texts);
+        if (tree.children) {
+            const anchors = block.anchors(el);
+            for (let child of tree.children) {
+                const block = blocks[child.idx];
+                mountBlock(child, block, anchors[block.target]);
+            }
+        }
+        parent.appendChild(el);
+    }
+}
+
+function update(newTree, oldTree, blocks, parent) {
+  const block = blocks[newTree.idx];
+  block.update(oldTree.el, newTree.texts);
+  newTree.el = oldTree.el;
+//   for (let i )
+//   if (newTree.children.length)
+}
+
+const template = compileTemplate();
+const tree = template.render({value: 'value', condition: true});
+mount(tree, template.blocks, document.body);
+
+
+// update stuff
+const tree2 = template.render({value: 'other', condition: false});
+
+update(tree2, tree, template.blocks, document.body);
+
+// function build(tree) {
+//     const b1 = tmp1.cloneNode(true);
+// }
+
+// function buildBlock1 (texts) {
+//   return [[el1], [el1]] // rendered stuff, references
+// }
+
+// function updateBlock1(texts, refs) {
+//     refs[0].nodeValue = texts[0];
+// }
+
+
+// function buildBlock2 (texts) {
+//   const el1 = document.createElement('p');
+//   el1.appendChild(document.createTextNode('Boom'));
+//   return [[el1], [el1]] // rendered stuff, references
+// }
+
+// function updateBlock2(texts, refs) {
+// }
+
+
+
+// const tree = templateFn({value: "hablabla", condition: true});
+
+// console.log(tree);
+// build process
+
+// class Block {
+//     constructor(texts) {
+//         this.texts = texts;
+//         this.refs = [];
+//         this.children = [];
+//     }
+    
+//     build(insert){}
+
+//     update(){}
+// }
+
+// function compile(template) {
+//     class Block1 extends Block{
+//         build(insert) {
+//             const div = document.createElement('div');
+//             const p1 = document.createElement('p');
+//             div.appendChild(p1);
+
+//             const text = document.createTextNode(this.texts[0]);
+//             this.refs.push(text);
+//             p1.appendChild(text);
+//             this.refs.push(p1);
+//             insert(div);
+//         }
+//         update(block) {
+//             this.refs[0].nodeValue = block.texts[0];
+//         }
+//     }
+
+//     class Block2 extends Block {
+//         build(insert) {
+//             const p = document.createElement('p');
+//             const text = document.createTextNode('BOOM');
+//             p.appendChild(text);
+//             insert(p);
+//         }
+//     }
+
+//     function fn(context) {
+//         const b1 = new Block1([context.value]);
+//         if (context.condition) {
+//             b1.children.push(new Block2([]));
+//         }
+//         return { root: b1 };
+//     }
+//     return fn;
+// }
+
+// function build(tree, target) {
+//     tree.root.build(node => target.appendChild(node));
+//     debugger
+//     for (let child of tree.root.children) {
+//         child.build(node => tree.root.refs[0].insertAfter(node));
+//     }
+
+// }
+
+// function update(tree1, tree2) {
+//     tree1.root.update(tree2.root)
+// }
+// // template rendering
+// // -----------------------------------------------------------------------------
+// const template = `
+//     <div>
+//         <p><t t-esc="value" /></p>
+//         <p t-if="condition">BOOM</p>
+//     </div>`;
+// const renderFn = compile(template);
+// // template = { render, blocks }
+
+
+// // creation
+// // -----------------------------------------------------------------------------
+// const tree = renderFn({value: "hablabla", condition: true});
+// // tree = { blocks, root: ... };
+
+
+// // patch time
+// // -----------------------------------------------------------------------------
+// build(tree, document.body);
+
+
+// // update
+// // -----------------------------------------------------------------------------
+// const tree2 = renderFn({value: "sadff", condition: true})
+
+// // patch time
+// // -----------------------------------------------------------------------------
+// update(tree, tree2)
+
+</script>
+</body>
+</html>
