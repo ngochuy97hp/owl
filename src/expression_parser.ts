@@ -139,7 +139,7 @@ let tokenizeSymbol: Tokenizer = function (expr) {
       i++;
     }
     if (s in WORD_REPLACEMENT) {
-      return { type: "OPERATOR", value: WORD_REPLACEMENT[s], size: s.length };
+      return { type: "OPERATOR", value: (WORD_REPLACEMENT as any)[s], size: s.length };
     }
     return { type: "SYMBOL", value: s };
   } else {

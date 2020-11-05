@@ -4,8 +4,11 @@
 
 export const enum ASTType {
   Text,
+  Comment,
   DomNode,
   Multi,
+  TEsc,
+  TIf,
 }
 
 export interface ASTText {
@@ -13,10 +16,16 @@ export interface ASTText {
   value: string;
 }
 
+export interface ASTComment {
+  type: ASTType.Comment;
+  value: string;
+}
+
 export interface ASTDomNode {
   type: ASTType.DomNode;
   tag: string;
-  content: AST | null;
+  attrs: { [key: string]: string };
+  content: AST[];
 }
 
 export interface ASTMulti {
@@ -24,7 +33,18 @@ export interface ASTMulti {
   content: AST[];
 }
 
-export type AST = ASTText | ASTDomNode | ASTMulti;
+export interface ASTTEsc {
+  type: ASTType.TEsc;
+  expr: string;
+}
+
+export interface ASTTif {
+  type: ASTType.TIf;
+  condition: string;
+  content: AST[];
+}
+
+export type AST = ASTText | ASTComment | ASTDomNode | ASTMulti | ASTTEsc | ASTTif;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -44,7 +64,7 @@ function parseNode(node: ChildNode): AST | null {
   if (!(node instanceof Element)) {
     return parseTextCommentNode(node);
   }
-  return parseTNode(node) || parseDOMNode(node);
+  return parseTIf(node) || parseTNode(node) || parseTEscNode(node) || parseDOMNode(node);
 }
 
 // -----------------------------------------------------------------------------
@@ -84,6 +104,8 @@ function parseTNode(node: Element): AST | null {
 function parseTextCommentNode(node: ChildNode): AST | null {
   if (node.nodeType === 3) {
     return { type: ASTType.Text, value: node.textContent || "" };
+  } else if (node.nodeType === 8) {
+    return { type: ASTType.Comment, value: node.textContent || "" };
   }
   return null;
   // const type = node.nodeType === 3 ? ASTType.Text : ASTType.Comment;
@@ -113,16 +135,66 @@ function parseDOMNode(node: Element): AST | null {
       children.push(ast);
     }
   }
-  const content: AST | null =
-    children.length === 0
-      ? null
-      : children.length === 1
-      ? children[0]
-      : { type: ASTType.Multi, content: children };
+  const attrs: ASTDomNode["attrs"] = {};
+  for (let attr of node.getAttributeNames()) {
+    attrs[attr] = node.getAttribute(attr)!;
+  }
   return {
     type: ASTType.DomNode,
     tag: node.tagName,
-    content: content,
+    attrs,
+    content: children,
+  };
+}
+
+// -----------------------------------------------------------------------------
+// t-esc
+// -----------------------------------------------------------------------------
+
+function parseTEscNode(node: Element): AST | null {
+  if (!node.hasAttribute("t-esc")) {
+    return null;
+  }
+  const escValue = node.getAttribute("t-esc")!;
+  node.removeAttribute("t-esc");
+  const tesc: AST = {
+    type: ASTType.TEsc,
+    expr: escValue,
+  };
+  const ast = parseNode(node);
+  if (!ast) {
+    return tesc;
+  }
+  if (ast.type === ASTType.DomNode) {
+    return {
+      type: ASTType.DomNode,
+      tag: ast.tag,
+      attrs: ast.attrs,
+      content: [tesc],
+    };
+  }
+  throw new Error("hmm");
+}
+
+// -----------------------------------------------------------------------------
+// t-if
+// -----------------------------------------------------------------------------
+
+function parseTIf(node: Element): AST | null {
+  if (!node.hasAttribute("t-if")) {
+    return null;
+  }
+  const condition = node.getAttribute("t-if")!;
+  node.removeAttribute("t-if");
+  const ast = parseNode(node);
+  if (!ast) {
+    throw new Error("hmmm");
+  }
+  const content = ast.type === ASTType.Multi ? ast.content : [ast];
+  return {
+    type: ASTType.TIf,
+    condition,
+    content,
   };
 }
 
