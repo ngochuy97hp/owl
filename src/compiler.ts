@@ -1,4 +1,4 @@
-import { BDom, Block, AnchorBlock, MultiBlock } from "./bdom";
+import { BDom, ContentBlock, MultiBlock } from "./bdom";
 import { compileExpr } from "./expression_parser";
 import { AST, ASTType, parse } from "./parser";
 
@@ -8,24 +8,23 @@ import { AST, ASTType, parse } from "./parser";
 
 export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (
-  block: typeof Block,
-  anchorblock: typeof AnchorBlock,
+  contentBlock: typeof ContentBlock,
   multiBlock: typeof MultiBlock,
   elem: any
 ) => RenderFunction;
 
 export function compile(template: string): RenderFunction {
   const templateFunction = compileTemplate(template);
-  return templateFunction(Block, AnchorBlock, MultiBlock, elem);
+  return templateFunction(ContentBlock, MultiBlock, elem);
 }
 
 export function compileTemplate(template: string): TemplateFunction {
   const ast = parse(template);
   const ctx = new CompilationContext();
-  compileAST(ast, ctx);
+  compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();
   // console.warn(code);
-  return new Function("Block, AnchorBlock, MultiBlock, elem", code) as TemplateFunction;
+  return new Function("ContentBlock, MultiBlock, elem", code) as TemplateFunction;
 }
 
 // -----------------------------------------------------------------------------
@@ -67,11 +66,17 @@ interface DomNode {
 
 type Dom = DomText | DomComment | DomNode;
 
+interface MakeBlockParams {
+  multi?: number;
+  parentBlock?: string | null;
+  parentIndex?: number | null;
+}
+
 class CompilationContext {
   code: string[] = [];
   indentLevel: number = 0;
   blocks: BlockDescription[] = [];
-  rootBlocks: string[] = [];
+  rootBlock: string | null = null;
   nextId = 1;
 
   addLine(line: string) {
@@ -83,16 +88,24 @@ class CompilationContext {
     return `${prefix}${this.nextId++}`;
   }
 
-  makeBlock(): BlockDescription {
+  makeBlock({ multi, parentBlock, parentIndex }: MakeBlockParams = {}): BlockDescription {
+    const name = multi ? "MultiBlock" : `Block${this.blocks.length + 1}`;
     const block: BlockDescription = {
-      name: `Block${this.blocks.length + 1}`,
+      name,
       varName: this.generateId("b"),
       updateFn: [],
       currentPath: ["el"],
       textNumber: 0,
       childNumber: 0,
     };
-    this.blocks.push(block);
+    if (!multi) {
+      this.blocks.push(block);
+    }
+    if (!this.rootBlock) {
+      this.rootBlock = block.varName;
+    }
+    const parentStr = parentBlock ? `${parentBlock}.children[${parentIndex}] = ` : "";
+    this.addLine(`const ${block.varName} = ${parentStr}new ${block.name}(${multi || ""});`);
     return block;
   }
 
@@ -102,7 +115,7 @@ class CompilationContext {
     this.indentLevel = 0;
     // define all blocks
     for (let block of this.blocks) {
-      this.addLine(`class ${block.name} extends Block {`);
+      this.addLine(`class ${block.name} extends ContentBlock {`);
       this.indentLevel++;
       this.addLine(`static el = elem(\`${domToString(block.dom!)}\`);`);
       if (block.childNumber) {
@@ -125,24 +138,16 @@ class CompilationContext {
     }
 
     // generate main code
-    // if (this.rootBlocks.length === 1 && this.blocks.length === 1) {
-    //   // micro optimisation: remove assignation
-    //   const last = mainCode.pop()!.trimLeft();
-    //   const block = last.replace(`const ${this.rootBlocks[0]} = `, "");
-    //   this.rootBlocks[0] = block.slice(0, -1);
-    // }
     this.indentLevel = 0;
     this.addLine(``);
     this.addLine(`return ctx => {`);
     for (let line of mainCode) {
       this.addLine(line);
     }
-    if (this.rootBlocks.length === 1) {
-      this.addLine(`  return ${this.rootBlocks[0]};`);
-    } else {
-      const blocks = this.rootBlocks.join(`, `);
-      this.addLine(`  return new MultiBlock([${blocks}])`);
+    if (!this.rootBlock) {
+      throw new Error("missing root block");
     }
+    this.addLine(`  return ${this.rootBlock};`);
     this.addLine("}");
     return this.code.join("\n");
   }
@@ -169,114 +174,104 @@ function domToString(dom: Dom): string {
   }
 }
 
-export function compileAST(ast: AST, ctx: CompilationContext) {
-  switch (ast.type) {
-    case ASTType.Multi:
-      if (ast.content.length === 1) {
-        compileAST(ast.content[0], ctx);
-      } else {
-        for (let child of ast.content) {
-          compileAST(child, ctx);
-        }
-      }
-      break;
-    case ASTType.TIf:
-      const anchorBlock: BlockDescription = {
-        name: `AnchorBlock`,
-        varName: ctx.generateId("b"),
-        updateFn: [],
-        currentPath: [],
-        textNumber: 0,
-        childNumber: 0,
-      };
-      ctx.rootBlocks.push(anchorBlock.varName);
-      ctx.addLine(`const ${anchorBlock.varName} = new ${anchorBlock.name}();`);
-      compileASTBlock(ast, anchorBlock, ctx);
-      break;
-    default:
-      const block = ctx.makeBlock();
-      ctx.addLine(`const ${block.varName} = new ${block.name}();`);
-      compileASTBlock(ast, block, ctx);
-      // const childblocks = block.texts.length ? "[" + block.texts.join(",") + "]" : "";
-      ctx.rootBlocks.push(block.varName);
+function addToBlockDom(block: BlockDescription, dom: Dom) {
+  if (block.currentDom) {
+    block.currentDom.content.push(dom);
+  } else {
+    block.dom = dom;
   }
 }
 
-function compileASTBlock(ast: AST, block: BlockDescription, ctx: CompilationContext) {
+function compileAST(
+  ast: AST,
+  currentBlock: BlockDescription | null,
+  currentIndex: number,
+  forceNewBlock: boolean,
+  ctx: CompilationContext
+) {
+  if (!currentBlock || forceNewBlock) {
+    switch (ast.type) {
+      case ASTType.TIf:
+        if (!currentBlock) {
+          currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });
+        }
+        break;
+      case ASTType.Multi:
+        currentBlock = ctx.makeBlock({
+          multi: ast.content.length,
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
+          parentIndex: currentIndex,
+        });
+        break;
+      default:
+        currentBlock = ctx.makeBlock({
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
+          parentIndex: currentIndex,
+        });
+    }
+  }
   switch (ast.type) {
-    case ASTType.Text:
-    case ASTType.Comment: {
+    case ASTType.Comment:
+    case ASTType.Text: {
       const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
       const text: Dom = { type, value: ast.value };
-      if (block.currentDom) {
-        block.currentDom.content.push(text);
-      } else {
-        block.dom = text;
-      }
+      addToBlockDom(currentBlock, text);
       break;
     }
     case ASTType.DomNode: {
       const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: ast.attrs, content: [] };
-
-      if (block.currentDom) {
-        block.currentDom.content.push(dom);
-      } else {
-        block.dom = dom;
-      }
+      addToBlockDom(currentBlock, dom);
       if (ast.content.length) {
-        const initialDom = block.currentDom;
-        block.currentDom = dom;
-        const path = block.currentPath.slice();
-        block.currentPath.push("firstChild");
+        const initialDom = currentBlock.currentDom;
+        currentBlock.currentDom = dom;
+        const path = currentBlock.currentPath.slice();
+        currentBlock.currentPath.push("firstChild");
         for (let child of ast.content) {
-          compileASTBlock(child, block, ctx);
-          block.currentPath.push("nextSibling");
+          compileAST(child, currentBlock, 0, false, ctx);
+          currentBlock.currentPath.push("nextSibling");
         }
-        block.currentPath = path;
-        block.currentDom = initialDom;
+        currentBlock.currentPath = path;
+        currentBlock.currentDom = initialDom;
       }
       break;
     }
     case ASTType.TEsc: {
-      const targetEl = `this.` + block.currentPath.join(".");
+      const targetEl = `this.` + currentBlock.currentPath.join(".");
       const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
-      if (block.currentDom) {
-        block.currentDom.content.push(text);
-      } else {
-        block.dom = text;
-      }
-      const idx = block.textNumber;
-      block.textNumber++;
-      ctx.addLine(`${block.varName}.texts[${idx}] = ${compileExpr(ast.expr, {})};`);
-      block.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
+      addToBlockDom(currentBlock, text);
+      const idx = currentBlock.textNumber;
+      currentBlock.textNumber++;
+      ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${compileExpr(ast.expr, {})};`);
+      currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
       break;
     }
     case ASTType.TIf: {
-      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      if (block.currentDom) {
-        block.currentDom.content.push(anchor);
-      } else {
-        block.dom = anchor;
-      }
-      block.childNumber++;
       ctx.addLine(`if (${compileExpr(ast.condition, {})}) {`);
       ctx.indentLevel++;
-      const subBlock = ctx.makeBlock();
-      ctx.addLine(`${block.varName}.children[${block.childNumber - 1}] = new ${subBlock.name}();`);
-
-      compileASTBlock({ type: ASTType.Multi, content: ast.content }, subBlock, ctx);
+      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+      addToBlockDom(currentBlock, anchor);
+      currentBlock.childNumber++;
+      compileAST(ast.content, currentBlock, currentBlock.childNumber - 1, true, ctx);
       ctx.indentLevel--;
-      ctx.addLine(`}`);
+      if (ast.tElse) {
+        ctx.addLine(`} else {`);
+        ctx.indentLevel++;
+        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+        addToBlockDom(currentBlock, anchor);
+        currentBlock.childNumber++;
+        compileAST(ast.tElse, currentBlock, currentBlock.childNumber - 1, true, ctx);
+
+        ctx.indentLevel--;
+      }
+      ctx.addLine("}");
       break;
     }
     case ASTType.Multi: {
-      for (let content of ast.content) {
-        compileASTBlock(content, block, ctx);
+      for (let i = 0; i < ast.content.length; i++) {
+        const child = ast.content[i];
+        compileAST(child, currentBlock, i, true, ctx);
       }
-      break;
     }
-    default:
-      throw new Error(`not yet supported`);
   }
 }
 

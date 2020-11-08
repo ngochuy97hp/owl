@@ -1,9 +1,57 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`compiler div with a class attribute 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+exports[`compiler a t-if with two inner nodes 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span>yip</span>\`);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<div>yip</div>\`);
+  }
+  
+  return ctx => {
+    const b1 = new MultiBlock(1);
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new MultiBlock(2);
+      const b3 = b2.children[0] = new Block1();
+      const b4 = b2.children[1] = new Block2();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`compiler div containing a t-if with two inner nodes 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span>yip</span>\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`<div>yip</div>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new MultiBlock(2);
+      const b3 = b2.children[0] = new Block2();
+      const b4 = b2.children[1] = new Block3();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`compiler div with a class attribute 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div class=\\"abc\\">foo</div>\`);
   }
   
@@ -15,9 +63,9 @@ exports[`compiler div with a class attribute 1`] = `
 `;
 
 exports[`compiler div with a class attribute with a quote 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div class=\\"a'bc\\">word</div>\`);
   }
   
@@ -29,9 +77,9 @@ exports[`compiler div with a class attribute with a quote 1`] = `
 `;
 
 exports[`compiler div with a span child node 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div><span>word</span></div>\`);
   }
   
@@ -43,9 +91,9 @@ exports[`compiler div with a span child node 1`] = `
 `;
 
 exports[`compiler div with an arbitrary attribute with a quote 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div abc=\\"a'bc\\">word</div>\`);
   }
   
@@ -57,9 +105,9 @@ exports[`compiler div with an arbitrary attribute with a quote 1`] = `
 `;
 
 exports[`compiler div with an empty class attribute 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div>word</div>\`);
   }
   
@@ -71,9 +119,9 @@ exports[`compiler div with an empty class attribute 1`] = `
 `;
 
 exports[`compiler div with content 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div>foo</div>\`);
   }
   
@@ -85,28 +133,9 @@ exports[`compiler div with content 1`] = `
 `;
 
 exports[`compiler dom node with t-esc 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
-    texts = new Array(1);
-    update() {
-      this.el.firstChild.textContent = this.texts[0];
-    }
-  }
-  
-  return ctx => {
-    const b1 = new Block1();
-    b1.texts[0] = ctx['text'];
-    return b1;
-  }
-}"
-`;
-
-exports[`compiler dom node with t-esc 2`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
-) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div><owl-text></owl-text></div>\`);
     texts = new Array(1);
     update() {
@@ -123,9 +152,9 @@ exports[`compiler dom node with t-esc 2`] = `
 `;
 
 exports[`compiler dynamic text value 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<owl-text></owl-text>\`);
     texts = new Array(1);
     update() {
@@ -142,9 +171,9 @@ exports[`compiler dynamic text value 1`] = `
 `;
 
 exports[`compiler empty div 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div></div>\`);
   }
   
@@ -156,9 +185,9 @@ exports[`compiler empty div 1`] = `
 `;
 
 exports[`compiler empty string 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`\`);
   }
   
@@ -170,33 +199,16 @@ exports[`compiler empty string 1`] = `
 `;
 
 exports[`compiler just a t-if 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`ok\`);
   }
   
   return ctx => {
-    const b1 = new AnchorBlock();
+    const b1 = new MultiBlock(1);
     if (ctx['condition']) {
-      b1.children[0] = new Block1();
-    }
-    return b1;
-  }
-}"
-`;
-
-exports[`compiler just a t-if 2`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
-) {
-  class Block1 extends Block {
-    static el = elem(\`ok\`);
-  }
-  
-  return ctx => {
-    const b1 = new AnchorBlock();
-    if (ctx['condition']) {
-      b1.children[0] = new Block1();
+      const b2 = b1.children[0] = new Block1();
     }
     return b1;
   }
@@ -204,27 +216,28 @@ exports[`compiler just a t-if 2`] = `
 `;
 
 exports[`compiler multiple root nodes 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div>foo</div>\`);
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`<span>hey</span>\`);
   }
   
   return ctx => {
-    const b1 = new Block1();
-    const b2 = new Block2();
-    return new MultiBlock([b1, b2])
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    const b3 = b1.children[1] = new Block2();
+    return b1;
   }
 }"
 `;
 
 exports[`compiler properly handle comments 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div>hello <!-- comment-->owl</div>\`);
   }
   
@@ -236,9 +249,9 @@ exports[`compiler properly handle comments 1`] = `
 `;
 
 exports[`compiler simple string 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`hello vdom\`);
   }
   
@@ -250,9 +263,9 @@ exports[`compiler simple string 1`] = `
 `;
 
 exports[`compiler simple string in t tag 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`hello vdom\`);
   }
   
@@ -263,13 +276,61 @@ exports[`compiler simple string in t tag 1`] = `
 }"
 `;
 
-exports[`compiler static text and dynamic text (no t tag) 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+exports[`compiler simple t-if/t-else 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
+    static el = elem(\`1\`);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`2\`);
+  }
+  
+  return ctx => {
+    const b1 = new MultiBlock(1);
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new Block1();
+    } else {
+      const b3 = b1.children[1] = new Block2();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`compiler simple t-if/t-else in a div 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`1\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`2\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new Block2();
+    } else {
+      const b3 = b1.children[1] = new Block3();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`compiler static text and dynamic text (no t tag) 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
     static el = elem(\`hello \`);
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`<owl-text></owl-text>\`);
     texts = new Array(1);
     update() {
@@ -278,21 +339,22 @@ exports[`compiler static text and dynamic text (no t tag) 1`] = `
   }
   
   return ctx => {
-    const b1 = new Block1();
-    const b2 = new Block2();
-    b2.texts[0] = ctx['text'];
-    return new MultiBlock([b1, b2])
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    const b3 = b1.children[1] = new Block2();
+    b3.texts[0] = ctx['text'];
+    return b1;
   }
 }"
 `;
 
 exports[`compiler static text and dynamic text 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`hello \`);
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`<owl-text></owl-text>\`);
     texts = new Array(1);
     update() {
@@ -301,18 +363,19 @@ exports[`compiler static text and dynamic text 1`] = `
   }
   
   return ctx => {
-    const b1 = new Block1();
-    const b2 = new Block2();
-    b2.texts[0] = ctx['text'];
-    return new MultiBlock([b1, b2])
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    const b3 = b1.children[1] = new Block2();
+    b3.texts[0] = ctx['text'];
+    return b1;
   }
 }"
 `;
 
 exports[`compiler t-esc in dom node 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div><owl-text></owl-text></div>\`);
     texts = new Array(1);
     update() {
@@ -329,9 +392,9 @@ exports[`compiler t-esc in dom node 1`] = `
 `;
 
 exports[`compiler t-esc in dom node, variations 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div>hello <owl-text></owl-text></div>\`);
     texts = new Array(1);
     update() {
@@ -348,9 +411,9 @@ exports[`compiler t-esc in dom node, variations 1`] = `
 `;
 
 exports[`compiler t-esc in dom node, variations 2`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div>hello <owl-text></owl-text> world</div>\`);
     texts = new Array(1);
     update() {
@@ -367,41 +430,20 @@ exports[`compiler t-esc in dom node, variations 2`] = `
 `;
 
 exports[`compiler t-if in a div 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
     children = new Array(1);
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`ok\`);
   }
   
   return ctx => {
     const b1 = new Block1();
     if (ctx['condition']) {
-      b1.children[0] = new Block2();
-    }
-    return b1;
-  }
-}"
-`;
-
-exports[`compiler t-if in a div 2`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
-) {
-  class Block1 extends Block {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
-    children = new Array(1);
-  }
-  class Block2 extends Block {
-    static el = elem(\`ok\`);
-  }
-  
-  return ctx => {
-    const b1 = new Block1();
-    if (ctx['condition']) {
-      b1.children[0] = new Block2();
+      const b2 = b1.children[0] = new Block2();
     }
     return b1;
   }
@@ -409,101 +451,49 @@ exports[`compiler t-if in a div 2`] = `
 `;
 
 exports[`compiler two consecutive t-if 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`1\`);
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`2\`);
   }
   
   return ctx => {
-    const b1 = new AnchorBlock();
+    const b1 = new MultiBlock(2);
     if (ctx['cond1']) {
-      b1.children[0] = new Block1();
-    }
-    const b3 = new AnchorBlock();
-    if (ctx['cond2']) {
-      b3.children[0] = new Block2();
-    }
-    return new MultiBlock([b1, b3])
-  }
-}"
-`;
-
-exports[`compiler two consecutive t-if 2`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
-) {
-  class Block1 extends Block {
-    static el = elem(\`1\`);
-  }
-  class Block2 extends Block {
-    static el = elem(\`2\`);
-  }
-  
-  return ctx => {
-    const b1 = new AnchorBlock();
-    if (ctx['cond1']) {
-      b1.children[0] = new Block1();
-    }
-    const b3 = new AnchorBlock();
-    if (ctx['cond2']) {
-      b3.children[0] = new Block2();
-    }
-    return new MultiBlock([b1, b3])
-  }
-}"
-`;
-
-exports[`compiler two consecutive t-if in a div 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
-) {
-  class Block1 extends Block {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
-    children = new Array(2);
-  }
-  class Block2 extends Block {
-    static el = elem(\`1\`);
-  }
-  class Block3 extends Block {
-    static el = elem(\`2\`);
-  }
-  
-  return ctx => {
-    const b1 = new Block1();
-    if (ctx['cond1']) {
-      b1.children[0] = new Block2();
+      const b2 = b1.children[0] = new Block1();
     }
     if (ctx['cond2']) {
-      b1.children[1] = new Block3();
+      const b3 = b1.children[1] = new Block2();
     }
     return b1;
   }
 }"
 `;
 
-exports[`compiler two consecutive t-if in a div 2`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+exports[`compiler two consecutive t-if in a div 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
     children = new Array(2);
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`1\`);
   }
-  class Block3 extends Block {
+  class Block3 extends ContentBlock {
     static el = elem(\`2\`);
   }
   
   return ctx => {
     const b1 = new Block1();
     if (ctx['cond1']) {
-      b1.children[0] = new Block2();
+      const b2 = b1.children[0] = new Block2();
     }
     if (ctx['cond2']) {
-      b1.children[1] = new Block3();
+      const b3 = b1.children[1] = new Block3();
     }
     return b1;
   }
@@ -511,16 +501,16 @@ exports[`compiler two consecutive t-if in a div 2`] = `
 `;
 
 exports[`compiler two t-escs next to each other 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<owl-text></owl-text>\`);
     texts = new Array(1);
     update() {
       this.el.textContent = this.texts[0];
     }
   }
-  class Block2 extends Block {
+  class Block2 extends ContentBlock {
     static el = elem(\`<owl-text></owl-text>\`);
     texts = new Array(1);
     update() {
@@ -529,19 +519,20 @@ exports[`compiler two t-escs next to each other 1`] = `
   }
   
   return ctx => {
-    const b1 = new Block1();
-    b1.texts[0] = ctx['text1'];
-    const b2 = new Block2();
-    b2.texts[0] = ctx['text2'];
-    return new MultiBlock([b1, b2])
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    b2.texts[0] = ctx['text1'];
+    const b3 = b1.children[1] = new Block2();
+    b3.texts[0] = ctx['text2'];
+    return b1;
   }
 }"
 `;
 
 exports[`compiler two t-escs next to each other, in a div 1`] = `
-"function anonymous(Block, AnchorBlock, MultiBlock, elem
+"function anonymous(ContentBlock, MultiBlock, elem
 ) {
-  class Block1 extends Block {
+  class Block1 extends ContentBlock {
     static el = elem(\`<div><owl-text></owl-text><owl-text></owl-text></div>\`);
     texts = new Array(2);
     update() {

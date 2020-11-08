@@ -141,12 +141,11 @@ describe("qweb parser", () => {
         {
           type: ASTType.TIf,
           condition: "condition",
-          content: [
-            {
-              type: ASTType.Text,
-              value: "hey",
-            },
-          ],
+          content: {
+            type: ASTType.Text,
+            value: "hey",
+          },
+          tElse: null,
         },
       ],
     });
@@ -156,14 +155,28 @@ describe("qweb parser", () => {
     expect(parse(`<div t-if="condition">hey</div>`)).toEqual({
       type: ASTType.TIf,
       condition: "condition",
-      content: [
-        {
-          type: ASTType.DomNode,
-          tag: "div",
-          attrs: {},
-          content: [{ type: ASTType.Text, value: "hey" }],
-        },
-      ],
+      content: {
+        type: ASTType.DomNode,
+        tag: "div",
+        attrs: {},
+        content: [{ type: ASTType.Text, value: "hey" }],
+      },
+      tElse: null,
+    });
+  });
+
+  test("t-if and t else", async () => {
+    expect(parse(`<t t-if="condition">hey</t><t t-else="">else</t>`)).toEqual({
+      type: ASTType.TIf,
+      condition: "condition",
+      content: {
+        type: ASTType.Text,
+        value: "hey",
+      },
+      tElse: {
+        type: ASTType.Text,
+        value: "else",
+      },
     });
   });
 });

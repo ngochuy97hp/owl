@@ -5,19 +5,48 @@
  * "block" instead of just a html (v)node.
  */
 
-export type BDom = Block | MultiBlock;
+export type BDom = ContentBlock;
 
-export class Block {
-  static el: HTMLElement | Text;
-  texts: string[] = [];
-  el!: HTMLElement | Text | null;
-  children: (Block | null)[] | null = null;
-  anchors!: Text[];
+abstract class Block {
+  mount(parent: HTMLElement) {
+    const anchor = document.createTextNode("");
+    parent.appendChild(anchor);
+    this.mountBefore(anchor);
+  }
+
+  abstract mountBefore(anchor: Text): void;
+
+  abstract patch(other: Block): void;
 
   update() {}
 
+  remove() {}
+}
+
+export class ContentBlock extends Block {
+  static el: HTMLElement | Text;
+  el?: HTMLElement | Text;
+  children: (ContentBlock | null)[] | null = null;
+  anchors?: Text[];
+  texts: string[] = [];
+
+  mountBefore(anchor: Text) {
+    this.build();
+    if (this.children) {
+      for (let i = 0; i < this.children.length; i++) {
+        const child = this.children[i];
+        if (child) {
+          const anchor = this.anchors![i];
+          child.mountBefore(anchor);
+        }
+      }
+    }
+    anchor.before(this.el!);
+  }
+
   protected build() {
     this.el = (this.constructor as any).el.cloneNode(true);
+    this.update();
     if (this.children) {
       const anchorElems = (this.el as HTMLElement).getElementsByTagName("owl-anchor");
       const anchors = new Array(anchorElems.length);
@@ -28,29 +57,9 @@ export class Block {
       }
       this.anchors = anchors;
     }
-    this.update();
   }
 
-  mount(parent: HTMLElement) {
-    this._mount();
-    parent.appendChild(this.el!);
-  }
-
-  protected _mount() {
-    this.build();
-    if (this.children) {
-      for (let i = 0; i < this.children.length; i++) {
-        const child = this.children[i];
-        if (child) {
-          const anchor = this.anchors[i];
-          child._mount();
-          anchor.replaceWith(child.el!);
-        }
-      }
-    }
-  }
-
-  patch(newTree: Block) {
+  patch(newTree: ContentBlock) {
     this.texts = newTree.texts;
     this.update();
     if (this.children) {
@@ -64,60 +73,67 @@ export class Block {
             child.patch(newChild);
           } else {
             children[i] = null;
-            child.el!.replaceWith(this.anchors[i]);
+            child.remove();
           }
         } else if (newChild) {
           children[i] = newChild;
-          const anchor = this.anchors[i];
-          newChild._mount();
-          anchor.replaceWith(newChild.el!);
+          const anchor = this.anchors![i];
+          newChild.mountBefore(anchor);
         }
       }
     }
   }
+
+  remove() {
+    this.el!.remove();
+  }
 }
 
-export class AnchorBlock extends Block {
-  children = new Array(1);
+export class MultiBlock extends Block {
+  children: (ContentBlock | undefined | null)[];
+  anchors?: Text[];
 
-  protected _mount() {
-    const child = this.children[0];
-    if (child) {
-      child._mount();
-      this.el = child.el;
-    } else {
-      this.el = document.createTextNode("");
-    }
+  constructor(n: number) {
+    super();
+    this.children = new Array(n);
+    this.anchors = new Array(n);
   }
-  patch(newTree: AnchorBlock) {
-    const child = this.children[0];
-    const newChild = newTree.children[0];
-    if (child) {
-      if (newChild) {
-        child.patch(newChild);
-      } else {
-        this.children[0] = null;
-        this.el = document.createTextNode("");
-        child.el.replaceWith(this.el);
+
+  mountBefore(anchor: Text) {
+    for (let i = 0; i < this.children.length; i++) {
+      let child: any = this.children[i];
+      const childAnchor = document.createTextNode("");
+      anchor.before(childAnchor);
+      this.anchors![i] = childAnchor;
+      if (child) {
+        child.mountBefore(childAnchor);
       }
-    } else if (newChild) {
-      this.children[0] = newChild;
-      newChild._mount();
-      this.el!.replaceWith(newChild.el);
-      this.el = newChild.el;
     }
   }
-}
 
-export class MultiBlock {
-  blocks: Block[];
-  constructor(blocks: Block[]) {
-    this.blocks = blocks;
+  patch(newTree: MultiBlock) {
+    for (let i = 0; i < this.children.length; i++) {
+      const block = this.children[i];
+      const newBlock = newTree.children[i];
+      if (block) {
+        if (newBlock) {
+          block.patch(newBlock);
+        } else {
+          this.children[0] = null;
+          block.remove();
+        }
+      } else if (newBlock) {
+        this.children[i] = newBlock;
+        newBlock.mountBefore(this.anchors![i]);
+      }
+    }
   }
 
-  mount(parent: HTMLElement) {
-    for (let block of this.blocks) {
-      block.mount(parent);
+  remove() {
+    for (let child of this.children) {
+      if (child) {
+        child.remove();
+      }
     }
   }
 }

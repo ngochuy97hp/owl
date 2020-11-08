@@ -21,60 +21,60 @@ beforeEach(() => {
 //------------------------------------------------------------------------------
 
 describe("static templates", () => {
-  test("simple string", () => {
-    qweb.addTemplate("test", "<t>hello vdom</t>");
-    expect(renderToString(qweb, "test")).toBe("hello vdom");
-  });
+  // test("simple string", () => {
+  //   qweb.addTemplate("test", "<t>hello vdom</t>");
+  //   expect(renderToString(qweb, "test")).toBe("hello vdom");
+  // });
 
-  test("simple dynamic value", () => {
-    qweb.addTemplate("test", '<t><t t-esc="text"/></t>');
-    expect(renderToString(qweb, "test", { text: "hello vdom" })).toBe("hello vdom");
-  });
+  // test("simple dynamic value", () => {
+  //   qweb.addTemplate("test", '<t><t t-esc="text"/></t>');
+  //   expect(renderToString(qweb, "test", { text: "hello vdom" })).toBe("hello vdom");
+  // });
 
-  test("simple string, with some dynamic value", () => {
-    qweb.addTemplate("test", '<t>hello <t t-esc="text"/></t>');
-    expect(renderToString(qweb, "test", { text: "vdom" })).toBe("hello vdom");
-  });
+  // test("simple string, with some dynamic value", () => {
+  //   qweb.addTemplate("test", '<t>hello <t t-esc="text"/></t>');
+  //   expect(renderToString(qweb, "test", { text: "vdom" })).toBe("hello vdom");
+  // });
 
-  test("empty div", () => {
-    qweb.addTemplate("test", "<div></div>");
-    expect(renderToString(qweb, "test")).toBe("<div></div>");
-  });
+  // test("empty div", () => {
+  //   qweb.addTemplate("test", "<div></div>");
+  //   expect(renderToString(qweb, "test")).toBe("<div></div>");
+  // });
 
-  test("div with a text node", () => {
-    qweb.addTemplate("test", "<div>word</div>");
-    expect(renderToString(qweb, "test")).toBe("<div>word</div>");
-  });
+  // test("div with a text node", () => {
+  //   qweb.addTemplate("test", "<div>word</div>");
+  //   expect(renderToString(qweb, "test")).toBe("<div>word</div>");
+  // });
 
-  test("div with a class attribute", () => {
-    qweb.addTemplate("test", `<div class="abc">word</div>`);
-    expect(renderToString(qweb, "test")).toBe(`<div class="abc">word</div>`);
-  });
+  // test("div with a class attribute", () => {
+  //   qweb.addTemplate("test", `<div class="abc">word</div>`);
+  //   expect(renderToString(qweb, "test")).toBe(`<div class="abc">word</div>`);
+  // });
 
-  test("div with a class attribute with a quote", () => {
-    qweb.addTemplate("test", `<div class="a'bc">word</div>`);
-    expect(renderToString(qweb, "test")).toBe(`<div class="a'bc">word</div>`);
-  });
+  // test("div with a class attribute with a quote", () => {
+  //   qweb.addTemplate("test", `<div class="a'bc">word</div>`);
+  //   expect(renderToString(qweb, "test")).toBe(`<div class="a'bc">word</div>`);
+  // });
 
-  test("div with an arbitrary attribute with a quote", () => {
-    qweb.addTemplate("test", `<div abc="a'bc">word</div>`);
-    expect(renderToString(qweb, "test")).toBe(`<div abc="a'bc">word</div>`);
-  });
+  // test("div with an arbitrary attribute with a quote", () => {
+  //   qweb.addTemplate("test", `<div abc="a'bc">word</div>`);
+  //   expect(renderToString(qweb, "test")).toBe(`<div abc="a'bc">word</div>`);
+  // });
 
-  test("div with a empty class attribute", () => {
-    qweb.addTemplate("test", `<div class="">word</div>`);
-    expect(renderToString(qweb, "test")).toBe(`<div>word</div>`);
-  });
+  // test("div with a empty class attribute", () => {
+  //   qweb.addTemplate("test", `<div class="">word</div>`);
+  //   expect(renderToString(qweb, "test")).toBe(`<div>word</div>`);
+  // });
 
-  test("div with a span child node", () => {
-    qweb.addTemplate("test", "<div><span>word</span></div>");
-    expect(renderToString(qweb, "test")).toBe("<div><span>word</span></div>");
-  });
+  // test("div with a span child node", () => {
+  //   qweb.addTemplate("test", "<div><span>word</span></div>");
+  //   expect(renderToString(qweb, "test")).toBe("<div><span>word</span></div>");
+  // });
 
-  test("properly handle comments", () => {
-    qweb.addTemplate("test", "<div>hello <!-- comment-->owl</div>");
-    expect(renderToString(qweb, "test")).toBe("<div>hello <!-- comment-->owl</div>");
-  });
+  // test("properly handle comments", () => {
+  //   qweb.addTemplate("test", "<div>hello <!-- comment-->owl</div>");
+  //   expect(renderToString(qweb, "test")).toBe("<div>hello <!-- comment-->owl</div>");
+  // });
 
   test("properly handle comments between t-if/t-else", () => {
     qweb.addTemplate(

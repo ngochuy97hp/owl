@@ -1,4 +1,4 @@
-import { AnchorBlock, Block, MultiBlock } from "../src/bdom";
+import { ContentBlock, MultiBlock } from "../src/bdom";
 import { makeTestFixture } from "./helpers";
 
 //------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ function el(html: string): HTMLElement {
 
 describe("mount", () => {
   test("simple block", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div>foo</div>");
     }
 
@@ -36,7 +36,7 @@ describe("mount", () => {
   });
 
   test("simple block with string", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("foo");
     }
 
@@ -46,21 +46,35 @@ describe("mount", () => {
   });
 
   test("simple block with multiple roots", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div>foo</div>");
     }
-    class Block2 extends Block {
+    class Block2 extends ContentBlock {
       static el = el("<span>bar</span>");
     }
 
-    const blocks = [new Block1(), new Block2()];
-    const tree = new MultiBlock(blocks);
+    const tree = new MultiBlock(2);
+    tree.children[0] = new Block1();
+    tree.children[1] = new Block2();
+
     tree.mount(fixture);
     expect(fixture.innerHTML).toBe("<div>foo</div><span>bar</span>");
   });
 
+  test("multiblock with an empty children", async () => {
+    class Block1 extends ContentBlock {
+      static el = el("<div>foo</div>");
+    }
+
+    const tree = new MultiBlock(2);
+    tree.children[0] = new Block1();
+
+    tree.mount(fixture);
+    expect(fixture.innerHTML).toBe("<div>foo</div>");
+  });
+
   test("block with dynamic content", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div><p></p></div>");
       texts = new Array(1);
       update() {
@@ -75,7 +89,7 @@ describe("mount", () => {
   });
 
   test("block with subblock", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div><span></span><owl-anchor></owl-anchor></div>");
       children = new Array(1);
       texts = new Array(1);
@@ -84,7 +98,7 @@ describe("mount", () => {
       }
     }
 
-    class Block2 extends Block {
+    class Block2 extends ContentBlock {
       static el = el("<p>yip yip</p>");
     }
 
@@ -97,13 +111,13 @@ describe("mount", () => {
   });
 
   test("block with subblock with siblings", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div><p>1</p><owl-anchor></owl-anchor><p>2</p></div>");
       children = new Array(1);
       refs = new Array(1);
     }
 
-    class Block2 extends Block {
+    class Block2 extends ContentBlock {
       static el = el("<p>yip yip</p>");
     }
 
@@ -113,11 +127,29 @@ describe("mount", () => {
     tree.mount(fixture);
     expect(fixture.innerHTML).toBe("<div><p>1</p><p>yip yip</p><p>2</p></div>");
   });
+
+  test("multi block in a regular block", async () => {
+    class Block1 extends ContentBlock {
+      static el = el(`<div><owl-anchor></owl-anchor></div>`);
+      children = new Array(1);
+    }
+
+    class Block2 extends ContentBlock {
+      static el = el(`<span>yip yip</span>`);
+    }
+
+    const b1 = new Block1();
+    const b2 = (b1.children[0] = new MultiBlock(1));
+    b2.children[0] = new Block2();
+
+    b1.mount(fixture);
+    expect(fixture.innerHTML).toBe("<div><span>yip yip</span></div>");
+  });
 });
 
 describe("update", () => {
   test("block with dynamic content", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div><p></p></div>");
       texts = new Array(1);
       update() {
@@ -137,11 +169,11 @@ describe("update", () => {
   });
 
   test("block with conditional child", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div><p><owl-anchor></owl-anchor></p></div>");
       children = new Array(1);
     }
-    class Block2 extends Block {
+    class Block2 extends ContentBlock {
       static el = el("<span>foo</span>");
     }
 
@@ -160,12 +192,12 @@ describe("update", () => {
   });
 
   test("block with subblock with dynamic content", async () => {
-    class Block1 extends Block {
+    class Block1 extends ContentBlock {
       static el = el("<div><owl-anchor></owl-anchor></div>");
       children = new Array(1);
     }
 
-    class Block2 extends Block {
+    class Block2 extends ContentBlock {
       static el = el("<p></p>");
       texts = new Array(1);
       update() {
@@ -188,22 +220,22 @@ describe("update", () => {
     expect(fixture.innerHTML).toBe("<div><p>foo</p></div>");
   });
 
-  test("anchor block", async () => {
-    class Block1 extends Block {
+  test("multi block", async () => {
+    class Block1 extends ContentBlock {
       static el = el(`ok`);
     }
 
-    const tree = new AnchorBlock();
+    const tree = new MultiBlock(1);
     tree.children[0] = new Block1();
 
     tree.mount(fixture);
     expect(fixture.innerHTML).toBe("ok");
 
-    const tree2 = new AnchorBlock();
+    const tree2 = new MultiBlock(1);
     tree.patch(tree2);
     expect(fixture.innerHTML).toBe("");
 
-    const tree3 = new AnchorBlock();
+    const tree3 = new MultiBlock(1);
     tree3.children[0] = new Block1();
     tree.patch(tree3);
     expect(fixture.innerHTML).toBe("ok");

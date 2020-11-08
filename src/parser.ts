@@ -41,7 +41,8 @@ export interface ASTTEsc {
 export interface ASTTif {
   type: ASTType.TIf;
   condition: string;
-  content: AST[];
+  content: AST;
+  tElse: AST | null;
 }
 
 export type AST = ASTText | ASTComment | ASTDomNode | ASTMulti | ASTTEsc | ASTTif;
@@ -186,15 +187,25 @@ function parseTIf(node: Element): AST | null {
   }
   const condition = node.getAttribute("t-if")!;
   node.removeAttribute("t-if");
-  const ast = parseNode(node);
-  if (!ast) {
+  const content = parseNode(node);
+  if (!content) {
     throw new Error("hmmm");
   }
-  const content = ast.type === ASTType.Multi ? ast.content : [ast];
+
+  let nextElement = node.nextElementSibling;
+  let tElse: AST | null = null;
+
+  // t-else
+  if (nextElement && nextElement.hasAttribute("t-else")) {
+    tElse = parseNode(nextElement);
+    nextElement.remove();
+  }
+
   return {
     type: ASTType.TIf,
     condition,
     content,
+    tElse,
   };
 }
 
