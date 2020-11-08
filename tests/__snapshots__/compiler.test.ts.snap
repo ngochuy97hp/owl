@@ -531,9 +531,9 @@ exports[`compiler two t-escs next to each other 1`] = `
   return ctx => {
     const b1 = new Block1();
     b1.texts[0] = ctx['text1'];
-    const b3 = new Block2();
-    b3.texts[0] = ctx['text2'];
-    return new MultiBlock([b1, b3])
+    const b2 = new Block2();
+    b2.texts[0] = ctx['text2'];
+    return new MultiBlock([b1, b2])
   }
 }"
 `;

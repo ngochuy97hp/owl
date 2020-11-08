@@ -37,7 +37,7 @@ interface BlockDescription {
   updateFn: string[];
   varName: string;
   currentPath: string[];
-  texts: string[];
+  textNumber: number;
   dom?: Dom;
   currentDom?: DomNode;
   childNumber: number;
@@ -89,7 +89,7 @@ class CompilationContext {
       varName: this.generateId("b"),
       updateFn: [],
       currentPath: ["el"],
-      texts: [],
+      textNumber: 0,
       childNumber: 0,
     };
     this.blocks.push(block);
@@ -108,8 +108,8 @@ class CompilationContext {
       if (block.childNumber) {
         this.addLine(`children = new Array(${block.childNumber});`);
       }
-      if (block.texts.length) {
-        this.addLine(`texts = new Array(${block.texts.length});`);
+      if (block.textNumber) {
+        this.addLine(`texts = new Array(${block.textNumber});`);
       }
       if (block.updateFn.length) {
         this.addLine(`update() {`);
@@ -186,7 +186,7 @@ export function compileAST(ast: AST, ctx: CompilationContext) {
         varName: ctx.generateId("b"),
         updateFn: [],
         currentPath: [],
-        texts: [],
+        textNumber: 0,
         childNumber: 0,
       };
       ctx.rootBlocks.push(anchorBlock.varName);
@@ -245,8 +245,8 @@ function compileASTBlock(ast: AST, block: BlockDescription, ctx: CompilationCont
       } else {
         block.dom = text;
       }
-      const textId = ctx.generateId("t");
-      const idx = block.texts.push(textId) - 1;
+      const idx = block.textNumber;
+      block.textNumber++;
       ctx.addLine(`${block.varName}.texts[${idx}] = ${compileExpr(ast.expr, {})};`);
       block.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
       break;
