@@ -10,12 +10,18 @@ export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (
   contentBlock: typeof ContentBlock,
   multiBlock: typeof MultiBlock,
-  elem: any
+  utils: TemplateUtils
 ) => RenderFunction;
+
+interface TemplateUtils {
+  elem: typeof elem;
+  toString: typeof toString;
+  withDefault: typeof withDefault;
+}
 
 export function compile(template: string): RenderFunction {
   const templateFunction = compileTemplate(template);
-  return templateFunction(ContentBlock, MultiBlock, elem);
+  return templateFunction(ContentBlock, MultiBlock, { elem, toString, withDefault });
 }
 
 export function compileTemplate(template: string): TemplateFunction {
@@ -24,7 +30,7 @@ export function compileTemplate(template: string): TemplateFunction {
   compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();
   // console.warn(code);
-  return new Function("ContentBlock, MultiBlock, elem", code) as TemplateFunction;
+  return new Function("ContentBlock, MultiBlock, utils", code) as TemplateFunction;
 }
 
 // -----------------------------------------------------------------------------
@@ -113,6 +119,10 @@ class CompilationContext {
     const mainCode = this.code;
     this.code = [];
     this.indentLevel = 0;
+    // define utility functions
+    this.addLine(`let {elem, toString, withDefault} = utils;`);
+    this.addLine(``);
+
     // define all blocks
     for (let block of this.blocks) {
       this.addLine(`class ${block.name} extends ContentBlock {`);
@@ -241,8 +251,10 @@ function compileAST(
       addToBlockDom(currentBlock, text);
       const idx = currentBlock.textNumber;
       currentBlock.textNumber++;
-      ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${compileExpr(ast.expr, {})};`);
-      currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
+      const expr = compileExpr(ast.expr, {});
+      const textValue = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
+      ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${textValue};`);
+      currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
       break;
     }
     case ASTType.TIf: {
@@ -289,4 +301,24 @@ function elem(html: string): HTMLElement | Text {
     texts[0].replaceWith(document.createTextNode(""));
   }
   return (div.firstChild as HTMLElement | Text) || document.createTextNode("");
+}
+
+function toString(value: any): string {
+  switch (typeof value) {
+    case "string":
+      return value;
+    case "number":
+      return String(value);
+    case "boolean":
+      return value ? "true" : "false";
+    case "undefined":
+      return "";
+    case "object":
+      return value ? value.toString() : "";
+  }
+  throw new Error("not yet working" + value);
+}
+
+function withDefault(value: any, defaultValue: any): any {
+  return (value === undefined || value === null) ? defaultValue : value;
 }

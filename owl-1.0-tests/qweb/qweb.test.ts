@@ -133,37 +133,37 @@ describe("error handling", () => {
 });
 
 describe("t-esc", () => {
-  test("literal", () => {
-    qweb.addTemplate("test", `<span><t t-esc="'ok'"/></span>`);
-    expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
-  });
+  // test("literal", () => {
+  //   qweb.addTemplate("test", `<span><t t-esc="'ok'"/></span>`);
+  //   expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
+  // });
 
-  test("variable", () => {
-    qweb.addTemplate("test", `<span><t t-esc="var"/></span>`);
-    expect(renderToString(qweb, "test", { var: "ok" })).toBe("<span>ok</span>");
-  });
+  // test("variable", () => {
+  //   qweb.addTemplate("test", `<span><t t-esc="var"/></span>`);
+  //   expect(renderToString(qweb, "test", { var: "ok" })).toBe("<span>ok</span>");
+  // });
 
-  test("escaping", () => {
-    qweb.addTemplate("test", `<span><t t-esc="var"/></span>`);
-    expect(renderToString(qweb, "test", { var: "<ok>abc</ok>" })).toBe(
-      "<span>&amp;lt;ok&amp;gt;abc&amp;lt;/ok&amp;gt;</span>"
-    );
-  });
+  // test("escaping", () => {
+  //   qweb.addTemplate("test", `<span><t t-esc="var"/></span>`);
+  //   expect(renderToString(qweb, "test", { var: "<ok>abc</ok>" })).toBe(
+  //     "<span>&amp;lt;ok&amp;gt;abc&amp;lt;/ok&amp;gt;</span>"
+  //   );
+  // });
 
-  test("escaping on a node", () => {
-    qweb.addTemplate("test", `<span t-esc="'ok'"/>`);
-    expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
-  });
+  // test("escaping on a node", () => {
+  //   qweb.addTemplate("test", `<span t-esc="'ok'"/>`);
+  //   expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
+  // });
 
-  test("escaping on a node with a body", () => {
-    qweb.addTemplate("test", `<span t-esc="'ok'">nope</span>`);
-    expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
-  });
+  // test("escaping on a node with a body", () => {
+  //   qweb.addTemplate("test", `<span t-esc="'ok'">nope</span>`);
+  //   expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
+  // });
 
-  test("escaping on a node with a body, as a default", () => {
-    qweb.addTemplate("test", `<span t-esc="var">nope</span>`);
-    expect(renderToString(qweb, "test")).toBe("<span>nope</span>");
-  });
+  // test("escaping on a node with a body, as a default", () => {
+  //   qweb.addTemplate("test", `<span t-esc="var">nope</span>`);
+  //   expect(renderToString(qweb, "test")).toBe("<span>nope</span>");
+  // });
 
   test("t-esc is escaped", () => {
     qweb.addTemplate("test", `<div><t t-set="var"><p>escaped</p></t><t t-esc="var"/></div>`);
@@ -178,29 +178,29 @@ describe("t-esc", () => {
     expect(domRendered.querySelector("span")!.textContent).toBe("<p>escaped</p>");
   });
 
-  test("div with falsy values", () => {
-    qweb.addTemplate(
-      "test",
-      `
-      <div>
-        <p t-esc="v1"/>
-        <p t-esc="v2"/>
-        <p t-esc="v3"/>
-        <p t-esc="v4"/>
-        <p t-esc="v5"/>
-      </div>`
-    );
-    const vals = {
-      v1: false,
-      v2: undefined,
-      v3: null,
-      v4: 0,
-      v5: "",
-    };
-    expect(renderToString(qweb, "test", vals)).toBe(
-      "<div><p>false</p><p></p><p></p><p>0</p><p></p></div>"
-    );
-  });
+  // test("div with falsy values", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `
+  //     <div>
+  //       <p t-esc="v1"/>
+  //       <p t-esc="v2"/>
+  //       <p t-esc="v3"/>
+  //       <p t-esc="v4"/>
+  //       <p t-esc="v5"/>
+  //     </div>`
+  //   );
+  //   const vals = {
+  //     v1: false,
+  //     v2: undefined,
+  //     v3: null,
+  //     v4: 0,
+  //     v5: "",
+  //   };
+  //   expect(renderToString(qweb, "test", vals)).toBe(
+  //     "<div><p>false</p><p></p><p></p><p>0</p><p></p></div>"
+  //   );
+  // });
 
   test("t-esc work with spread operator", () => {
     qweb.addTemplate("test", `<span><t t-esc="[...state.list]"/></span>`);

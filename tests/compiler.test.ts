@@ -310,4 +310,58 @@ describe("t-esc", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template)).toBe("<span>ok</span>");
   });
+
+  test("variable", () => {
+    const template = `<span><t t-esc="var"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { var: "ok" })).toBe("<span>ok</span>");
+  });
+
+  test("escaping", () => {
+    const template = `<span><t t-esc="var"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { var: "<ok>abc</ok>" })).toBe(
+      "<span>&lt;ok&gt;abc&lt;/ok&gt;</span>"
+    );
+  });
+
+  test("escaping on a node", () => {
+    const template = `<span t-esc="'ok'"/>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span>ok</span>");
+  });
+
+  test("escaping on a node with a body", () => {
+    const template = `<span t-esc="'ok'">nope</span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span>ok</span>");
+  });
+
+  test("escaping on a node with a body, as a default", () => {
+    const template = `<span t-esc="var">nope</span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span>nope</span>");
+  });
+
+  test("div with falsy values", () => {
+    const template = `
+    <div>
+      <p t-esc="v1"/>
+      <p t-esc="v2"/>
+      <p t-esc="v3"/>
+      <p t-esc="v4"/>
+      <p t-esc="v5"/>
+    </div>`;
+    snapshotCompiledCode(template);
+    const vals = {
+      v1: false,
+      v2: undefined,
+      v3: null,
+      v4: 0,
+      v5: "",
+    };
+    expect(renderToString(template, vals)).toBe(
+      "<div><p>false</p><p></p><p></p><p>0</p><p></p></div>"
+    );
+  });
 });

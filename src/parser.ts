@@ -36,6 +36,7 @@ export interface ASTMulti {
 export interface ASTTEsc {
   type: ASTType.TEsc;
   expr: string;
+  defaultValue: string;
 }
 
 export interface ASTTif {
@@ -71,8 +72,8 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
   }
   return (
     parseTIf(node, ctx) ||
-    parseTNode(node, ctx) ||
     parseTEscNode(node, ctx) ||
+    parseTNode(node, ctx) ||
     parseDOMNode(node, ctx)
   );
 }
@@ -178,12 +179,13 @@ function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
   const tesc: AST = {
     type: ASTType.TEsc,
     expr: escValue,
+    defaultValue: node.textContent || ""
   };
   const ast = parseNode(node, ctx);
   if (!ast) {
     return tesc;
   }
-  if (ast.type === ASTType.DomNode) {
+  if (ast && ast.type === ASTType.DomNode) {
     return {
       type: ASTType.DomNode,
       tag: ast.tag,
@@ -191,7 +193,7 @@ function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
       content: [tesc],
     };
   }
-  throw new Error("hmm");
+  return tesc;
 }
 
 // -----------------------------------------------------------------------------

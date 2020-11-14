@@ -131,10 +131,12 @@ describe("qweb parser", () => {
     expect(parse(`<t t-esc="text"/>`)).toEqual({
       type: ASTType.TEsc,
       expr: "text",
+      defaultValue: ""
     });
     expect(parse(`<t><t t-esc="text"/></t>`)).toEqual({
       type: ASTType.TEsc,
       expr: "text",
+      defaultValue: ""
     });
   });
 
@@ -143,7 +145,24 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "span",
       attrs: {},
-      content: [{ type: ASTType.TEsc, expr: "text" }],
+      content: [{ type: ASTType.TEsc, expr: "text", defaultValue: "" }],
+    });
+  });
+
+  test("t-esc node with default value", async () => {
+    expect(parse(`<t t-esc="text">hey</t>`)).toEqual({
+      type: ASTType.TEsc,
+      expr: "text",
+      defaultValue: "hey"
+    });
+  });
+
+  test("dom node with t-esc with default value", async () => {
+    expect(parse(`<div t-esc="text">hey</div>`)).toEqual({
+      type: ASTType.DomNode,
+      tag: "div",
+      attrs: {},
+      content: [{ type: ASTType.TEsc, expr: "text", defaultValue: "hey" }],
     });
   });
 
