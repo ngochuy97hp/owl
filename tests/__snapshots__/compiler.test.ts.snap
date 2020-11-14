@@ -429,6 +429,33 @@ exports[`compiler t-esc in dom node, variations 2`] = `
 }"
 `;
 
+exports[`compiler t-if and t-else with two nodes 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`1\`);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span>a</span>\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`<span>b</span>\`);
+  }
+  
+  return ctx => {
+    const b1 = new MultiBlock(1);
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new Block1();
+    } else {
+      const b3 = b1.children[1] = new MultiBlock(2);
+      const b4 = b3.children[0] = new Block2();
+      const b5 = b3.children[1] = new Block3();
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`compiler t-if in a div 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {

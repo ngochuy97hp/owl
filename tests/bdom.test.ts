@@ -61,6 +61,25 @@ describe("mount", () => {
     expect(fixture.innerHTML).toBe("<div>foo</div><span>bar</span>");
   });
 
+  test("a multiblock can be removed and leaves no extra text nodes", async () => {
+    class Block1 extends ContentBlock {
+      static el = el("<div>foo</div>");
+    }
+    class Block2 extends ContentBlock {
+      static el = el("<span>bar</span>");
+    }
+
+    const tree = new MultiBlock(2);
+    tree.children[0] = new Block1();
+    tree.children[1] = new Block2();
+
+    expect(fixture.childNodes.length).toBe(0);
+    tree.mount(fixture);
+    expect(fixture.childNodes.length).toBe(4);
+    tree.remove();
+    expect(fixture.childNodes.length).toBe(0);
+  });
+
   test("multiblock with an empty children", async () => {
     class Block1 extends ContentBlock {
       static el = el("<div>foo</div>");

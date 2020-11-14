@@ -12,6 +12,7 @@ abstract class Block {
     const anchor = document.createTextNode("");
     parent.appendChild(anchor);
     this.mountBefore(anchor);
+    anchor.remove();
   }
 
   abstract mountBefore(anchor: Text): void;
@@ -130,10 +131,9 @@ export class MultiBlock extends Block {
   }
 
   remove() {
-    for (let child of this.children) {
-      if (child) {
-        child.remove();
-      }
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i]!.remove();
+      this.anchors![i].remove();
     }
   }
 }
