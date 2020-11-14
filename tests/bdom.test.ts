@@ -239,6 +239,35 @@ describe("update", () => {
     expect(fixture.innerHTML).toBe("<div><p>foo</p></div>");
   });
 
+  test("block with dynamic content and subblock", async () => {
+    class Block1 extends ContentBlock {
+      static el = el("<div><owl-anchor></owl-anchor><p></p></div>");
+      children = new Array(1);
+      texts = new Array(1);
+      update() {
+        this.anchors![0].nextSibling!.textContent = this.texts[0];
+      }
+    }
+
+    class Block2 extends ContentBlock {
+      static el = el("<p>sub block</p>");
+    }
+
+    const tree = new Block1();
+    tree.texts[0] = "yip yip";
+    tree.children[0] = new Block2();
+
+    tree.mount(fixture);
+    expect(fixture.innerHTML).toBe("<div><p>sub block</p><p>yip yip</p></div>");
+
+    const tree2 = new Block1();
+    tree2.texts[0] = "foo";
+    tree2.children[0] = new Block2();
+
+    tree.patch(tree2);
+    expect(fixture.innerHTML).toBe("<div><p>sub block</p><p>foo</p></div>");
+  });
+
   test("multi block", async () => {
     class Block1 extends ContentBlock {
       static el = el(`ok`);

@@ -47,7 +47,6 @@ export class ContentBlock extends Block {
 
   protected build() {
     this.el = (this.constructor as any).el.cloneNode(true);
-    this.update();
     if (this.children) {
       const anchorElems = (this.el as HTMLElement).getElementsByTagName("owl-anchor");
       const anchors = new Array(anchorElems.length);
@@ -58,6 +57,7 @@ export class ContentBlock extends Block {
       }
       this.anchors = anchors;
     }
+    this.update();
   }
 
   patch(newTree: ContentBlock) {
