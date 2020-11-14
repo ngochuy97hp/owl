@@ -17,11 +17,7 @@ function snapshotCompiledCode(template: string) {
   expect(compileTemplate(template).toString()).toMatchSnapshot();
 }
 
-describe("template compiler", () => {
-  // ---------------------------------------------------------------------------
-  // Simple (mostly) static templates with/without t-esc
-  // ---------------------------------------------------------------------------
-
+describe("simple templates, mostly static", () => {
   test("simple string", () => {
     const template = `hello vdom`;
     expect(renderToString(template)).toBe("hello vdom");
@@ -140,11 +136,9 @@ describe("template compiler", () => {
     expect(renderToString(template)).toBe("<div><span>word</span></div>");
     snapshotCompiledCode(template);
   });
+});
 
-  // ---------------------------------------------------------------------------
-  // white space handling
-  // ---------------------------------------------------------------------------
-
+describe("white space handling", () => {
   test("white space only text nodes are condensed into a single space", () => {
     const template = `<div>  </div>`;
     expect(renderToString(template)).toBe("<div> </div>");
@@ -181,11 +175,9 @@ describe("template compiler", () => {
       </pre>`;
     expect(renderToString(template3)).toBe(template3);
   });
+});
 
-  // ---------------------------------------------------------------------------
-  // comments
-  // ---------------------------------------------------------------------------
-
+describe("comments", () => {
   test("properly handle comments", () => {
     const template = `<div>hello <!-- comment-->owl</div>`;
     expect(renderToString(template)).toBe("<div>hello <!-- comment-->owl</div>");
@@ -202,11 +194,9 @@ describe("template compiler", () => {
     expect(renderToString(template)).toBe("<div><span>true</span></div>");
     snapshotCompiledCode(template);
   });
+});
 
-  // ---------------------------------------------------------------------------
-  // t-if
-  // ---------------------------------------------------------------------------
-
+describe("t-if", () => {
   test("t-if in a div", () => {
     const template = `<div><t t-if="condition">ok</t></div>`;
     snapshotCompiledCode(template);
@@ -304,5 +294,20 @@ describe("template compiler", () => {
     const bdom2 = renderToBdom(template, { condition: false, text: "halloween" });
     bdom.patch(bdom2);
     expect(fixture.innerHTML).toBe("<div>halloween</div>");
+  });
+});
+
+describe("error handling", () => {
+  test("invalid xml", () => {
+    const template = "<div>";
+    expect(() => compile(template)).toThrow("Invalid XML in template");
+  });
+});
+
+describe("t-esc", () => {
+  test("literal", () => {
+    const template = `<span><t t-esc="'ok'"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span>ok</span>");
   });
 });
