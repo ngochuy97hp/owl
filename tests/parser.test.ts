@@ -131,12 +131,12 @@ describe("qweb parser", () => {
     expect(parse(`<t t-esc="text"/>`)).toEqual({
       type: ASTType.TEsc,
       expr: "text",
-      defaultValue: ""
+      defaultValue: "",
     });
     expect(parse(`<t><t t-esc="text"/></t>`)).toEqual({
       type: ASTType.TEsc,
       expr: "text",
-      defaultValue: ""
+      defaultValue: "",
     });
   });
 
@@ -153,7 +153,7 @@ describe("qweb parser", () => {
     expect(parse(`<t t-esc="text">hey</t>`)).toEqual({
       type: ASTType.TEsc,
       expr: "text",
-      defaultValue: "hey"
+      defaultValue: "hey",
     });
   });
 
@@ -215,6 +215,18 @@ describe("qweb parser", () => {
         type: ASTType.Text,
         value: "else",
       },
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // t-set
+  // ---------------------------------------------------------------------------
+
+  test("simple t-set expression", async () => {
+    expect(parse(`<t t-set="key" t-value="value" />`)).toEqual({
+      type: ASTType.TSet,
+      name: "key",
+      value: "value",
     });
   });
 });

@@ -906,6 +906,29 @@ exports[`t-if two consecutive t-if in a div 1`] = `
 }"
 `;
 
+exports[`t-set set from attribute literal 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`value\`] = 'ok';
+    b1.texts[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`white space handling consecutives whitespaces are condensed into a single space 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {

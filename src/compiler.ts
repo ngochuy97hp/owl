@@ -84,6 +84,7 @@ class CompilationContext {
   blocks: BlockDescription[] = [];
   rootBlock: string | null = null;
   nextId = 1;
+  shouldProtextScope: boolean = false;
 
   addLine(line: string) {
     const prefix = new Array(this.indentLevel + 2).join("  ");
@@ -151,6 +152,9 @@ class CompilationContext {
     this.indentLevel = 0;
     this.addLine(``);
     this.addLine(`return ctx => {`);
+    if (this.shouldProtextScope) {
+      this.addLine(`  ctx = Object.create(ctx);`);
+    }
     for (let line of mainCode) {
       this.addLine(line);
     }
@@ -238,7 +242,9 @@ function compileAST(
         currentBlock.currentPath.push("firstChild");
         for (let child of ast.content) {
           compileAST(child, currentBlock, currentBlock.childNumber, false, ctx);
-          currentBlock.currentPath.push("nextSibling");
+          if (child.type !== ASTType.TSet) {
+            currentBlock.currentPath.push("nextSibling");
+          }
         }
         currentBlock.currentPath = path;
         currentBlock.currentDom = initialDom;
@@ -284,6 +290,12 @@ function compileAST(
         const child = ast.content[i];
         compileAST(child, currentBlock, i, true, ctx);
       }
+      break;
+    }
+    case ASTType.TSet: {
+      ctx.shouldProtextScope = true;
+      ctx.addLine(`ctx[\`${ast.name}\`] = ${compileExpr(ast.value || "", {})};`);
+      break;
     }
   }
 }
@@ -320,5 +332,5 @@ function toString(value: any): string {
 }
 
 function withDefault(value: any, defaultValue: any): any {
-  return (value === undefined || value === null) ? defaultValue : value;
+  return value === undefined || value === null ? defaultValue : value;
 }

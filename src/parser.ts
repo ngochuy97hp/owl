@@ -9,6 +9,7 @@ export const enum ASTType {
   Multi,
   TEsc,
   TIf,
+  TSet,
 }
 
 export interface ASTText {
@@ -46,7 +47,13 @@ export interface ASTTif {
   tElse: AST | null;
 }
 
-export type AST = ASTText | ASTComment | ASTDomNode | ASTMulti | ASTTEsc | ASTTif;
+export interface ASTTSet {
+  type: ASTType.TSet;
+  name: string;
+  value: string | null;
+}
+
+export type AST = ASTText | ASTComment | ASTDomNode | ASTMulti | ASTTEsc | ASTTif | ASTTSet;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -74,7 +81,8 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     parseTIf(node, ctx) ||
     parseTEscNode(node, ctx) ||
     parseTNode(node, ctx) ||
-    parseDOMNode(node, ctx)
+    parseDOMNode(node, ctx) ||
+    parseTSetNode(node, ctx)
   );
 }
 
@@ -179,7 +187,7 @@ function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
   const tesc: AST = {
     type: ASTType.TEsc,
     expr: escValue,
-    defaultValue: node.textContent || ""
+    defaultValue: node.textContent || "",
   };
   const ast = parseNode(node, ctx);
   if (!ast) {
@@ -226,6 +234,20 @@ function parseTIf(node: Element, ctx: ParsingContext): AST | null {
     content,
     tElse,
   };
+}
+
+// -----------------------------------------------------------------------------
+// t-set directive
+// -----------------------------------------------------------------------------
+
+function parseTSetNode(node: Element, ctx: ParsingContext): AST | null {
+  if (!node.hasAttribute("t-set")) {
+    return null;
+  }
+  const name = node.getAttribute("t-set")!;
+  const value = node.getAttribute("t-value");
+  // const body = parseChildren(node);
+  return { type: ASTType.TSet, name, value };
 }
 
 // -----------------------------------------------------------------------------

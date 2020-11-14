@@ -248,10 +248,10 @@ describe("t-raw", () => {
 });
 
 describe("t-set", () => {
-  test("set from attribute literal", () => {
-    qweb.addTemplate("test", `<div><t t-set="value" t-value="'ok'"/><t t-esc="value"/></div>`);
-    expect(renderToString(qweb, "test")).toBe("<div>ok</div>");
-  });
+  // test("set from attribute literal", () => {
+  //   qweb.addTemplate("test", `<div><t t-set="value" t-value="'ok'"/><t t-esc="value"/></div>`);
+  //   expect(renderToString(qweb, "test")).toBe("<div>ok</div>");
+  // });
 
   test("t-set and t-if", () => {
     qweb.addTemplate(

@@ -365,3 +365,11 @@ describe("t-esc", () => {
     );
   });
 });
+
+describe("t-set", () => {
+  test("set from attribute literal", () => {
+    const template = `<div><t t-set="value" t-value="'ok'"/><t t-esc="value"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>ok</div>");
+  });
+});
