@@ -227,7 +227,7 @@ function compileAST(
         const path = currentBlock.currentPath.slice();
         currentBlock.currentPath.push("firstChild");
         for (let child of ast.content) {
-          compileAST(child, currentBlock, 0, false, ctx);
+          compileAST(child, currentBlock, currentBlock.childNumber, false, ctx);
           currentBlock.currentPath.push("nextSibling");
         }
         currentBlock.currentPath = path;
@@ -252,7 +252,7 @@ function compileAST(
       addToBlockDom(currentBlock, anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
-      compileAST(ast.content, currentBlock, currentBlock.childNumber - 1, true, ctx);
+      compileAST(ast.content, currentBlock, currentIndex, true, ctx);
       ctx.indentLevel--;
       if (ast.tElse) {
         ctx.addLine(`} else {`);

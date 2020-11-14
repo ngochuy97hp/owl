@@ -188,6 +188,13 @@ describe("template compiler", () => {
     expect(renderToString(template, { cond1: false, cond2: true })).toBe("2");
   });
 
+  test("a t-if next to a div", () => {
+    const template = `<div>foo</div><t t-if="cond">1</t>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { cond: true })).toBe("<div>foo</div>1");
+    expect(renderToString(template, { cond: false })).toBe("<div>foo</div>");
+  });
+
   test("two consecutive t-if in a div", () => {
     const template = `<div><t t-if="cond1">1</t><t t-if="cond2">2</t></div>`;
     snapshotCompiledCode(template);

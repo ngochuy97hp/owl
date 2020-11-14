@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`template compiler a t-if next to a div 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div>foo</div>\`);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`1\`);
+  }
+  
+  return ctx => {
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    if (ctx['cond']) {
+      const b3 = b1.children[1] = new Block2();
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`template compiler a t-if with two inner nodes 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
