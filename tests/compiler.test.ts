@@ -216,6 +216,15 @@ describe("template compiler", () => {
     expect(renderToString(template, { condition: false })).toBe("<div>2</div>");
   });
 
+  test("t-if in a t-if", () => {
+    const template = `<div><t t-if="cond1"><span>1<t t-if="cond2">2</t></span></t></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { cond1: true, cond2: true })).toBe("<div><span>12</span></div>");
+    expect(renderToString(template, { cond1: true, cond2: false })).toBe("<div><span>1</span></div>");
+    expect(renderToString(template, { cond1: false, cond2: true })).toBe("<div></div>");
+    expect(renderToString(template, { cond1: false, cond2: false })).toBe("<div></div>");
+  });
+
   test("t-if and t-else with two nodes", () => {
     const template = `<t t-if="condition">1</t><t t-else=""><span>a</span><span>b</span></t>`;
     snapshotCompiledCode(template);

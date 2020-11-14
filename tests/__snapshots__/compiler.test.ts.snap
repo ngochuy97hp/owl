@@ -529,6 +529,34 @@ exports[`template compiler t-if in a div 1`] = `
 }"
 `;
 
+exports[`template compiler t-if in a t-if 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span>1<owl-anchor></owl-anchor></span>\`);
+    children = new Array(1);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`2\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['cond1']) {
+      const b2 = b1.children[0] = new Block2();
+      if (ctx['cond2']) {
+        const b3 = b2.children[0] = new Block3();
+      }
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`template compiler two consecutive t-if 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
