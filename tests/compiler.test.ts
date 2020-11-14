@@ -19,7 +19,7 @@ function snapshotCompiledCode(template: string) {
 
 describe("template compiler", () => {
   // ---------------------------------------------------------------------------
-  // Simple (mostly) static templates
+  // Simple (mostly) static templates with/without t-esc
   // ---------------------------------------------------------------------------
 
   test("simple string", () => {
@@ -141,9 +141,65 @@ describe("template compiler", () => {
     snapshotCompiledCode(template);
   });
 
+  // ---------------------------------------------------------------------------
+  // white space handling
+  // ---------------------------------------------------------------------------
+
+  test("white space only text nodes are condensed into a single space", () => {
+    const template = `<div>  </div>`;
+    expect(renderToString(template)).toBe("<div> </div>");
+    snapshotCompiledCode(template);
+  });
+
+  test("consecutives whitespaces are condensed into a single space", () => {
+    const template = `<div>  abc  </div>`;
+    expect(renderToString(template)).toBe("<div> abc </div>");
+    snapshotCompiledCode(template);
+  });
+
+  test("whitespace only text nodes with newlines are removed", () => {
+    const template = `<div>
+        <span>abc</span>
+      </div>`;
+
+    expect(renderToString(template)).toBe("<div><span>abc</span></div>");
+    snapshotCompiledCode(template);
+  });
+
+  test("nothing is done in pre tags", () => {
+    const template1 = `<pre>   </pre>`;
+    expect(renderToString(template1)).toBe(template1);
+
+    const template2 = `<pre>
+        some text
+      </pre>`;
+    snapshotCompiledCode(template2);
+    expect(renderToString(template2)).toBe(template2);
+
+    const template3 = `<pre>
+        
+      </pre>`;
+    expect(renderToString(template3)).toBe(template3);
+  });
+
+  // ---------------------------------------------------------------------------
+  // comments
+  // ---------------------------------------------------------------------------
+
   test("properly handle comments", () => {
     const template = `<div>hello <!-- comment-->owl</div>`;
     expect(renderToString(template)).toBe("<div>hello <!-- comment-->owl</div>");
+    snapshotCompiledCode(template);
+  });
+
+  test("properly handle comments between t-if/t-else", () => {
+    const template = `
+      <div>
+        <span t-if="true">true</span>
+        <!-- comment-->
+        <span t-else="">owl</span>
+      </div>`;
+    expect(renderToString(template)).toBe("<div><span>true</span></div>");
     snapshotCompiledCode(template);
   });
 
@@ -219,8 +275,12 @@ describe("template compiler", () => {
   test("t-if in a t-if", () => {
     const template = `<div><t t-if="cond1"><span>1<t t-if="cond2">2</t></span></t></div>`;
     snapshotCompiledCode(template);
-    expect(renderToString(template, { cond1: true, cond2: true })).toBe("<div><span>12</span></div>");
-    expect(renderToString(template, { cond1: true, cond2: false })).toBe("<div><span>1</span></div>");
+    expect(renderToString(template, { cond1: true, cond2: true })).toBe(
+      "<div><span>12</span></div>"
+    );
+    expect(renderToString(template, { cond1: true, cond2: false })).toBe(
+      "<div><span>1</span></div>"
+    );
     expect(renderToString(template, { cond1: false, cond2: true })).toBe("<div></div>");
     expect(renderToString(template, { cond1: false, cond2: false })).toBe("<div></div>");
   });

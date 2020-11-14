@@ -43,6 +43,20 @@ exports[`template compiler a t-if with two inner nodes 1`] = `
 }"
 `;
 
+exports[`template compiler consecutives whitespaces are condensed into a single space 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div> abc </div>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    return b1;
+  }
+}"
+`;
+
 exports[`template compiler div containing a t-if with two inner nodes 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
@@ -286,6 +300,23 @@ exports[`template compiler multiple root nodes 1`] = `
 }"
 `;
 
+exports[`template compiler nothing is done in pre tags 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<pre>
+
+        some text
+      </pre>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    return b1;
+  }
+}"
+`;
+
 exports[`template compiler properly handle comments 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
@@ -295,6 +326,32 @@ exports[`template compiler properly handle comments 1`] = `
   
   return ctx => {
     const b1 = new Block1();
+    return b1;
+  }
+}"
+`;
+
+exports[`template compiler properly handle comments between t-if/t-else 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span>true</span>\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`<span t-else=\\"\\">owl</span>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (true) {
+      const b2 = b1.children[0] = new Block2();
+    } else {
+      const b3 = b1.children[1] = new Block3();
+    }
     return b1;
   }
 }"
@@ -652,6 +709,34 @@ exports[`template compiler two t-escs next to each other, in a div 1`] = `
     const b1 = new Block1();
     b1.texts[0] = ctx['text1'];
     b1.texts[1] = ctx['text2'];
+    return b1;
+  }
+}"
+`;
+
+exports[`template compiler white space only text nodes are condensed into a single space 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div> </div>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    return b1;
+  }
+}"
+`;
+
+exports[`template compiler whitespace only text nodes with newlines are removed 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><span>abc</span></div>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
     return b1;
   }
 }"

@@ -283,7 +283,6 @@ function compileAST(
 function elem(html: string): HTMLElement | Text {
   const div = document.createElement("div");
   div.innerHTML = html;
-
   // replace all "owl-text" by text nodes
   const texts = div.getElementsByTagName("owl-text");
   while (texts.length) {

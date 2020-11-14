@@ -50,35 +50,44 @@ export type AST = ASTText | ASTComment | ASTDomNode | ASTMulti | ASTTEsc | ASTTi
 // -----------------------------------------------------------------------------
 // Parser
 // -----------------------------------------------------------------------------
+interface ParsingContext {
+  inPreTag: boolean;
+}
 
 export function parse(xml: string): AST {
   const template = `<t>${xml}</t>`;
   const doc = parseXML(template);
-  const ast = parseNode(doc.firstChild!);
+  const ctx = { inPreTag: false };
+  const ast = parseNode(doc.firstChild!, ctx);
   if (!ast) {
     return { type: ASTType.Text, value: "" };
   }
   return ast;
 }
 
-function parseNode(node: ChildNode): AST | null {
+function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
   if (!(node instanceof Element)) {
-    return parseTextCommentNode(node);
+    return parseTextCommentNode(node, ctx);
   }
-  return parseTIf(node) || parseTNode(node) || parseTEscNode(node) || parseDOMNode(node);
+  return (
+    parseTIf(node, ctx) ||
+    parseTNode(node, ctx) ||
+    parseTEscNode(node, ctx) ||
+    parseDOMNode(node, ctx)
+  );
 }
 
 // -----------------------------------------------------------------------------
 // <t /> tag
 // -----------------------------------------------------------------------------
 
-function parseTNode(node: Element): AST | null {
+function parseTNode(node: Element, ctx: ParsingContext): AST | null {
   if (node.tagName !== "t") {
     return null;
   }
   const children: AST[] = [];
   for (let child of node.childNodes) {
-    const ast = parseNode(child);
+    const ast = parseNode(child, ctx);
     if (ast) {
       children.push(ast);
     }
@@ -99,43 +108,51 @@ function parseTNode(node: Element): AST | null {
 // -----------------------------------------------------------------------------
 // Text and Comment Nodes
 // -----------------------------------------------------------------------------
-// const lineBreakRE = /[\r\n]/;
-// const whitespaceRE = /\s+/g;
+const lineBreakRE = /[\r\n]/;
+const whitespaceRE = /\s+/g;
 
-function parseTextCommentNode(node: ChildNode): AST | null {
+function parseTextCommentNode(node: ChildNode, ctx: ParsingContext): AST | null {
   if (node.nodeType === 3) {
-    return { type: ASTType.Text, value: node.textContent || "" };
+    let value = node.textContent || "";
+    if (!ctx.inPreTag) {
+      if (lineBreakRE.test(value) && !value.trim()) {
+        return null;
+      }
+      value = value.replace(whitespaceRE, " ");
+    }
+
+    return { type: ASTType.Text, value };
   } else if (node.nodeType === 8) {
     return { type: ASTType.Comment, value: node.textContent || "" };
   }
   return null;
-  // const type = node.nodeType === 3 ? ASTType.Text : ASTType.Comment;
-  // let text = node.textContent!;
-  // if (lineBreakRE.test(text) && !text.trim()) {
-  //   return null;
-  // }
-  // text = text.replace(whitespaceRE, " ");
-  // return {
-  //   type,
-  //   text: "`" + text + "`",
-  // };
 }
 
 // -----------------------------------------------------------------------------
 // Regular dom node
 // -----------------------------------------------------------------------------
 
-function parseDOMNode(node: Element): AST | null {
+function parseDOMNode(node: Element, ctx: ParsingContext): AST | null {
   if (node.tagName === "t") {
     return null;
   }
   const children: AST[] = [];
+  if (node.tagName === "pre") {
+    ctx = { inPreTag: true };
+  }
   for (let child of node.childNodes) {
-    const ast = parseNode(child);
+    const ast = parseNode(child, ctx);
     if (ast) {
       children.push(ast);
     }
   }
+  if (node.tagName === "pre" && children[0].type === ASTType.Text) {
+    // weird fix: because owl will serialize this value, and deserialize it
+    // later, the leading \n character will be dropped, as per the html spec
+    // therefore we need to add an extra \n to get the expected result
+    children[0].value = `\n` + children[0].value;
+  }
+
   const attrs: ASTDomNode["attrs"] = {};
   for (let attr of node.getAttributeNames()) {
     attrs[attr] = node.getAttribute(attr)!;
@@ -152,7 +169,7 @@ function parseDOMNode(node: Element): AST | null {
 // t-esc
 // -----------------------------------------------------------------------------
 
-function parseTEscNode(node: Element): AST | null {
+function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
   if (!node.hasAttribute("t-esc")) {
     return null;
   }
@@ -162,7 +179,7 @@ function parseTEscNode(node: Element): AST | null {
     type: ASTType.TEsc,
     expr: escValue,
   };
-  const ast = parseNode(node);
+  const ast = parseNode(node, ctx);
   if (!ast) {
     return tesc;
   }
@@ -181,13 +198,13 @@ function parseTEscNode(node: Element): AST | null {
 // t-if
 // -----------------------------------------------------------------------------
 
-function parseTIf(node: Element): AST | null {
+function parseTIf(node: Element, ctx: ParsingContext): AST | null {
   if (!node.hasAttribute("t-if")) {
     return null;
   }
   const condition = node.getAttribute("t-if")!;
   node.removeAttribute("t-if");
-  const content = parseNode(node);
+  const content = parseNode(node, ctx);
   if (!content) {
     throw new Error("hmmm");
   }
@@ -197,7 +214,7 @@ function parseTIf(node: Element): AST | null {
 
   // t-else
   if (nextElement && nextElement.hasAttribute("t-else")) {
-    tElse = parseNode(nextElement);
+    tElse = parseNode(nextElement, ctx);
     nextElement.remove();
   }
 

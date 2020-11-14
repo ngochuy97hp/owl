@@ -26,6 +26,25 @@ describe("qweb parser", () => {
     });
   });
 
+  test("white spaces are condensed into a single space", async () => {
+    expect(parse("   ")).toEqual({
+      type: ASTType.Text,
+      value: " ",
+    });
+  });
+
+  test("white spaces only text nodes with newlines are removed", async () => {
+    const template = `
+      <div>  
+      </div>`;
+    expect(parse(template)).toEqual({
+      type: ASTType.DomNode,
+      tag: "div",
+      content: [],
+      attrs: {},
+    });
+  });
+
   test("empty string in t tag", async () => {
     expect(parse("<t></t>")).toEqual({
       type: ASTType.Text,
