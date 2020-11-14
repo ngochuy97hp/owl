@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`compiler a t-if with two inner nodes 1`] = `
+exports[`template compiler a t-if with two inner nodes 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -22,7 +22,7 @@ exports[`compiler a t-if with two inner nodes 1`] = `
 }"
 `;
 
-exports[`compiler div containing a t-if with two inner nodes 1`] = `
+exports[`template compiler div containing a t-if with two inner nodes 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -48,7 +48,7 @@ exports[`compiler div containing a t-if with two inner nodes 1`] = `
 }"
 `;
 
-exports[`compiler div with a class attribute 1`] = `
+exports[`template compiler div with a class attribute 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -62,7 +62,7 @@ exports[`compiler div with a class attribute 1`] = `
 }"
 `;
 
-exports[`compiler div with a class attribute with a quote 1`] = `
+exports[`template compiler div with a class attribute with a quote 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -76,7 +76,7 @@ exports[`compiler div with a class attribute with a quote 1`] = `
 }"
 `;
 
-exports[`compiler div with a span child node 1`] = `
+exports[`template compiler div with a span child node 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -90,7 +90,7 @@ exports[`compiler div with a span child node 1`] = `
 }"
 `;
 
-exports[`compiler div with an arbitrary attribute with a quote 1`] = `
+exports[`template compiler div with an arbitrary attribute with a quote 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -104,7 +104,7 @@ exports[`compiler div with an arbitrary attribute with a quote 1`] = `
 }"
 `;
 
-exports[`compiler div with an empty class attribute 1`] = `
+exports[`template compiler div with an empty class attribute 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -118,7 +118,7 @@ exports[`compiler div with an empty class attribute 1`] = `
 }"
 `;
 
-exports[`compiler div with content 1`] = `
+exports[`template compiler div with content 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -132,7 +132,7 @@ exports[`compiler div with content 1`] = `
 }"
 `;
 
-exports[`compiler dom node with t-esc 1`] = `
+exports[`template compiler dom node with t-esc 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -151,7 +151,38 @@ exports[`compiler dom node with t-esc 1`] = `
 }"
 `;
 
-exports[`compiler dynamic text value 1`] = `
+exports[`template compiler dynamic content after t-if with two children nodes 1`] = `
+"function anonymous(ContentBlock, MultiBlock, elem
+) {
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    children = new Array(1);
+    texts = new Array(1);
+    update() {
+      this.anchors[0].nextSibling.textContent = this.texts[0];
+    }
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<p>1</p>\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`<p>2</p>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new MultiBlock(2);
+      const b3 = b2.children[0] = new Block2();
+      const b4 = b2.children[1] = new Block3();
+    }
+    b1.texts[0] = ctx['text'];
+    return b1;
+  }
+}"
+`;
+
+exports[`template compiler dynamic text value 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -170,7 +201,7 @@ exports[`compiler dynamic text value 1`] = `
 }"
 `;
 
-exports[`compiler empty div 1`] = `
+exports[`template compiler empty div 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -184,7 +215,7 @@ exports[`compiler empty div 1`] = `
 }"
 `;
 
-exports[`compiler empty string 1`] = `
+exports[`template compiler empty string 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -198,7 +229,7 @@ exports[`compiler empty string 1`] = `
 }"
 `;
 
-exports[`compiler just a t-if 1`] = `
+exports[`template compiler just a t-if 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -215,7 +246,7 @@ exports[`compiler just a t-if 1`] = `
 }"
 `;
 
-exports[`compiler multiple root nodes 1`] = `
+exports[`template compiler multiple root nodes 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -234,7 +265,7 @@ exports[`compiler multiple root nodes 1`] = `
 }"
 `;
 
-exports[`compiler properly handle comments 1`] = `
+exports[`template compiler properly handle comments 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -248,7 +279,7 @@ exports[`compiler properly handle comments 1`] = `
 }"
 `;
 
-exports[`compiler simple string 1`] = `
+exports[`template compiler simple string 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -262,7 +293,7 @@ exports[`compiler simple string 1`] = `
 }"
 `;
 
-exports[`compiler simple string in t tag 1`] = `
+exports[`template compiler simple string in t tag 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -276,7 +307,7 @@ exports[`compiler simple string in t tag 1`] = `
 }"
 `;
 
-exports[`compiler simple t-if/t-else 1`] = `
+exports[`template compiler simple t-if/t-else 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -298,7 +329,7 @@ exports[`compiler simple t-if/t-else 1`] = `
 }"
 `;
 
-exports[`compiler simple t-if/t-else in a div 1`] = `
+exports[`template compiler simple t-if/t-else in a div 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -324,7 +355,7 @@ exports[`compiler simple t-if/t-else in a div 1`] = `
 }"
 `;
 
-exports[`compiler static text and dynamic text (no t tag) 1`] = `
+exports[`template compiler static text and dynamic text (no t tag) 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -348,7 +379,7 @@ exports[`compiler static text and dynamic text (no t tag) 1`] = `
 }"
 `;
 
-exports[`compiler static text and dynamic text 1`] = `
+exports[`template compiler static text and dynamic text 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -372,7 +403,7 @@ exports[`compiler static text and dynamic text 1`] = `
 }"
 `;
 
-exports[`compiler t-esc in dom node 1`] = `
+exports[`template compiler t-esc in dom node 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -391,7 +422,7 @@ exports[`compiler t-esc in dom node 1`] = `
 }"
 `;
 
-exports[`compiler t-esc in dom node, variations 1`] = `
+exports[`template compiler t-esc in dom node, variations 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -410,7 +441,7 @@ exports[`compiler t-esc in dom node, variations 1`] = `
 }"
 `;
 
-exports[`compiler t-esc in dom node, variations 2`] = `
+exports[`template compiler t-esc in dom node, variations 2`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -429,7 +460,7 @@ exports[`compiler t-esc in dom node, variations 2`] = `
 }"
 `;
 
-exports[`compiler t-if and t-else with two nodes 1`] = `
+exports[`template compiler t-if and t-else with two nodes 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -456,7 +487,7 @@ exports[`compiler t-if and t-else with two nodes 1`] = `
 }"
 `;
 
-exports[`compiler t-if in a div 1`] = `
+exports[`template compiler t-if in a div 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -477,7 +508,7 @@ exports[`compiler t-if in a div 1`] = `
 }"
 `;
 
-exports[`compiler two consecutive t-if 1`] = `
+exports[`template compiler two consecutive t-if 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -500,7 +531,7 @@ exports[`compiler two consecutive t-if 1`] = `
 }"
 `;
 
-exports[`compiler two consecutive t-if in a div 1`] = `
+exports[`template compiler two consecutive t-if in a div 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -527,7 +558,7 @@ exports[`compiler two consecutive t-if in a div 1`] = `
 }"
 `;
 
-exports[`compiler two t-escs next to each other 1`] = `
+exports[`template compiler two t-escs next to each other 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {
@@ -556,7 +587,7 @@ exports[`compiler two t-escs next to each other 1`] = `
 }"
 `;
 
-exports[`compiler two t-escs next to each other, in a div 1`] = `
+exports[`template compiler two t-escs next to each other, in a div 1`] = `
 "function anonymous(ContentBlock, MultiBlock, elem
 ) {
   class Block1 extends ContentBlock {

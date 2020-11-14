@@ -17,7 +17,7 @@ function snapshotCompiledCode(template: string) {
   expect(compileTemplate(template).toString()).toMatchSnapshot();
 }
 
-describe("compiler", () => {
+describe("template compiler", () => {
   // ---------------------------------------------------------------------------
   // Simple (mostly) static templates
   // ---------------------------------------------------------------------------
@@ -214,5 +214,19 @@ describe("compiler", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { condition: true })).toBe("1");
     expect(renderToString(template, { condition: false })).toBe("<span>a</span><span>b</span>");
+  });
+
+  test("dynamic content after t-if with two children nodes", () => {
+    const template = `<div><t t-if="condition"><p>1</p><p>2</p></t><t t-esc="text"/></div>`;
+    snapshotCompiledCode(template);
+
+    // need to do it with bdom to go through the update path
+    const bdom = renderToBdom(template, { condition: true, text: "owl" });
+    const fixture = makeTestFixture();
+    bdom.mount(fixture);
+    expect(fixture.innerHTML).toBe("<div><p>1</p><p>2</p>owl</div>");
+    const bdom2 = renderToBdom(template, { condition: false, text: "halloween" });
+    bdom.patch(bdom2);
+    expect(fixture.innerHTML).toBe("<div>halloween</div>");
   });
 });

@@ -250,6 +250,7 @@ function compileAST(
       ctx.indentLevel++;
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       addToBlockDom(currentBlock, anchor);
+      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
       compileAST(ast.content, currentBlock, currentBlock.childNumber - 1, true, ctx);
       ctx.indentLevel--;
