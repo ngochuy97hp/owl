@@ -296,10 +296,10 @@ describe("t-set", () => {
   //   expect(renderToString(qweb, "test", { value: "ok" })).toBe("<div>ok</div>");
   // });
 
-  test("set from empty body", () => {
-    qweb.addTemplate("test", `<div><t t-set="stuff"/><t t-esc="stuff"/></div>`);
-    expect(renderToString(qweb, "test")).toBe("<div></div>");
-  });
+  // test("set from empty body", () => {
+  //   qweb.addTemplate("test", `<div><t t-set="stuff"/><t t-esc="stuff"/></div>`);
+  //   expect(renderToString(qweb, "test")).toBe("<div></div>");
+  // });
 
   test("value priority", () => {
     qweb.addTemplate("test", `<div><t t-set="value" t-value="1">2</t><t t-esc="value"/></div>`);

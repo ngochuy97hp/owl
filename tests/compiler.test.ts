@@ -437,6 +437,24 @@ describe("t-set", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { value: "ok" })).toBe("<div>ok</div>");
   });
+
+  test("set from empty body", () => {
+    const template = `<div><t t-set="stuff"/><t t-esc="stuff"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div></div>");
+  });
+
+  test("value priority", () => {
+    const template = `<div><t t-set="value" t-value="1">2</t><t t-esc="value"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>1</div>");
+  });
+
+  test("value priority (with non text body", () => {
+    const template = `<div><t t-set="value" t-value="1"><span>2</span></t><t t-esc="value"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>1</div>");
+  });
 });
 
 describe("t-call (template calling)", () => {
