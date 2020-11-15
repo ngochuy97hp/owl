@@ -11,6 +11,7 @@ export const enum ASTType {
   TIf,
   TSet,
   TCall,
+  TRaw,
 }
 
 export interface ASTText {
@@ -41,6 +42,11 @@ export interface ASTTEsc {
   defaultValue: string;
 }
 
+export interface ASTTRaw {
+  type: ASTType.TRaw;
+  expr: string;
+}
+
 export interface ASTTif {
   type: ASTType.TIf;
   condition: string;
@@ -69,7 +75,8 @@ export type AST =
   | ASTTEsc
   | ASTTif
   | ASTTSet
-  | ASTTCall;
+  | ASTTCall
+  | ASTTRaw;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -99,6 +106,7 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     parseDOMNode(node, ctx) ||
     parseTCall(node, ctx) ||
     parseTSetNode(node, ctx) ||
+    parseTRawNode(node, ctx) ||
     parseTNode(node, ctx)
   );
 }
@@ -219,6 +227,18 @@ function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
     };
   }
   return tesc;
+}
+
+// -----------------------------------------------------------------------------
+// t-raw
+// -----------------------------------------------------------------------------
+
+function parseTRawNode(node: Element, ctx: ParsingContext): AST | null {
+  if (!node.hasAttribute("t-raw")) {
+    return null;
+  }
+  const expr = node.getAttribute("t-raw")!;
+  return { type: ASTType.TRaw, expr };
 }
 
 // -----------------------------------------------------------------------------

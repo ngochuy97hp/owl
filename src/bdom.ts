@@ -5,7 +5,7 @@
  * "block" instead of just a html (v)node.
  */
 
-export type BDom = ContentBlock | MultiBlock;
+export type BDom = ContentBlock | MultiBlock | HTMLBlock;
 
 abstract class Block {
   mount(parent: HTMLElement) {
@@ -19,9 +19,49 @@ abstract class Block {
 
   abstract patch(other: Block): void;
 
-  update() {}
-
   remove() {}
+}
+
+export class HTMLBlock extends Block {
+  html: string;
+  content: ChildNode[] = [];
+  anchor: Text;
+  constructor(html: string) {
+    super();
+    this.html = html;
+    this.anchor = document.createTextNode("");
+  }
+
+  mountBefore(anchor: Text) {
+    this.build();
+    anchor.before(this.anchor);
+    for (let elem of this.content) {
+      this.anchor.before(elem);
+    }
+  }
+
+  build() {
+    const div = document.createElement("div");
+    div.innerHTML = this.html;
+    this.content = [...div.childNodes];
+  }
+
+  remove() {
+    for (let elem of this.content) {
+      elem.remove();
+    }
+    this.anchor.remove();
+  }
+
+  patch(other: any) {
+    for (let elem of this.content) {
+      elem.remove();
+    }
+    this.build();
+    for (let elem of this.content) {
+      this.anchor.before(elem);
+    }
+  }
 }
 
 export class ContentBlock extends Block {
@@ -50,6 +90,8 @@ export class ContentBlock extends Block {
     }
     anchor.before(this.el!);
   }
+
+  update() {}
 
   protected build() {
     this.el = (this.constructor as any).el.cloneNode(true);

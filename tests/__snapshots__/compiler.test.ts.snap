@@ -1,8 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`comments properly handle comments 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -17,8 +18,9 @@ exports[`comments properly handle comments 1`] = `
 `;
 
 exports[`comments properly handle comments between t-if/t-else 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -45,8 +47,9 @@ exports[`comments properly handle comments between t-if/t-else 1`] = `
 `;
 
 exports[`simple templates, mostly static div with a class attribute 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -61,8 +64,9 @@ exports[`simple templates, mostly static div with a class attribute 1`] = `
 `;
 
 exports[`simple templates, mostly static div with a class attribute with a quote 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -77,8 +81,9 @@ exports[`simple templates, mostly static div with a class attribute with a quote
 `;
 
 exports[`simple templates, mostly static div with a span child node 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -93,8 +98,9 @@ exports[`simple templates, mostly static div with a span child node 1`] = `
 `;
 
 exports[`simple templates, mostly static div with an arbitrary attribute with a quote 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -109,8 +115,9 @@ exports[`simple templates, mostly static div with an arbitrary attribute with a 
 `;
 
 exports[`simple templates, mostly static div with an empty class attribute 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -125,8 +132,9 @@ exports[`simple templates, mostly static div with an empty class attribute 1`] =
 `;
 
 exports[`simple templates, mostly static div with content 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -141,8 +149,9 @@ exports[`simple templates, mostly static div with content 1`] = `
 `;
 
 exports[`simple templates, mostly static dom node with t-esc 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -162,8 +171,9 @@ exports[`simple templates, mostly static dom node with t-esc 1`] = `
 `;
 
 exports[`simple templates, mostly static dynamic text value 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -183,8 +193,9 @@ exports[`simple templates, mostly static dynamic text value 1`] = `
 `;
 
 exports[`simple templates, mostly static empty div 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -199,8 +210,9 @@ exports[`simple templates, mostly static empty div 1`] = `
 `;
 
 exports[`simple templates, mostly static empty string 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -215,8 +227,9 @@ exports[`simple templates, mostly static empty string 1`] = `
 `;
 
 exports[`simple templates, mostly static multiple root nodes 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -236,8 +249,9 @@ exports[`simple templates, mostly static multiple root nodes 1`] = `
 `;
 
 exports[`simple templates, mostly static simple string 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -252,8 +266,9 @@ exports[`simple templates, mostly static simple string 1`] = `
 `;
 
 exports[`simple templates, mostly static simple string in t tag 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -268,8 +283,9 @@ exports[`simple templates, mostly static simple string in t tag 1`] = `
 `;
 
 exports[`simple templates, mostly static static text and dynamic text (no t tag) 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -294,8 +310,9 @@ exports[`simple templates, mostly static static text and dynamic text (no t tag)
 `;
 
 exports[`simple templates, mostly static static text and dynamic text 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -320,8 +337,9 @@ exports[`simple templates, mostly static static text and dynamic text 1`] = `
 `;
 
 exports[`simple templates, mostly static t-esc in dom node 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -341,8 +359,9 @@ exports[`simple templates, mostly static t-esc in dom node 1`] = `
 `;
 
 exports[`simple templates, mostly static t-esc in dom node, variations 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -362,8 +381,9 @@ exports[`simple templates, mostly static t-esc in dom node, variations 1`] = `
 `;
 
 exports[`simple templates, mostly static t-esc in dom node, variations 2`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -383,8 +403,9 @@ exports[`simple templates, mostly static t-esc in dom node, variations 2`] = `
 `;
 
 exports[`simple templates, mostly static two t-escs next to each other 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -414,8 +435,9 @@ exports[`simple templates, mostly static two t-escs next to each other 1`] = `
 `;
 
 exports[`simple templates, mostly static two t-escs next to each other, in a div 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -437,8 +459,9 @@ exports[`simple templates, mostly static two t-escs next to each other, in a div
 `;
 
 exports[`t-call (template calling) basic caller 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -455,8 +478,9 @@ exports[`t-call (template calling) basic caller 1`] = `
 `;
 
 exports[`t-call (template calling) basic caller, no parent node 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   
@@ -469,8 +493,9 @@ exports[`t-call (template calling) basic caller, no parent node 1`] = `
 `;
 
 exports[`t-esc div with falsy values 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -498,8 +523,9 @@ exports[`t-esc div with falsy values 1`] = `
 `;
 
 exports[`t-esc escaping 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -519,8 +545,9 @@ exports[`t-esc escaping 1`] = `
 `;
 
 exports[`t-esc escaping on a node 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -540,8 +567,9 @@ exports[`t-esc escaping on a node 1`] = `
 `;
 
 exports[`t-esc escaping on a node with a body 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -561,8 +589,9 @@ exports[`t-esc escaping on a node with a body 1`] = `
 `;
 
 exports[`t-esc escaping on a node with a body, as a default 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -582,8 +611,9 @@ exports[`t-esc escaping on a node with a body, as a default 1`] = `
 `;
 
 exports[`t-esc literal 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -603,8 +633,9 @@ exports[`t-esc literal 1`] = `
 `;
 
 exports[`t-esc variable 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -624,8 +655,9 @@ exports[`t-esc variable 1`] = `
 `;
 
 exports[`t-if a t-if next to a div 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -647,8 +679,9 @@ exports[`t-if a t-if next to a div 1`] = `
 `;
 
 exports[`t-if a t-if with two inner nodes 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -671,8 +704,9 @@ exports[`t-if a t-if with two inner nodes 1`] = `
 `;
 
 exports[`t-if div containing a t-if with two inner nodes 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -699,8 +733,9 @@ exports[`t-if div containing a t-if with two inner nodes 1`] = `
 `;
 
 exports[`t-if dynamic content after t-if with two children nodes 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -732,8 +767,9 @@ exports[`t-if dynamic content after t-if with two children nodes 1`] = `
 `;
 
 exports[`t-if just a t-if 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -751,8 +787,9 @@ exports[`t-if just a t-if 1`] = `
 `;
 
 exports[`t-if simple t-if/t-else 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -775,8 +812,9 @@ exports[`t-if simple t-if/t-else 1`] = `
 `;
 
 exports[`t-if simple t-if/t-else in a div 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -803,8 +841,9 @@ exports[`t-if simple t-if/t-else in a div 1`] = `
 `;
 
 exports[`t-if t-if and t-else with two nodes 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -832,8 +871,9 @@ exports[`t-if t-if and t-else with two nodes 1`] = `
 `;
 
 exports[`t-if t-if in a div 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -855,8 +895,9 @@ exports[`t-if t-if in a div 1`] = `
 `;
 
 exports[`t-if t-if in a t-if 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -885,8 +926,9 @@ exports[`t-if t-if in a t-if 1`] = `
 `;
 
 exports[`t-if two consecutive t-if 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -910,8 +952,9 @@ exports[`t-if two consecutive t-if 1`] = `
 `;
 
 exports[`t-if two consecutive t-if in a div 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -938,9 +981,29 @@ exports[`t-if two consecutive t-if in a div 1`] = `
 }"
 `;
 
-exports[`t-set evaluate value expression 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+exports[`t-raw literal 1`] = `
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = new HTMLBlock('ok');
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set evaluate value expression 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -962,8 +1025,9 @@ exports[`t-set evaluate value expression 1`] = `
 `;
 
 exports[`t-set evaluate value expression, part 2 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -985,8 +1049,9 @@ exports[`t-set evaluate value expression, part 2 1`] = `
 `;
 
 exports[`t-set set from attribute literal (no outside div) 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1008,8 +1073,9 @@ exports[`t-set set from attribute literal (no outside div) 1`] = `
 `;
 
 exports[`t-set set from attribute literal 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1031,8 +1097,9 @@ exports[`t-set set from attribute literal 1`] = `
 `;
 
 exports[`t-set set from attribute lookup 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1054,8 +1121,9 @@ exports[`t-set set from attribute lookup 1`] = `
 `;
 
 exports[`t-set set from body literal 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1077,8 +1145,9 @@ exports[`t-set set from body literal 1`] = `
 `;
 
 exports[`t-set set from body lookup 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1109,8 +1178,9 @@ exports[`t-set set from body lookup 1`] = `
 `;
 
 exports[`t-set set from empty body 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1132,8 +1202,9 @@ exports[`t-set set from empty body 1`] = `
 `;
 
 exports[`t-set t-set and t-if 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1156,9 +1227,42 @@ exports[`t-set t-set and t-if 1`] = `
 }"
 `;
 
-exports[`t-set t-set evaluates an expression only once 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+exports[`t-set t-set body is evaluated immediately 1`] = `
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`v1\`] = 'before';
+    const b2 = new Block2();
+    b2.texts[0] = ctx['v1'];
+    ctx[\`v2\`] = b2;
+    ctx[\`v1\`] = 'after';
+    b1.children[0] = new HTMLBlock(ctx['v2']);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set evaluates an expression only once 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1182,8 +1286,9 @@ exports[`t-set t-set evaluates an expression only once 1`] = `
 `;
 
 exports[`t-set t-set with content and sub t-esc 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1219,8 +1324,9 @@ exports[`t-set t-set with content and sub t-esc 1`] = `
 `;
 
 exports[`t-set t-set, t-if, and mix of expression/body lookup, 1 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1247,8 +1353,9 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 1 1`] = `
 `;
 
 exports[`t-set t-set, t-if, and mix of expression/body lookup, 2 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1275,8 +1382,9 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 2 1`] = `
 `;
 
 exports[`t-set t-set, t-if, and mix of expression/body lookup, 3 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1303,8 +1411,9 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 3 1`] = `
 `;
 
 exports[`t-set value priority (with non text body 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1330,8 +1439,9 @@ exports[`t-set value priority (with non text body 1`] = `
 `;
 
 exports[`t-set value priority 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1353,8 +1463,9 @@ exports[`t-set value priority 1`] = `
 `;
 
 exports[`white space handling consecutives whitespaces are condensed into a single space 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1369,8 +1480,9 @@ exports[`white space handling consecutives whitespaces are condensed into a sing
 `;
 
 exports[`white space handling nothing is done in pre tags 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1388,8 +1500,9 @@ exports[`white space handling nothing is done in pre tags 1`] = `
 `;
 
 exports[`white space handling white space only text nodes are condensed into a single space 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {
@@ -1404,8 +1517,9 @@ exports[`white space handling white space only text nodes are condensed into a s
 `;
 
 exports[`white space handling whitespace only text nodes with newlines are removed 1`] = `
-"function anonymous(ContentBlock, MultiBlock, utils
+"function anonymous(Blocks, utils
 ) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call} = utils;
   
   class Block1 extends ContentBlock {

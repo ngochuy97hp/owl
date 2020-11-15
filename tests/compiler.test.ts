@@ -156,6 +156,10 @@ describe("simple templates, mostly static", () => {
   });
 });
 
+// -----------------------------------------------------------------------------
+// white space
+// -----------------------------------------------------------------------------
+
 describe("white space handling", () => {
   test("white space only text nodes are condensed into a single space", () => {
     const template = `<div>  </div>`;
@@ -195,6 +199,10 @@ describe("white space handling", () => {
   });
 });
 
+// -----------------------------------------------------------------------------
+// comments
+// -----------------------------------------------------------------------------
+
 describe("comments", () => {
   test("properly handle comments", () => {
     const template = `<div>hello <!-- comment-->owl</div>`;
@@ -213,6 +221,10 @@ describe("comments", () => {
     snapshotCompiledCode(template);
   });
 });
+
+// -----------------------------------------------------------------------------
+// t-if
+// -----------------------------------------------------------------------------
 
 describe("t-if", () => {
   test("t-if in a div", () => {
@@ -315,12 +327,20 @@ describe("t-if", () => {
   });
 });
 
+// -----------------------------------------------------------------------------
+// error handling
+// -----------------------------------------------------------------------------
+
 describe("error handling", () => {
   test("invalid xml", () => {
     const template = "<div>";
     expect(() => compile(template)).toThrow("Invalid XML in template");
   });
 });
+
+// -----------------------------------------------------------------------------
+// t-esc
+// -----------------------------------------------------------------------------
 
 describe("t-esc", () => {
   test("literal", () => {
@@ -383,6 +403,22 @@ describe("t-esc", () => {
     );
   });
 });
+
+// -----------------------------------------------------------------------------
+// t-raw
+// -----------------------------------------------------------------------------
+
+describe("t-raw", () => {
+  test("literal", () => {
+    const template = `<span><t t-raw="'ok'"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span>ok</span>");
+  });
+});
+
+// -----------------------------------------------------------------------------
+// t-set
+// -----------------------------------------------------------------------------
 
 describe("t-set", () => {
   test("set from attribute literal", () => {
@@ -514,7 +550,26 @@ describe("t-set", () => {
     expect(renderToString(template, { flag: true })).toBe("1");
     expect(renderToString(template, { flag: false })).toBe("0");
   });
+
+  test("t-set body is evaluated immediately", () => {
+    const template = `
+      <div>
+        <t t-set="v1" t-value="'before'"/>
+        <t t-set="v2">
+          <span><t t-esc="v1"/></span>
+        </t>
+        <t t-set="v1" t-value="'after'"/>
+        <t t-raw="v2"/>
+      </div>`;
+    snapshotCompiledCode(template);
+
+    expect(renderToString(template)).toBe("<div><span>before</span></div>");
+  });
 });
+
+// -----------------------------------------------------------------------------
+// t-call
+// -----------------------------------------------------------------------------
 
 describe("t-call (template calling)", () => {
   test("basic caller", () => {

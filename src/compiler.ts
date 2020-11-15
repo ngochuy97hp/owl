@@ -1,4 +1,4 @@
-import { BDom, ContentBlock, MultiBlock } from "./bdom";
+import { BDom, ContentBlock, HTMLBlock, MultiBlock } from "./bdom";
 import { compileExpr } from "./expression_parser";
 import { AST, ASTType, parse } from "./parser";
 
@@ -6,12 +6,10 @@ import { AST, ASTType, parse } from "./parser";
 // Compile functions
 // -----------------------------------------------------------------------------
 
+const Blocks = { ContentBlock, MultiBlock, HTMLBlock };
+
 export type RenderFunction = (context: any) => BDom;
-export type TemplateFunction = (
-  contentBlock: typeof ContentBlock,
-  multiBlock: typeof MultiBlock,
-  utils: typeof UTILS
-) => RenderFunction;
+export type TemplateFunction = (blocks: typeof Blocks, utils: typeof UTILS) => RenderFunction;
 
 const UTILS = {
   elem,
@@ -22,7 +20,7 @@ const UTILS = {
 
 export function compile(template: string, utils: typeof UTILS = UTILS): RenderFunction {
   const templateFunction = compileTemplate(template);
-  return templateFunction(ContentBlock, MultiBlock, utils);
+  return templateFunction(Blocks, utils);
 }
 
 export function compileTemplate(template: string): TemplateFunction {
@@ -32,7 +30,7 @@ export function compileTemplate(template: string): TemplateFunction {
   compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();
   // console.warn(code);
-  return new Function("ContentBlock, MultiBlock, utils", code) as TemplateFunction;
+  return new Function("Blocks, utils", code) as TemplateFunction;
 }
 
 export class TemplateSet {
@@ -56,7 +54,7 @@ export class TemplateSet {
   getFunction(name: string): RenderFunction {
     if (!(name in this.compiledTemplates)) {
       const templateFn = compileTemplate(this.templates[name]);
-      const renderFn = templateFn(ContentBlock, MultiBlock, this.utils);
+      const renderFn = templateFn(Blocks, this.utils);
       this.compiledTemplates[name] = renderFn;
     }
     return this.compiledTemplates[name];
@@ -150,7 +148,8 @@ class CompilationContext {
     const mainCode = this.code;
     this.code = [];
     this.indentLevel = 0;
-    // define utility functions
+    // define blocks and utility functions
+    this.addLine(`let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;`);
     this.addLine(`let {elem, toString, withDefault, call} = utils;`);
     this.addLine(``);
 
@@ -330,6 +329,20 @@ function compileAST(
       currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
       break;
     }
+    case ASTType.TRaw: {
+      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+      addToBlockDom(currentBlock, anchor);
+      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
+      currentBlock.childNumber++;
+      const expr = compileExpr(ast.expr, {});
+      ctx.addLine(
+        `${currentBlock.varName}.children[${
+          currentBlock.childNumber - 1
+        }] = new HTMLBlock(${expr});`
+      );
+      break;
+    }
+
     case ASTType.TIf: {
       ctx.addLine(`if (${compileExpr(ast.condition, {})}) {`);
       ctx.indentLevel++;
