@@ -471,6 +471,12 @@ describe("t-set", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { beep: "beep" })).toBe("<div>beep boop</div>");
   });
+
+  test("evaluate value expression, part 2", () => {
+    const template = `<div><t t-set="value" t-value="somevariable + 2"/><t t-esc="value"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { somevariable: 43 })).toBe("<div>45</div>");
+  });
 });
 
 describe("t-call (template calling)", () => {

@@ -961,6 +961,29 @@ exports[`t-set evaluate value expression 1`] = `
 }"
 `;
 
+exports[`t-set evaluate value expression, part 2 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`value\`] = ctx['somevariable']+2;
+    b1.texts[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`t-set set from attribute literal (no outside div) 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {
