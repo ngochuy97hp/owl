@@ -414,6 +414,18 @@ describe("t-raw", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template)).toBe("<span>ok</span>");
   });
+
+  test("literal, no outside html element", () => {
+    const template = `<t t-raw="'ok'"/>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("ok");
+  });
+
+  test("variable", () => {
+    const template = `<span><t t-raw="var"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { var: "ok" })).toBe("<span>ok</span>");
+  });
 });
 
 // -----------------------------------------------------------------------------

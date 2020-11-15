@@ -217,10 +217,10 @@ describe("t-esc", () => {
 });
 
 describe("t-raw", () => {
-  test("literal", () => {
-    qweb.addTemplate("test", `<span><t t-raw="'ok'"/></span>`);
-    expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
-  });
+  // test("literal", () => {
+  //   qweb.addTemplate("test", `<span><t t-raw="'ok'"/></span>`);
+  //   expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
+  // });
 
   test("variable", () => {
     qweb.addTemplate("test", `<span><t t-raw="var"/></span>`);

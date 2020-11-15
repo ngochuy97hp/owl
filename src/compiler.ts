@@ -264,6 +264,7 @@ function compileAST(
           currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
         }
         break;
+      case ASTType.TRaw:
       case ASTType.TCall:
         if (!currentBlock) {
           currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });

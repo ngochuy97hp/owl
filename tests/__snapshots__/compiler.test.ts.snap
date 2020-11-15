@@ -1000,6 +1000,40 @@ exports[`t-raw literal 1`] = `
 }"
 `;
 
+exports[`t-raw literal, no outside html element 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  
+  return ctx => {
+    const b1 = new MultiBlock(1);
+    b1.children[0] = new HTMLBlock('ok');
+    return b1;
+  }
+}"
+`;
+
+exports[`t-raw variable 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = new HTMLBlock(ctx['var']);
+    return b1;
+  }
+}"
+`;
+
 exports[`t-set evaluate value expression 1`] = `
 "function anonymous(Blocks, utils
 ) {
