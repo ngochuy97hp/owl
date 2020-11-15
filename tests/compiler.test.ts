@@ -372,4 +372,14 @@ describe("t-set", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template)).toBe("<div>ok</div>");
   });
+
+  test("t-set and t-if", () => {
+    const template = `
+      <div>
+        <t t-set="v" t-value="value"/>
+        <t t-if="v === 'ok'">grimbergen</t>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { value: "ok" })).toBe("<div>grimbergen</div>");
+  });
 });

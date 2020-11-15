@@ -929,6 +929,31 @@ exports[`t-set set from attribute literal 1`] = `
 }"
 `;
 
+exports[`t-set t-set and t-if 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`grimbergen\`);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`v\`] = ctx['value'];
+    if (ctx['v']==='ok') {
+      const b2 = b1.children[0] = new Block2();
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`white space handling consecutives whitespaces are condensed into a single space 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {
