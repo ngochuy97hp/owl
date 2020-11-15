@@ -5,7 +5,7 @@
  * "block" instead of just a html (v)node.
  */
 
-export type BDom = ContentBlock;
+export type BDom = ContentBlock | MultiBlock;
 
 abstract class Block {
   mount(parent: HTMLElement) {
@@ -60,7 +60,7 @@ export class ContentBlock extends Block {
     this.update();
   }
 
-  patch(newTree: ContentBlock) {
+  patch(newTree: any) {
     this.texts = newTree.texts;
     this.update();
     if (this.children) {
@@ -112,7 +112,7 @@ export class MultiBlock extends Block {
     }
   }
 
-  patch(newTree: MultiBlock) {
+  patch(newTree: any) {
     for (let i = 0; i < this.children.length; i++) {
       const block = this.children[i];
       const newBlock = newTree.children[i];

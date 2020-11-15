@@ -10,18 +10,19 @@ export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (
   contentBlock: typeof ContentBlock,
   multiBlock: typeof MultiBlock,
-  utils: TemplateUtils
+  utils: typeof UTILS
 ) => RenderFunction;
 
-interface TemplateUtils {
-  elem: typeof elem;
-  toString: typeof toString;
-  withDefault: typeof withDefault;
-}
+const UTILS = {
+  elem,
+  toString,
+  withDefault,
+  call: null,
+};
 
-export function compile(template: string): RenderFunction {
+export function compile(template: string, utils: typeof UTILS = UTILS): RenderFunction {
   const templateFunction = compileTemplate(template);
-  return templateFunction(ContentBlock, MultiBlock, { elem, toString, withDefault });
+  return templateFunction(ContentBlock, MultiBlock, utils);
 }
 
 export function compileTemplate(template: string): TemplateFunction {
@@ -31,6 +32,34 @@ export function compileTemplate(template: string): TemplateFunction {
   const code = ctx.generateCode();
   // console.warn(code);
   return new Function("ContentBlock, MultiBlock, utils", code) as TemplateFunction;
+}
+
+export class TemplateSet {
+  templates: { [name: string]: string } = {};
+  compiledTemplates: { [name: string]: RenderFunction } = {};
+  utils: typeof UTILS;
+
+  constructor() {
+    const call = (subTemplate: string, ctx: any) => {
+      const renderFn = this.getFunction(subTemplate);
+      return renderFn(ctx);
+    };
+
+    this.utils = Object.assign({}, UTILS, { call });
+  }
+
+  add(name: string, template: string) {
+    this.templates[name] = template;
+  }
+
+  getFunction(name: string): RenderFunction {
+    if (!(name in this.compiledTemplates)) {
+      const templateFn = compileTemplate(this.templates[name]);
+      const renderFn = templateFn(ContentBlock, MultiBlock, this.utils);
+      this.compiledTemplates[name] = renderFn;
+    }
+    return this.compiledTemplates[name];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -121,7 +150,7 @@ class CompilationContext {
     this.code = [];
     this.indentLevel = 0;
     // define utility functions
-    this.addLine(`let {elem, toString, withDefault} = utils;`);
+    this.addLine(`let {elem, toString, withDefault, call} = utils;`);
     this.addLine(``);
 
     // define all blocks
@@ -206,6 +235,7 @@ function compileAST(
   if (!currentBlock || forceNewBlock) {
     switch (ast.type) {
       case ASTType.TIf:
+      case ASTType.TCall:
         if (!currentBlock) {
           currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });
         }
@@ -295,6 +325,19 @@ function compileAST(
     case ASTType.TSet: {
       ctx.shouldProtextScope = true;
       ctx.addLine(`ctx[\`${ast.name}\`] = ${compileExpr(ast.value || "", {})};`);
+      break;
+    }
+
+    case ASTType.TCall: {
+      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+      addToBlockDom(currentBlock, anchor);
+      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
+      currentBlock.childNumber++;
+      ctx.addLine(
+        `${currentBlock.varName}.children[${currentBlock.childNumber - 1}] = call(\`${
+          ast.name
+        }\`, ctx);`
+      );
       break;
     }
   }

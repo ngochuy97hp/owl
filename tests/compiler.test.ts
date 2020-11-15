@@ -1,6 +1,10 @@
 import { BDom } from "../src/bdom";
-import { compile, compileTemplate } from "../src/compiler";
+import { compile, compileTemplate, TemplateSet } from "../src/compiler";
 import { makeTestFixture } from "./helpers";
+
+// -----------------------------------------------------------------------------
+// Helpers
+// -----------------------------------------------------------------------------
 
 function renderToBdom(template: string, context: any = {}): BDom {
   return compile(template)(context);
@@ -16,6 +20,20 @@ function renderToString(template: string, context: any = {}): string {
 function snapshotCompiledCode(template: string) {
   expect(compileTemplate(template).toString()).toMatchSnapshot();
 }
+
+class TestTemplateSet extends TemplateSet {
+  renderToString(name: string, context: any = {}): string {
+    const renderFn = this.getFunction(name);
+    const bdom = renderFn(context);
+    const fixture = makeTestFixture();
+    bdom.mount(fixture);
+    return fixture.innerHTML;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Tests
+// -----------------------------------------------------------------------------
 
 describe("simple templates, mostly static", () => {
   test("simple string", () => {
@@ -381,5 +399,25 @@ describe("t-set", () => {
       </div>`;
     snapshotCompiledCode(template);
     expect(renderToString(template, { value: "ok" })).toBe("<div>grimbergen</div>");
+  });
+});
+
+describe("t-call (template calling)", () => {
+  test("basic caller", () => {
+    const templateSet = new TestTemplateSet();
+    templateSet.add("_basic-callee", `<span>ok</span>`);
+    templateSet.add("caller", `<div><t t-call="_basic-callee"/></div>`);
+
+    snapshotCompiledCode(`<div><t t-call="_basic-callee"/></div>`);
+    expect(templateSet.renderToString("caller")).toBe("<div><span>ok</span></div>");
+  });
+
+  test("basic caller, no parent node", () => {
+    const templateSet = new TestTemplateSet();
+    templateSet.add("_basic-callee", `<span>ok</span>`);
+    templateSet.add("caller", `<t t-call="_basic-callee"/>`);
+
+    snapshotCompiledCode(`<t t-call="_basic-callee"/>`);
+    expect(templateSet.renderToString("caller")).toBe("<span>ok</span>");
   });
 });
