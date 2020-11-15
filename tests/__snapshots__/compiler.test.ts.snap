@@ -1068,7 +1068,7 @@ exports[`t-set set from body literal 1`] = `
   
   return ctx => {
     ctx = Object.create(ctx);
-    ctx[\`value\`] = withDefault(null, \`ok\`);
+    ctx[\`value\`] = \`ok\`;
     const b1 = new Block1();
     b1.texts[0] = ctx['value'];
     return b1;
@@ -1213,6 +1213,34 @@ exports[`t-set t-set with content and sub t-esc 1`] = `
     const b4 = b2.children[1] = new Block3();
     ctx[\`setvar\`] = b2;
     b1.texts[0] = ctx['setvar'];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set, t-if, and mix of expression/body lookup, 1 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    children = new Array(2);
+    texts = new Array(1);
+    update() {
+      this.anchors[0].nextSibling.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    if (ctx['flag']) {
+      ctx[\`ourvar\`] = \`1\`;
+    } else {
+      ctx[\`ourvar\`] = 0;
+    }
+    b1.texts[0] = ctx['ourvar'];
     return b1;
   }
 }"

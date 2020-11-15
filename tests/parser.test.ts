@@ -273,6 +273,21 @@ describe("qweb parser", () => {
     });
   });
 
+  test("t-if and t-set expression with body", async () => {
+    expect(parse(`<t t-if="flag" t-set="key">ok</t>`)).toEqual({
+      type: ASTType.TIf,
+      condition: "flag",
+      content: {
+        type: ASTType.TSet,
+        name: "key",
+        defaultValue: "ok",
+        value: null,
+        body: null,
+      },
+      tElse: null,
+    });
+  });
+
   // ---------------------------------------------------------------------------
   // t-call
   // ---------------------------------------------------------------------------

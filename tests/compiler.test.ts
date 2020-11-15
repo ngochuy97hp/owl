@@ -477,6 +477,19 @@ describe("t-set", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { somevariable: 43 })).toBe("<div>45</div>");
   });
+
+  test("t-set, t-if, and mix of expression/body lookup, 1", () => {
+    const template = `
+      <div>
+        <t t-if="flag" t-set="ourvar">1</t>
+        <t t-else="" t-set="ourvar" t-value="0"></t>
+        <t t-esc="ourvar"/>
+      </div>`;
+    snapshotCompiledCode(template);
+
+    expect(renderToString(template, { flag: true })).toBe("<div>1</div>");
+    expect(renderToString(template, { flag: false })).toBe("<div>0</div>");
+  });
 });
 
 describe("t-call (template calling)", () => {

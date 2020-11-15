@@ -242,7 +242,16 @@ function compileAST(
       const value = ast.value ? `withDefault(${expr}, b${nextId})` : `b${nextId}`;
       ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
     } else {
-      const value = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
+      let value: string;
+      if (ast.defaultValue) {
+        if (ast.value) {
+          value = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
+        } else {
+          value = `\`${ast.defaultValue}\``;
+        }
+      } else {
+        value = expr;
+      }
       ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
     }
     return;
