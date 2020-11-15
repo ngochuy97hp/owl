@@ -406,6 +406,31 @@ describe("t-set", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { value: "ok" })).toBe("<div>grimbergen</div>");
   });
+
+  test("set from body literal", () => {
+    const template = `<t><t t-set="value">ok</t><t t-esc="value"/></t>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("ok");
+  });
+
+  test("set from attribute lookup", () => {
+    const template = `<div><t t-set="stuff" t-value="value"/><t t-esc="stuff"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { value: "ok" })).toBe("<div>ok</div>");
+  });
+
+  test("t-set evaluates an expression only once", () => {
+    const template = `
+      <div >
+        <t t-set="v" t-value="value + ' artois'"/>
+        <t t-esc="v"/>
+        <t t-esc="v"/>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { value: "stella" })).toBe(
+      "<div>stella artoisstella artois</div>"
+    );
+  });
 });
 
 describe("t-call (template calling)", () => {

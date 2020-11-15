@@ -264,29 +264,29 @@ describe("t-set", () => {
   //   expect(renderToString(qweb, "test", { value: "ok" })).toBe("<div>grimbergen</div>");
   // });
 
-  test("set from body literal", () => {
-    qweb.addTemplate("test", `<t><t t-set="value">ok</t><t t-esc="value"/></t>`);
-    expect(renderToString(qweb, "test")).toBe("ok");
-  });
+  // test("set from body literal", () => {
+  //   qweb.addTemplate("test", `<t><t t-set="value">ok</t><t t-esc="value"/></t>`);
+  //   expect(renderToString(qweb, "test")).toBe("ok");
+  // });
 
-  test("set from attribute lookup", () => {
-    qweb.addTemplate("test", `<div><t t-set="stuff" t-value="value"/><t t-esc="stuff"/></div>`);
-    expect(renderToString(qweb, "test", { value: "ok" })).toBe("<div>ok</div>");
-  });
+  // test("set from attribute lookup", () => {
+  //   qweb.addTemplate("test", `<div><t t-set="stuff" t-value="value"/><t t-esc="stuff"/></div>`);
+  //   expect(renderToString(qweb, "test", { value: "ok" })).toBe("<div>ok</div>");
+  // });
 
-  test("t-set evaluates an expression only once", () => {
-    qweb.addTemplate(
-      "test",
-      `<div >
-          <t t-set="v" t-value="value + ' artois'"/>
-          <t t-esc="v"/>
-          <t t-esc="v"/>
-        </div>`
-    );
-    expect(renderToString(qweb, "test", { value: "stella" })).toBe(
-      "<div>stella artoisstella artois</div>"
-    );
-  });
+  // test("t-set evaluates an expression only once", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div >
+  //         <t t-set="v" t-value="value + ' artois'"/>
+  //         <t t-esc="v"/>
+  //         <t t-esc="v"/>
+  //       </div>`
+  //   );
+  //   expect(renderToString(qweb, "test", { value: "stella" })).toBe(
+  //     "<div>stella artoisstella artois</div>"
+  //   );
+  // });
 
   test("set from body lookup", () => {
     qweb.addTemplate(

@@ -52,6 +52,7 @@ export interface ASTTSet {
   type: ASTType.TSet;
   name: string;
   value: string | null;
+  defaultValue: string;
 }
 
 export interface ASTTCall {
@@ -275,9 +276,10 @@ function parseTSetNode(node: Element, ctx: ParsingContext): AST | null {
     return null;
   }
   const name = node.getAttribute("t-set")!;
-  const value = node.getAttribute("t-value");
+  const value = node.getAttribute("t-value") || null;
+  const defaultValue = node.innerHTML || "";
   // const body = parseChildren(node);
-  return { type: ASTType.TSet, name, value };
+  return { type: ASTType.TSet, name, value, defaultValue };
 }
 
 // -----------------------------------------------------------------------------

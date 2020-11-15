@@ -27,6 +27,7 @@ export function compile(template: string, utils: typeof UTILS = UTILS): RenderFu
 
 export function compileTemplate(template: string): TemplateFunction {
   const ast = parse(template);
+  // console.warn(ast)
   const ctx = new CompilationContext();
   compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();
@@ -234,7 +235,9 @@ function compileAST(
 ) {
   if (ast.type === ASTType.TSet) {
     ctx.shouldProtextScope = true;
-    ctx.addLine(`ctx[\`${ast.name}\`] = ${compileExpr(ast.value || "", {})};`);
+    const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
+    const value = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
+    ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
     return;
   }
 

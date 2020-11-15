@@ -984,6 +984,52 @@ exports[`t-set set from attribute literal 1`] = `
 }"
 `;
 
+exports[`t-set set from attribute lookup 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`stuff\`] = ctx['value'];
+    b1.texts[0] = ctx['stuff'];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set set from body literal 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    ctx[\`value\`] = withDefault(null, \`ok\`);
+    const b1 = new Block1();
+    b1.texts[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`t-set t-set and t-if 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {
@@ -1004,6 +1050,31 @@ exports[`t-set t-set and t-if 1`] = `
     if (ctx['v']==='ok') {
       const b2 = b1.children[0] = new Block2();
     }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set evaluates an expression only once 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text><owl-text></owl-text></div>\`);
+    texts = new Array(2);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+      this.el.firstChild.nextSibling.textContent = toString(this.texts[1]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`v\`] = ctx['value']+' artois';
+    b1.texts[0] = ctx['v'];
+    b1.texts[1] = ctx['v'];
     return b1;
   }
 }"

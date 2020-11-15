@@ -227,6 +227,16 @@ describe("qweb parser", () => {
       type: ASTType.TSet,
       name: "key",
       value: "value",
+      defaultValue: "",
+    });
+  });
+
+  test("t-set expression with body", async () => {
+    expect(parse(`<t t-set="key">ok</t>`)).toEqual({
+      type: ASTType.TSet,
+      name: "key",
+      defaultValue: "ok",
+      value: null,
     });
   });
 
