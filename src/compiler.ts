@@ -232,6 +232,12 @@ function compileAST(
   forceNewBlock: boolean,
   ctx: CompilationContext
 ) {
+  if (ast.type === ASTType.TSet) {
+    ctx.shouldProtextScope = true;
+    ctx.addLine(`ctx[\`${ast.name}\`] = ${compileExpr(ast.value || "", {})};`);
+    return;
+  }
+
   if (!currentBlock || forceNewBlock) {
     switch (ast.type) {
       case ASTType.TIf:
@@ -241,16 +247,23 @@ function compileAST(
         }
         break;
       case ASTType.Multi:
+        const n = ast.content.filter((c) => c.type !== ASTType.TSet).length;
+        if (n === 1) {
+          for (let child of ast.content) {
+            compileAST(child, currentBlock, currentIndex, forceNewBlock, ctx);
+          }
+          return;
+        }
         currentBlock = ctx.makeBlock({
-          multi: ast.content.length,
+          multi: n,
           parentBlock: currentBlock ? currentBlock.varName : undefined,
           parentIndex: currentIndex,
         });
         break;
       default:
         currentBlock = ctx.makeBlock({
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
           parentIndex: currentIndex,
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
         });
     }
   }
@@ -316,15 +329,15 @@ function compileAST(
       break;
     }
     case ASTType.Multi: {
+      let index = 0;
       for (let i = 0; i < ast.content.length; i++) {
         const child = ast.content[i];
-        compileAST(child, currentBlock, i, true, ctx);
+        const isTSet = child.type === ASTType.TSet;
+        compileAST(child, currentBlock, index, !isTSet, ctx);
+        if (!isTSet) {
+          index++;
+        }
       }
-      break;
-    }
-    case ASTType.TSet: {
-      ctx.shouldProtextScope = true;
-      ctx.addLine(`ctx[\`${ast.name}\`] = ${compileExpr(ast.value || "", {})};`);
       break;
     }
 

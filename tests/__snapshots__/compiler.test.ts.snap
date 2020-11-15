@@ -938,6 +938,29 @@ exports[`t-if two consecutive t-if in a div 1`] = `
 }"
 `;
 
+exports[`t-set set from attribute literal (no outside div) 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    ctx[\`value\`] = 'ok';
+    const b1 = new Block1();
+    b1.texts[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`t-set set from attribute literal 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {

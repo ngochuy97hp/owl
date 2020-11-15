@@ -391,6 +391,12 @@ describe("t-set", () => {
     expect(renderToString(template)).toBe("<div>ok</div>");
   });
 
+  test("set from attribute literal (no outside div)", () => {
+    const template = `<t><t t-set="value" t-value="'ok'"/><t t-esc="value"/></t>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("ok");
+  });
+
   test("t-set and t-if", () => {
     const template = `
       <div>
