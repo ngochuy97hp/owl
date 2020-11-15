@@ -229,4 +229,15 @@ describe("qweb parser", () => {
       value: "value",
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // t-call
+  // ---------------------------------------------------------------------------
+
+  test("simple t-call expression", async () => {
+    expect(parse(`<t t-call="blabla" />`)).toEqual({
+      type: ASTType.TCall,
+      name: "blabla",
+    });
+  });
 });

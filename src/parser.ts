@@ -10,6 +10,7 @@ export const enum ASTType {
   TEsc,
   TIf,
   TSet,
+  TCall,
 }
 
 export interface ASTText {
@@ -53,7 +54,20 @@ export interface ASTTSet {
   value: string | null;
 }
 
-export type AST = ASTText | ASTComment | ASTDomNode | ASTMulti | ASTTEsc | ASTTif | ASTTSet;
+export interface ASTTCall {
+  type: ASTType.TCall;
+  name: string;
+}
+
+export type AST =
+  | ASTText
+  | ASTComment
+  | ASTDomNode
+  | ASTMulti
+  | ASTTEsc
+  | ASTTif
+  | ASTTSet
+  | ASTTCall;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -80,9 +94,10 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
   return (
     parseTIf(node, ctx) ||
     parseTEscNode(node, ctx) ||
-    parseTNode(node, ctx) ||
     parseDOMNode(node, ctx) ||
-    parseTSetNode(node, ctx)
+    parseTCall(node, ctx) ||
+    parseTSetNode(node, ctx) ||
+    parseTNode(node, ctx)
   );
 }
 
@@ -202,6 +217,21 @@ function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
     };
   }
   return tesc;
+}
+
+// -----------------------------------------------------------------------------
+// t-call
+// -----------------------------------------------------------------------------
+
+function parseTCall(node: Element, ctx: ParsingContext): AST | null {
+  if (!node.hasAttribute("t-call")) {
+    return null;
+  }
+  const subTemplate = node.getAttribute("t-call")!;
+  return {
+    type: ASTType.TCall,
+    name: subTemplate,
+  };
 }
 
 // -----------------------------------------------------------------------------
