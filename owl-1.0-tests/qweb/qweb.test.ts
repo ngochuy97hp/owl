@@ -288,13 +288,13 @@ describe("t-set", () => {
   //   );
   // });
 
-  test("set from body lookup", () => {
-    qweb.addTemplate(
-      "test",
-      `<div><t t-set="stuff"><t t-esc="value"/></t><t t-esc="stuff"/></div>`
-    );
-    expect(renderToString(qweb, "test", { value: "ok" })).toBe("<div>ok</div>");
-  });
+  // test("set from body lookup", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div><t t-set="stuff"><t t-esc="value"/></t><t t-esc="stuff"/></div>`
+  //   );
+  //   expect(renderToString(qweb, "test", { value: "ok" })).toBe("<div>ok</div>");
+  // });
 
   test("set from empty body", () => {
     qweb.addTemplate("test", `<div><t t-set="stuff"/><t t-esc="stuff"/></div>`);

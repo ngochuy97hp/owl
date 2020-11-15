@@ -227,7 +227,8 @@ describe("qweb parser", () => {
       type: ASTType.TSet,
       name: "key",
       value: "value",
-      defaultValue: "",
+      defaultValue: null,
+      body: null,
     });
   });
 
@@ -237,6 +238,22 @@ describe("qweb parser", () => {
       name: "key",
       defaultValue: "ok",
       value: null,
+      body: null,
+    });
+
+    expect(parse(`<t t-set="v"><div>ok</div></t>`)).toEqual({
+      type: ASTType.TSet,
+      name: "v",
+      defaultValue: null,
+      value: null,
+      body: [
+        {
+          type: ASTType.DomNode,
+          attrs: {},
+          tag: "div",
+          content: [{ type: ASTType.Text, value: "ok" }],
+        },
+      ],
     });
   });
 

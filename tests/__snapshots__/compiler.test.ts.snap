@@ -1030,6 +1030,38 @@ exports[`t-set set from body literal 1`] = `
 }"
 `;
 
+exports[`t-set set from body lookup 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    const b2 = new Block2();
+    b2.texts[0] = ctx['value'];
+    ctx[\`stuff\`] = b2;
+    b1.texts[0] = ctx['stuff'];
+    return b1;
+  }
+}"
+`;
+
 exports[`t-set t-set and t-if 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {

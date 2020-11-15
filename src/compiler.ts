@@ -235,9 +235,15 @@ function compileAST(
 ) {
   if (ast.type === ASTType.TSet) {
     ctx.shouldProtextScope = true;
-    const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
-    const value = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
-    ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
+    if (ast.body) {
+      const nextId = ctx.nextId;
+      compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
+      ctx.addLine(`ctx[\`${ast.name}\`] = b${nextId};`);
+    } else {
+      const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
+      const value = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
+      ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
+    }
     return;
   }
 

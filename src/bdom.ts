@@ -31,6 +31,12 @@ export class ContentBlock extends Block {
   anchors?: Text[];
   texts: string[] = [];
 
+  toString(): string {
+    const div = document.createElement("div");
+    this.mount(div);
+    return div.innerHTML;
+  }
+
   mountBefore(anchor: Text) {
     this.build();
     if (this.children) {
@@ -135,5 +141,9 @@ export class MultiBlock extends Block {
       this.children[i]!.remove();
       this.anchors![i].remove();
     }
+  }
+
+  toString(): string {
+    return this.children.map((c) => (c ? c.toString() : "")).join("");
   }
 }

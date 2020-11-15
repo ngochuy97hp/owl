@@ -431,6 +431,12 @@ describe("t-set", () => {
       "<div>stella artoisstella artois</div>"
     );
   });
+
+  test("set from body lookup", () => {
+    const template = `<div><t t-set="stuff"><t t-esc="value"/></t><t t-esc="stuff"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { value: "ok" })).toBe("<div>ok</div>");
+  });
 });
 
 describe("t-call (template calling)", () => {

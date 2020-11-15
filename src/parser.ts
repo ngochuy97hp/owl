@@ -51,8 +51,9 @@ export interface ASTTif {
 export interface ASTTSet {
   type: ASTType.TSet;
   name: string;
-  value: string | null;
-  defaultValue: string;
+  value: string | null; // value defined in attribute
+  defaultValue: string | null; // value defined in body, if text
+  body: AST[] | null; // content of body if not text
 }
 
 export interface ASTTCall {
@@ -277,9 +278,19 @@ function parseTSetNode(node: Element, ctx: ParsingContext): AST | null {
   }
   const name = node.getAttribute("t-set")!;
   const value = node.getAttribute("t-value") || null;
-  const defaultValue = node.innerHTML || "";
+  const defaultValue = node.innerHTML === node.textContent ? node.textContent || null : null;
+  let body: AST[] | null = null;
+  if (node.textContent !== node.innerHTML) {
+    body = [];
+    for (let child of node.children) {
+      let childAst = parseNode(child, ctx);
+      if (childAst) {
+        body.push(childAst);
+      }
+    }
+  }
   // const body = parseChildren(node);
-  return { type: ASTType.TSet, name, value, defaultValue };
+  return { type: ASTType.TSet, name, value, defaultValue, body };
 }
 
 // -----------------------------------------------------------------------------
