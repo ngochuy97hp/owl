@@ -282,14 +282,13 @@ function parseTSetNode(node: Element, ctx: ParsingContext): AST | null {
   let body: AST[] | null = null;
   if (node.textContent !== node.innerHTML) {
     body = [];
-    for (let child of node.children) {
+    for (let child of node.childNodes) {
       let childAst = parseNode(child, ctx);
       if (childAst) {
         body.push(childAst);
       }
     }
   }
-  // const body = parseChildren(node);
   return { type: ASTType.TSet, name, value, defaultValue, body };
 }
 

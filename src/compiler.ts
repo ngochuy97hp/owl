@@ -27,7 +27,7 @@ export function compile(template: string, utils: typeof UTILS = UTILS): RenderFu
 
 export function compileTemplate(template: string): TemplateFunction {
   const ast = parse(template);
-  // console.warn(ast)
+  // console.warn(ast);
   const ctx = new CompilationContext();
   compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();

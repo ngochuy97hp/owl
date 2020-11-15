@@ -301,15 +301,15 @@ describe("t-set", () => {
   //   expect(renderToString(qweb, "test")).toBe("<div></div>");
   // });
 
-  test("value priority", () => {
-    qweb.addTemplate("test", `<div><t t-set="value" t-value="1">2</t><t t-esc="value"/></div>`);
-    expect(renderToString(qweb, "test")).toBe("<div>1</div>");
-  });
+  // test("value priority", () => {
+  //   qweb.addTemplate("test", `<div><t t-set="value" t-value="1">2</t><t t-esc="value"/></div>`);
+  //   expect(renderToString(qweb, "test")).toBe("<div>1</div>");
+  // });
 
-  test("evaluate value expression", () => {
-    qweb.addTemplate("test", `<div><t t-set="value" t-value="1 + 2"/><t t-esc="value"/></div>`);
-    expect(renderToString(qweb, "test")).toBe("<div>3</div>");
-  });
+  // test("evaluate value expression", () => {
+  //   qweb.addTemplate("test", `<div><t t-set="value" t-value="1 + 2"/><t t-esc="value"/></div>`);
+  //   expect(renderToString(qweb, "test")).toBe("<div>3</div>");
+  // });
 
   test("t-set should reuse variable if possible", () => {
     qweb.addTemplate(

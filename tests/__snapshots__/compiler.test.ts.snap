@@ -938,6 +938,29 @@ exports[`t-if two consecutive t-if in a div 1`] = `
 }"
 `;
 
+exports[`t-set evaluate value expression 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`value\`] = 1+2;
+    b1.texts[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`t-set set from attribute literal (no outside div) 1`] = `
 "function anonymous(ContentBlock, MultiBlock, utils
 ) {
@@ -1130,6 +1153,43 @@ exports[`t-set t-set evaluates an expression only once 1`] = `
     ctx[\`v\`] = ctx['value']+' artois';
     b1.texts[0] = ctx['v'];
     b1.texts[1] = ctx['v'];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set with content and sub t-esc 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\` boop\`);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    const b2 = new MultiBlock(2);
+    const b3 = b2.children[0] = new Block2();
+    b3.texts[0] = ctx['beep'];
+    const b4 = b2.children[1] = new Block3();
+    ctx[\`setvar\`] = b2;
+    b1.texts[0] = ctx['setvar'];
     return b1;
   }
 }"

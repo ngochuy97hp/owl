@@ -455,6 +455,22 @@ describe("t-set", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template)).toBe("<div>1</div>");
   });
+
+  test("evaluate value expression", () => {
+    const template = `<div><t t-set="value" t-value="1 + 2"/><t t-esc="value"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>3</div>");
+  });
+
+  test("t-set with content and sub t-esc", () => {
+    const template = `
+      <div>
+        <t t-set="setvar"><t t-esc="beep"/> boop</t>
+        <t t-esc="setvar"/>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { beep: "beep" })).toBe("<div>beep boop</div>");
+  });
 });
 
 describe("t-call (template calling)", () => {
