@@ -260,6 +260,11 @@ function compileAST(
   if (!currentBlock || forceNewBlock) {
     switch (ast.type) {
       case ASTType.TIf:
+        if (!currentBlock) {
+          const n = ast.tElse ? 2 : 1;
+          currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
+        }
+        break;
       case ASTType.TCall:
         if (!currentBlock) {
           currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });

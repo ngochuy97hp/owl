@@ -763,7 +763,7 @@ exports[`t-if simple t-if/t-else 1`] = `
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
+    const b1 = new MultiBlock(2);
     if (ctx['condition']) {
       const b2 = b1.children[0] = new Block1();
     } else {
@@ -818,7 +818,7 @@ exports[`t-if t-if and t-else with two nodes 1`] = `
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
+    const b1 = new MultiBlock(2);
     if (ctx['condition']) {
       const b2 = b1.children[0] = new Block1();
     } else {
@@ -1241,6 +1241,62 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 1 1`] = `
       ctx[\`ourvar\`] = 0;
     }
     b1.texts[0] = ctx['ourvar'];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set, t-if, and mix of expression/body lookup, 2 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    children = new Array(2);
+    texts = new Array(1);
+    update() {
+      this.anchors[0].nextSibling.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    if (ctx['flag']) {
+      ctx[\`ourvar\`] = 1;
+    } else {
+      ctx[\`ourvar\`] = \`0\`;
+    }
+    b1.texts[0] = ctx['ourvar'];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set, t-if, and mix of expression/body lookup, 3 1`] = `
+"function anonymous(ContentBlock, MultiBlock, utils
+) {
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new MultiBlock(2);
+    if (ctx['flag']) {
+      ctx[\`ourvar\`] = 1;
+    } else {
+      ctx[\`ourvar\`] = \`0\`;
+    }
+    const b2 = b1.children[1] = new Block1();
+    b2.texts[0] = ctx['ourvar'];
     return b1;
   }
 }"

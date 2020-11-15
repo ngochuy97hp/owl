@@ -288,6 +288,24 @@ describe("qweb parser", () => {
     });
   });
 
+  test("t-if, t-else and t-set", async () => {
+    expect(
+      parse(`<div><t t-if="flag">1</t><t t-else="" t-set="ourvar" t-value="0"></t></div>`)
+    ).toEqual({
+      type: ASTType.DomNode,
+      tag: "div",
+      attrs: {},
+      content: [
+        {
+          type: ASTType.TIf,
+          condition: "flag",
+          content: { type: ASTType.Text, value: "1" },
+          tElse: { type: ASTType.TSet, name: "ourvar", value: "0", defaultValue: null, body: null },
+        },
+      ],
+    });
+  });
+
   // ---------------------------------------------------------------------------
   // t-call
   // ---------------------------------------------------------------------------

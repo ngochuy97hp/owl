@@ -490,6 +490,30 @@ describe("t-set", () => {
     expect(renderToString(template, { flag: true })).toBe("<div>1</div>");
     expect(renderToString(template, { flag: false })).toBe("<div>0</div>");
   });
+
+  test("t-set, t-if, and mix of expression/body lookup, 2", () => {
+    const template = `
+      <div>
+        <t t-if="flag" t-set="ourvar" t-value="1"></t>
+        <t t-else="" t-set="ourvar">0</t>
+        <t t-esc="ourvar"/>
+      </div>`;
+    snapshotCompiledCode(template);
+
+    expect(renderToString(template, { flag: true })).toBe("<div>1</div>");
+    expect(renderToString(template, { flag: false })).toBe("<div>0</div>");
+  });
+
+  test("t-set, t-if, and mix of expression/body lookup, 3", () => {
+    const template = `
+        <t t-if="flag" t-set="ourvar" t-value="1"></t>
+        <t t-else="" t-set="ourvar">0</t>
+        <t t-esc="ourvar"/>`;
+    snapshotCompiledCode(template);
+
+    expect(renderToString(template, { flag: true })).toBe("1");
+    expect(renderToString(template, { flag: false })).toBe("0");
+  });
 });
 
 describe("t-call (template calling)", () => {
