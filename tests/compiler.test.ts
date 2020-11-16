@@ -1048,4 +1048,21 @@ describe("t-call (template calling)", () => {
       "<span>cascade 2</span><span>cascade 1</span><span>cascade 0</span><span>hey</span> <span>yay</span>";
     expect(templateSet.renderToString("main")).toBe(expected);
   });
+
+  test("recursive template, part 1", () => {
+    const templateSet = new TestTemplateSet();
+    const recursive = `
+      <div>
+        <span>hey</span>
+        <t t-if="false">
+          <t t-call="recursive"/>
+        </t>
+      </div>`;
+
+    templateSet.add("recursive", recursive);
+
+    snapshotCompiledCode(recursive);
+    const expected = "<div><span>hey</span></div>";
+    expect(templateSet.renderToString("recursive")).toBe(expected);
+  });
 });

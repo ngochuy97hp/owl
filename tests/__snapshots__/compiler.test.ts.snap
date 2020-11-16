@@ -485,8 +485,7 @@ exports[`t-call (template calling) basic caller, no parent node 1`] = `
   
   
   return ctx => {
-    const b1 = new MultiBlock(1);
-    b1.children[0] = call(\`_basic-callee\`, ctx);
+    const b1 = call(\`_basic-callee\`, ctx);
     return b1;
   }
 }"
@@ -682,14 +681,13 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
     ctx = Object.create(ctx);
-    const b2 = new MultiBlock(2);
-    const b3 = b2.children[0] = new Block1();
-    b2.children[1] = new HTMLBlock(ctx[zero]);
-    ctx[zero] = b2;
-    b1.children[0] = call(\`subSubTemplate\`, ctx);
-    return b1;
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    b1.children[1] = new HTMLBlock(ctx[zero]);
+    ctx[zero] = b1;
+    const b3 = call(\`subSubTemplate\`, ctx);
+    return b3;
   }
 }"
 `;
@@ -705,14 +703,13 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
     ctx = Object.create(ctx);
-    const b2 = new MultiBlock(2);
-    const b3 = b2.children[0] = new Block1();
-    b2.children[1] = new HTMLBlock(ctx[zero]);
-    ctx[zero] = b2;
-    b1.children[0] = call(\`finalTemplate\`, ctx);
-    return b1;
+    const b1 = new MultiBlock(2);
+    const b2 = b1.children[0] = new Block1();
+    b1.children[1] = new HTMLBlock(ctx[zero]);
+    ctx[zero] = b1;
+    const b3 = call(\`finalTemplate\`, ctx);
+    return b3;
   }
 }"
 `;
@@ -734,15 +731,14 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
     ctx = Object.create(ctx);
-    const b2 = new MultiBlock(3);
-    const b3 = b2.children[0] = new Block1();
-    const b4 = b2.children[1] = new Block2();
-    const b5 = b2.children[2] = new Block3();
-    ctx[zero] = b2;
-    b1.children[0] = call(\`subTemplate\`, ctx);
-    return b1;
+    const b1 = new MultiBlock(3);
+    const b2 = b1.children[0] = new Block1();
+    const b3 = b1.children[1] = new Block2();
+    const b4 = b1.children[2] = new Block3();
+    ctx[zero] = b1;
+    const b5 = call(\`subTemplate\`, ctx);
+    return b5;
   }
 }"
 `;
@@ -763,6 +759,27 @@ exports[`t-call (template calling) inherit context 1`] = `
     const b1 = new Block1();
     ctx[\`foo\`] = 1;
     b1.children[0] = call(\`sub\`, ctx);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-call (template calling) recursive template, part 1 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><span>hey</span><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (false) {
+      b1.children[0] = call(\`recursive\`, ctx);
+    }
     return b1;
   }
 }"
@@ -851,14 +868,14 @@ exports[`t-call (template calling) t-call with t-if 1`] = `
   let {elem, toString, withDefault, call, zero} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
-    children = new Array(2);
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
   }
   
   return ctx => {
     const b1 = new Block1();
     if (ctx['flag']) {
-      b1.children[1] = call(\`sub\`, ctx);
+      b1.children[0] = call(\`sub\`, ctx);
     }
     return b1;
   }
@@ -897,12 +914,11 @@ exports[`t-call (template calling) with unused body 1`] = `
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
     ctx = Object.create(ctx);
-    const b2 = new Block1();
-    ctx[zero] = b2;
-    b1.children[0] = call(\`sub\`, ctx);
-    return b1;
+    const b1 = new Block1();
+    ctx[zero] = b1;
+    const b2 = call(\`sub\`, ctx);
+    return b2;
   }
 }"
 `;
@@ -916,10 +932,9 @@ exports[`t-call (template calling) with unused setbody 1`] = `
   
   return ctx => {
     ctx = Object.create(ctx);
-    const b1 = new MultiBlock(1);
     ctx = Object.create(ctx);
     ctx[\`qux\`] = 3;
-    b1.children[0] = call(\`sub\`, ctx);
+    const b1 = call(\`sub\`, ctx);
     return b1;
   }
 }"
@@ -936,12 +951,11 @@ exports[`t-call (template calling) with used body 1`] = `
   }
   
   return ctx => {
-    const b1 = new MultiBlock(1);
     ctx = Object.create(ctx);
-    const b2 = new Block1();
-    ctx[zero] = b2;
-    b1.children[0] = call(\`sub\`, ctx);
-    return b1;
+    const b1 = new Block1();
+    ctx[zero] = b1;
+    const b2 = call(\`sub\`, ctx);
+    return b2;
   }
 }"
 `;

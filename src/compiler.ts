@@ -182,6 +182,7 @@ class CompilationContext {
     if (mainCode[mainCode.length - 1] === `  ctx = ctx.__proto__;`) {
       mainCode = mainCode.slice(0, -1);
     }
+
     // generate main code
     this.indentLevel = 0;
     this.addLine(``);
@@ -237,74 +238,35 @@ function compileAST(
   forceNewBlock: boolean,
   ctx: CompilationContext
 ) {
-  if (ast.type === ASTType.TSet) {
-    ctx.shouldProtextScope = true;
-    const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
-    if (ast.body) {
-      const nextId = ctx.nextId;
-      compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
-      const value = ast.value ? `withDefault(${expr}, b${nextId})` : `b${nextId}`;
-      ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
-    } else {
-      let value: string;
-      if (ast.defaultValue) {
-        if (ast.value) {
-          value = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
-        } else {
-          value = `\`${ast.defaultValue}\``;
-        }
-      } else {
-        value = expr;
-      }
-      ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
-    }
-    return;
-  }
-
-  if (!currentBlock || forceNewBlock) {
-    switch (ast.type) {
-      case ASTType.TIf:
-        if (!currentBlock) {
-          const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
-          currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
-        }
-        break;
-      case ASTType.TRaw:
-      case ASTType.TCall:
-        if (!currentBlock) {
-          currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });
-        }
-        break;
-      case ASTType.Multi:
-        const n = ast.content.filter((c) => c.type !== ASTType.TSet).length;
-        if (n === 1) {
-          for (let child of ast.content) {
-            compileAST(child, currentBlock, currentIndex, forceNewBlock, ctx);
-          }
-          return;
-        }
-        currentBlock = ctx.makeBlock({
-          multi: n,
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
-          parentIndex: currentIndex,
-        });
-        break;
-      default:
-        currentBlock = ctx.makeBlock({
-          parentIndex: currentIndex,
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
-        });
-    }
-  }
   switch (ast.type) {
+    // -------------------------------------------------------------------------
+    // Comment/Text
+    // -------------------------------------------------------------------------
     case ASTType.Comment:
     case ASTType.Text: {
+      if (!currentBlock || forceNewBlock) {
+        currentBlock = ctx.makeBlock({
+          parentIndex: currentIndex,
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
+        });
+      }
+
       const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
       const text: Dom = { type, value: ast.value };
       addToBlockDom(currentBlock, text);
       break;
     }
+
+    // -------------------------------------------------------------------------
+    // Dom Node
+    // -------------------------------------------------------------------------
     case ASTType.DomNode: {
+      if (!currentBlock || forceNewBlock) {
+        currentBlock = ctx.makeBlock({
+          parentIndex: currentIndex,
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
+        });
+      }
       const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: ast.attrs, content: [] };
       addToBlockDom(currentBlock, dom);
       if (ast.content.length) {
@@ -323,7 +285,17 @@ function compileAST(
       }
       break;
     }
+
+    // -------------------------------------------------------------------------
+    // t-esc
+    // -------------------------------------------------------------------------
     case ASTType.TEsc: {
+      if (!currentBlock || forceNewBlock) {
+        currentBlock = ctx.makeBlock({
+          parentIndex: currentIndex,
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
+        });
+      }
       const targetEl = `this.` + currentBlock.currentPath.join(".");
       const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
       addToBlockDom(currentBlock, text);
@@ -340,7 +312,14 @@ function compileAST(
       }
       break;
     }
+
+    // -------------------------------------------------------------------------
+    // t-raw
+    // -------------------------------------------------------------------------
     case ASTType.TRaw: {
+      if (!currentBlock) {
+        currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });
+      }
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       addToBlockDom(currentBlock, anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
@@ -350,7 +329,14 @@ function compileAST(
       break;
     }
 
+    // -------------------------------------------------------------------------
+    // t-if
+    // -------------------------------------------------------------------------
     case ASTType.TIf: {
+      if (!currentBlock) {
+        const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
+        currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
+      }
       ctx.addLine(`if (${compileExpr(ast.condition, {})}) {`);
       ctx.indentLevel++;
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
@@ -383,7 +369,27 @@ function compileAST(
       ctx.addLine("}");
       break;
     }
+
+    // -------------------------------------------------------------------------
+    // multi block
+    // -------------------------------------------------------------------------
+
     case ASTType.Multi: {
+      if (!currentBlock || forceNewBlock) {
+        const n = ast.content.filter((c) => c.type !== ASTType.TSet).length;
+        if (n === 1) {
+          for (let child of ast.content) {
+            compileAST(child, currentBlock, currentIndex, forceNewBlock, ctx);
+          }
+          return;
+        }
+        currentBlock = ctx.makeBlock({
+          multi: n,
+          parentBlock: currentBlock ? currentBlock.varName : undefined,
+          parentIndex: currentIndex,
+        });
+      }
+
       let index = 0;
       for (let i = 0; i < ast.content.length; i++) {
         const child = ast.content[i];
@@ -396,6 +402,9 @@ function compileAST(
       break;
     }
 
+    // -------------------------------------------------------------------------
+    // t-call
+    // -------------------------------------------------------------------------
     case ASTType.TCall: {
       if (ast.body) {
         ctx.addLine(`ctx = Object.create(ctx);`);
@@ -406,22 +415,59 @@ function compileAST(
           compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
           ctx.addLine(`ctx[zero] = b${nextId};`);
         } else {
-          compileAST({ type: ASTType.Multi, content: ast.body }, currentBlock, 0, false, ctx);
+          for (let elem of ast.body) {
+            compileAST(elem, currentBlock, 0, false, ctx);
+          }
         }
       }
 
-      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      addToBlockDom(currentBlock, anchor);
-      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-      currentBlock.childNumber++;
+      if (currentBlock) {
+        if (!forceNewBlock) {
+          const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+          addToBlockDom(currentBlock, anchor);
+          currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
+          currentBlock.childNumber++;
+        }
 
-      ctx.addLine(
-        `${currentBlock.varName}.children[${currentBlock.childNumber - 1}] = call(\`${
-          ast.name
-        }\`, ctx);`
-      );
+        ctx.addLine(
+          `${currentBlock.varName}.children[${currentBlock.childNumber - 1}] = call(\`${
+            ast.name
+          }\`, ctx);`
+        );
+      } else {
+        const id = ctx.generateId("b");
+        ctx.rootBlock = id;
+        ctx.addLine(`const ${id} = call(\`${ast.name}\`, ctx);`);
+      }
       if (ast.body) {
         ctx.addLine(`ctx = ctx.__proto__;`);
+      }
+      break;
+    }
+
+    // -------------------------------------------------------------------------
+    // t-set/t-value
+    // -------------------------------------------------------------------------
+    case ASTType.TSet: {
+      ctx.shouldProtextScope = true;
+      const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
+      if (ast.body) {
+        const nextId = ctx.nextId;
+        compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
+        const value = ast.value ? `withDefault(${expr}, b${nextId})` : `b${nextId}`;
+        ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
+      } else {
+        let value: string;
+        if (ast.defaultValue) {
+          if (ast.value) {
+            value = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
+          } else {
+            value = `\`${ast.defaultValue}\``;
+          }
+        } else {
+          value = expr;
+        }
+        ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
       }
       break;
     }
