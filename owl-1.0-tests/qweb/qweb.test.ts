@@ -438,127 +438,127 @@ describe("t-if", () => {
   // });
 
   // test("boolean value condition missing", () => {
-  //   qweb.addTemplate("test", `<span><t t-if="condition">fail</t></span>`);
+  //   qweb.addTemplate("test", `<spaelin><t t-if="condition">fail</t></span>`);
   //   expect(renderToString(qweb, "test")).toBe("<span></span>");
   // });
 
-  test("boolean value condition elif", () => {
-    qweb.addTemplate(
-      "test",
-      `<div><t t-if="color == 'black'">black pearl</t>
-        <t t-elif="color == 'yellow'">yellow submarine</t>
-        <t t-elif="color == 'red'">red is dead</t>
-        <t t-else="">beer</t></div>
-    `
-    );
-    expect(renderToString(qweb, "test", { color: "red" })).toBe("<div>red is dead</div>");
-  });
+  // test("boolean value condition elif", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div><t t-if="color == 'black'">black pearl</t>
+  //       <t t-elif="color == 'yellow'">yellow submarine</t>
+  //       <t t-elif="color == 'red'">red is dead</t>
+  //       <t t-else="">beer</t></div>
+  //   `
+  //   );
+  //   expect(renderToString(qweb, "test", { color: "red" })).toBe("<div>red is dead</div>");
+  // });
 
-  test("boolean value condition else", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <span>begin</span>
-        <t t-if="condition">ok</t>
-        <t t-else="">ok-else</t>
-        <span>end</span>
-      </div>
-    `
-    );
-    const result = trim(renderToString(qweb, "test", { condition: true }));
-    expect(result).toBe("<div><span>begin</span>ok<span>end</span></div>");
-  });
+  // test("boolean value condition else", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <span>begin</span>
+  //       <t t-if="condition">ok</t>
+  //       <t t-else="">ok-else</t>
+  //       <span>end</span>
+  //     </div>
+  //   `
+  //   );
+  //   const result = trim(renderToString(qweb, "test", { condition: true }));
+  //   expect(result).toBe("<div><span>begin</span>ok<span>end</span></div>");
+  // });
 
-  test("boolean value condition false else", () => {
-    qweb.addTemplate(
-      "test",
-      `<div><span>begin</span><t t-if="condition">fail</t>
-          <t t-else="">fail-else</t><span>end</span></div>
-        `
-    );
-    const result = trim(renderToString(qweb, "test", { condition: false }));
-    expect(result).toBe("<div><span>begin</span>fail-else<span>end</span></div>");
-  });
+  // test("boolean value condition false else", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div><span>begin</span><t t-if="condition">fail</t>
+  //         <t t-else="">fail-else</t><span>end</span></div>
+  //       `
+  //   );
+  //   const result = trim(renderToString(qweb, "test", { condition: false }));
+  //   expect(result).toBe("<div><span>begin</span>fail-else<span>end</span></div>");
+  // });
 
-  test("can use some boolean operators in expressions", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-if="cond1 and cond2">and</t>
-        <t t-if="cond1 and cond3">nope</t>
-        <t t-if="cond1 or cond3">or</t>
-        <t t-if="cond3 or cond4">nope</t>
-        <t t-if="m gt 3">mgt</t>
-        <t t-if="n gt 3">ngt</t>
-        <t t-if="m lt 3">mlt</t>
-        <t t-if="n lt 3">nlt</t>
-      </div>`
-    );
-    const context = {
-      cond1: true,
-      cond2: true,
-      cond3: false,
-      cond4: false,
-      m: 5,
-      n: 2,
-    };
-    expect(normalize(renderToString(qweb, "test", context))).toBe("<div>andormgtnlt</div>");
-  });
+  // test("can use some boolean operators in expressions", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-if="cond1 and cond2">and</t>
+  //       <t t-if="cond1 and cond3">nope</t>
+  //       <t t-if="cond1 or cond3">or</t>
+  //       <t t-if="cond3 or cond4">nope</t>
+  //       <t t-if="m gt 3">mgt</t>
+  //       <t t-if="n gt 3">ngt</t>
+  //       <t t-if="m lt 3">mlt</t>
+  //       <t t-if="n lt 3">nlt</t>
+  //     </div>`
+  //   );
+  //   const context = {
+  //     cond1: true,
+  //     cond2: true,
+  //     cond3: false,
+  //     cond4: false,
+  //     m: 5,
+  //     n: 2,
+  //   };
+  //   expect(normalize(renderToString(qweb, "test", context))).toBe("<div>andormgtnlt</div>");
+  // });
 
-  test("t-esc with t-if", () => {
-    qweb.addTemplate("test", `<div><t t-if="true" t-esc="'x'"/></div>`);
-    expect(renderToString(qweb, "test")).toBe("<div>x</div>");
-  });
+  // test("t-esc with t-if", () => {
+  //   qweb.addTemplate("test", `<div><t t-if="true" t-esc="'x'"/></div>`);
+  //   expect(renderToString(qweb, "test")).toBe("<div>x</div>");
+  // });
 
-  test("t-esc with t-elif", () => {
-    qweb.addTemplate("test", `<div><t t-if="false">abc</t><t t-else="" t-esc="'x'"/></div>`);
-    expect(renderToString(qweb, "test")).toBe("<div>x</div>");
-  });
+  // test("t-esc with t-elif", () => {
+  //   qweb.addTemplate("test", `<div><t t-if="false">abc</t><t t-else="" t-esc="'x'"/></div>`);
+  //   expect(renderToString(qweb, "test")).toBe("<div>x</div>");
+  // });
 
-  test("t-set, then t-if", () => {
-    qweb.addTemplate(
-      "test",
-      `
-      <div>
-        <t t-set="title" t-value="'test'"/>
-        <t t-if="title"><t t-esc="title"/></t>
-      </div>`
-    );
-    const result = renderToString(qweb, "test");
-    const expected = `<div>test</div>`;
-    expect(result).toBe(expected);
-  });
+  // test("t-set, then t-if", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `
+  //     <div>
+  //       <t t-set="title" t-value="'test'"/>
+  //       <t t-if="title"><t t-esc="title"/></t>
+  //     </div>`
+  //   );
+  //   const result = renderToString(qweb, "test");
+  //   const expected = `<div>test</div>`;
+  //   expect(result).toBe(expected);
+  // });
 
-  test("t-set, then t-if, part 2", () => {
-    qweb.addTemplate(
-      "test",
-      `
-        <div>
-            <t t-set="y" t-value="true"/>
-            <t t-set="x" t-value="y"/>
-            <span t-if="x">COUCOU</span>
-        </div>`
-    );
-    const result = renderToString(qweb, "test");
-    const expected = `<div><span>COUCOU</span></div>`;
-    expect(result).toBe(expected);
-  });
+  // test("t-set, then t-if, part 2", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `
+  //       <div>
+  //           <t t-set="y" t-value="true"/>
+  //           <t t-set="x" t-value="y"/>
+  //           <span t-if="x">COUCOU</span>
+  //       </div>`
+  //   );
+  //   const result = renderToString(qweb, "test");
+  //   const expected = `<div><span>COUCOU</span></div>`;
+  //   expect(result).toBe(expected);
+  // });
 
-  test("t-set, then t-elif, part 3", () => {
-    qweb.addTemplate(
-      "test",
-      `
-        <div>
-            <t t-set="y" t-value="false"/>
-            <t t-set="x" t-value="y"/>
-            <span t-if="x">AAA</span>
-            <span t-elif="!x">BBB</span>
-        </div>`
-    );
-    const result = renderToString(qweb, "test");
-    const expected = `<div><span>BBB</span></div>`;
-    expect(result).toBe(expected);
-  });
+  // test("t-set, then t-elif, part 3", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `
+  //       <div>
+  //           <t t-set="y" t-value="false"/>
+  //           <t t-set="x" t-value="y"/>
+  //           <span t-if="x">AAA</span>
+  //           <span t-elif="!x">BBB</span>
+  //       </div>`
+  //   );
+  //   const result = renderToString(qweb, "test");
+  //   const expected = `<div><span>BBB</span></div>`;
+  //   expect(result).toBe(expected);
+  // });
 });
 
 describe("attributes", () => {

@@ -289,6 +289,7 @@ function parseTIf(node: Element, ctx: ParsingContext): AST | null {
   const tElifs: any[] = [];
   while (nextElement && nextElement.hasAttribute("t-elif")) {
     const condition = nextElement.getAttribute("t-elif");
+    nextElement.removeAttribute("t-elif");
     const tElif = parseNode(nextElement, ctx);
     const next = nextElement.nextElementSibling;
     nextElement.remove();
@@ -301,6 +302,7 @@ function parseTIf(node: Element, ctx: ParsingContext): AST | null {
   // t-else
   let tElse: AST | null = null;
   if (nextElement && nextElement.hasAttribute("t-else")) {
+    nextElement.removeAttribute("t-else");
     tElse = parseNode(nextElement, ctx);
     nextElement.remove();
   }

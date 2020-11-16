@@ -261,7 +261,7 @@ function compileAST(
     switch (ast.type) {
       case ASTType.TIf:
         if (!currentBlock) {
-          const n = ast.tElse ? 2 : 1;
+          const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
           currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
         }
         break;

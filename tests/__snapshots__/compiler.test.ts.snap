@@ -31,7 +31,7 @@ exports[`comments properly handle comments between t-if/t-else 1`] = `
     static el = elem(\`<span>true</span>\`);
   }
   class Block3 extends ContentBlock {
-    static el = elem(\`<span t-else=\\"\\">owl</span>\`);
+    static el = elem(\`<span>owl</span>\`);
   }
   
   return ctx => {
@@ -883,6 +883,41 @@ exports[`t-if a t-if with two inner nodes 1`] = `
 }"
 `;
 
+exports[`t-if boolean value condition elif (no outside node) 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`black pearl\`);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`yellow submarine\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`red is dead\`);
+  }
+  class Block4 extends ContentBlock {
+    static el = elem(\`beer\`);
+  }
+  
+  return ctx => {
+    const b1 = new MultiBlock(4);
+    if (ctx['color']=='black') {
+      const b2 = b1.children[0] = new Block1();
+    } else if (ctx['color']=='yellow') {
+      const b3 = b1.children[1] = new Block2();
+    } else if (ctx['color']=='red') {
+      const b4 = b1.children[2] = new Block3();
+    } else {
+      const b5 = b1.children[3] = new Block4();
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`t-if boolean value condition elif 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -916,6 +951,130 @@ exports[`t-if boolean value condition elif 1`] = `
       const b4 = b1.children[2] = new Block4();
     } else {
       const b5 = b1.children[3] = new Block5();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if boolean value condition else 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><span>begin</span><owl-anchor></owl-anchor><owl-anchor></owl-anchor><span>end</span></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`ok\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`ok-else\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new Block2();
+    } else {
+      const b3 = b1.children[1] = new Block3();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if boolean value condition false else 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><span>begin</span><owl-anchor></owl-anchor><owl-anchor></owl-anchor><span>end</span></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`fail\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`fail-else\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['condition']) {
+      const b2 = b1.children[0] = new Block2();
+    } else {
+      const b3 = b1.children[1] = new Block3();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if can use some boolean operators in expressions 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(8);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`and\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`nope\`);
+  }
+  class Block4 extends ContentBlock {
+    static el = elem(\`or\`);
+  }
+  class Block5 extends ContentBlock {
+    static el = elem(\`nope\`);
+  }
+  class Block6 extends ContentBlock {
+    static el = elem(\`mgt\`);
+  }
+  class Block7 extends ContentBlock {
+    static el = elem(\`ngt\`);
+  }
+  class Block8 extends ContentBlock {
+    static el = elem(\`mlt\`);
+  }
+  class Block9 extends ContentBlock {
+    static el = elem(\`nlt\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['cond1']&&ctx['cond2']) {
+      const b2 = b1.children[0] = new Block2();
+    }
+    if (ctx['cond1']&&ctx['cond3']) {
+      const b3 = b1.children[1] = new Block3();
+    }
+    if (ctx['cond1']||ctx['cond3']) {
+      const b4 = b1.children[2] = new Block4();
+    }
+    if (ctx['cond3']||ctx['cond4']) {
+      const b5 = b1.children[3] = new Block5();
+    }
+    if (ctx['m']>3) {
+      const b6 = b1.children[4] = new Block6();
+    }
+    if (ctx['n']>3) {
+      const b7 = b1.children[5] = new Block7();
+    }
+    if (ctx['m']<3) {
+      const b8 = b1.children[6] = new Block8();
+    }
+    if (ctx['n']<3) {
+      const b9 = b1.children[7] = new Block9();
     }
     return b1;
   }
@@ -1059,6 +1218,69 @@ exports[`t-if simple t-if/t-else in a div 1`] = `
 }"
 `;
 
+exports[`t-if t-esc with t-elif 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`abc\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (false) {
+      const b2 = b1.children[0] = new Block2();
+    } else {
+      const b3 = b1.children[1] = new Block3();
+      b3.texts[0] = 'x';
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if t-esc with t-if 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (true) {
+      const b2 = b1.children[0] = new Block2();
+      b2.texts[0] = 'x';
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`t-if t-if and t-else with two nodes 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -1138,6 +1360,96 @@ exports[`t-if t-if in a t-if 1`] = `
       if (ctx['cond2']) {
         const b3 = b2.children[0] = new Block3();
       }
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if t-set, then t-if 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<owl-text></owl-text>\`);
+    texts = new Array(1);
+    update() {
+      this.el.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`title\`] = 'test';
+    if (ctx['title']) {
+      const b2 = b1.children[0] = new Block2();
+      b2.texts[0] = ctx['title'];
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if t-set, then t-if, part 2 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span>COUCOU</span>\`);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`y\`] = true;
+    ctx[\`x\`] = ctx['y'];
+    if (ctx['x']) {
+      const b2 = b1.children[0] = new Block2();
+    }
+    return b1;
+  }
+}"
+`;
+
+exports[`t-if t-set, then t-if, part 3 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span>AAA</span>\`);
+  }
+  class Block3 extends ContentBlock {
+    static el = elem(\`<span>BBB</span>\`);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`y\`] = false;
+    ctx[\`x\`] = ctx['y'];
+    if (ctx['x']) {
+      const b2 = b1.children[0] = new Block2();
+    } else if (!ctx['x']) {
+      const b3 = b1.children[1] = new Block3();
     }
     return b1;
   }

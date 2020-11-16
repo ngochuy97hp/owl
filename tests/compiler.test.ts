@@ -305,6 +305,109 @@ describe("t-if", () => {
     expect(renderToString(template, { color: "red" })).toBe("<div>red is dead</div>");
   });
 
+  test("boolean value condition elif (no outside node)", () => {
+    const template = `
+        <t t-if="color == 'black'">black pearl</t>
+        <t t-elif="color == 'yellow'">yellow submarine</t>
+        <t t-elif="color == 'red'">red is dead</t>
+        <t t-else="">beer</t>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { color: "red" })).toBe("red is dead");
+  });
+
+  test("boolean value condition else", () => {
+    const template = `
+      <div>
+        <span>begin</span>
+        <t t-if="condition">ok</t>
+        <t t-else="">ok-else</t>
+        <span>end</span>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { condition: true })).toBe(
+      "<div><span>begin</span>ok<span>end</span></div>"
+    );
+  });
+
+  test("boolean value condition false else", () => {
+    const template = `
+      <div><span>begin</span><t t-if="condition">fail</t>
+      <t t-else="">fail-else</t><span>end</span></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { condition: false })).toBe(
+      "<div><span>begin</span>fail-else<span>end</span></div>"
+    );
+  });
+
+  test("can use some boolean operators in expressions", () => {
+    const template = `
+      <div>
+        <t t-if="cond1 and cond2">and</t>
+        <t t-if="cond1 and cond3">nope</t>
+        <t t-if="cond1 or cond3">or</t>
+        <t t-if="cond3 or cond4">nope</t>
+        <t t-if="m gt 3">mgt</t>
+        <t t-if="n gt 3">ngt</t>
+        <t t-if="m lt 3">mlt</t>
+        <t t-if="n lt 3">nlt</t>
+      </div>`;
+    snapshotCompiledCode(template);
+    const context = {
+      cond1: true,
+      cond2: true,
+      cond3: false,
+      cond4: false,
+      m: 5,
+      n: 2,
+    };
+    expect(renderToString(template, context)).toBe("<div>andormgtnlt</div>");
+  });
+
+  test("t-esc with t-if", () => {
+    const template = `<div><t t-if="true" t-esc="'x'"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>x</div>");
+  });
+
+  test("t-esc with t-elif", () => {
+    const template = `<div><t t-if="false">abc</t><t t-else="" t-esc="'x'"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>x</div>");
+  });
+
+  test("t-set, then t-if", () => {
+    const template = `
+      <div>
+        <t t-set="title" t-value="'test'"/>
+        <t t-if="title"><t t-esc="title"/></t>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>test</div>");
+  });
+
+  test("t-set, then t-if, part 2", () => {
+    const template = `
+      <div>
+          <t t-set="y" t-value="true"/>
+          <t t-set="x" t-value="y"/>
+          <span t-if="x">COUCOU</span>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div><span>COUCOU</span></div>");
+  });
+
+  test("t-set, then t-if, part 3", () => {
+    const template = `
+      <div>
+        <t t-set="y" t-value="false"/>
+        <t t-set="x" t-value="y"/>
+        <span t-if="x">AAA</span>
+        <span t-elif="!x">BBB</span>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div><span>BBB</span></div>");
+  });
+
   test("t-if in a t-if", () => {
     const template = `<div><t t-if="cond1"><span>1<t t-if="cond2">2</t></span></t></div>`;
     snapshotCompiledCode(template);

@@ -271,6 +271,48 @@ describe("qweb parser", () => {
     });
   });
 
+  test("t-if, t-elif and t-else on a node", async () => {
+    expect(
+      parse(`<div t-if="c1">hey</div><h1 t-elif="c2">elif</h1><h2 t-else="">else</h2>`)
+    ).toEqual({
+      type: ASTType.TIf,
+      condition: "c1",
+      content: {
+        type: ASTType.DomNode,
+        tag: "div",
+        attrs: {},
+        content: [
+          {
+            type: ASTType.Text,
+            value: "hey",
+          },
+        ],
+      },
+      tElif: [
+        {
+          condition: "c2",
+          content: {
+            type: ASTType.DomNode,
+            tag: "h1",
+            attrs: {},
+            content: [{ type: ASTType.Text, value: "elif" }],
+          },
+        },
+      ],
+      tElse: {
+        type: ASTType.DomNode,
+        tag: "h2",
+        attrs: {},
+        content: [
+          {
+            type: ASTType.Text,
+            value: "else",
+          },
+        ],
+      },
+    });
+  });
+
   // ---------------------------------------------------------------------------
   // t-set
   // ---------------------------------------------------------------------------
