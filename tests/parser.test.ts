@@ -170,7 +170,7 @@ describe("qweb parser", () => {
   // t-raw
   // ---------------------------------------------------------------------------
 
-  test("t-esc node", async () => {
+  test("t-raw node", async () => {
     expect(parse(`<t t-raw="text"/>`)).toEqual({
       type: ASTType.TRaw,
       expr: "text",
@@ -325,6 +325,15 @@ describe("qweb parser", () => {
     expect(parse(`<t t-call="blabla" />`)).toEqual({
       type: ASTType.TCall,
       name: "blabla",
+      body: null,
+    });
+  });
+
+  test("t-call with body", async () => {
+    expect(parse(`<t t-call="sub">ok</t>`)).toEqual({
+      type: ASTType.TCall,
+      name: "sub",
+      body: [{ type: ASTType.Text, value: "ok" }],
     });
   });
 });

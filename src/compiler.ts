@@ -16,6 +16,7 @@ const UTILS = {
   toString,
   withDefault,
   call: null,
+  zero: Symbol("zero"),
 };
 
 export function compile(template: string, utils: typeof UTILS = UTILS): RenderFunction {
@@ -150,7 +151,7 @@ class CompilationContext {
     this.indentLevel = 0;
     // define blocks and utility functions
     this.addLine(`let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;`);
-    this.addLine(`let {elem, toString, withDefault, call} = utils;`);
+    this.addLine(`let {elem, toString, withDefault, call, zero} = utils;`);
     this.addLine(``);
 
     // define all blocks
@@ -324,10 +325,15 @@ function compileAST(
       addToBlockDom(currentBlock, text);
       const idx = currentBlock.textNumber;
       currentBlock.textNumber++;
-      const expr = compileExpr(ast.expr, {});
-      const textValue = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
-      ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${textValue};`);
-      currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
+      if (ast.expr === "0") {
+        ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ctx[zero];`);
+        currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
+      } else {
+        const expr = compileExpr(ast.expr, {});
+        const textValue = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
+        ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${textValue};`);
+        currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
+      }
       break;
     }
     case ASTType.TRaw: {
@@ -380,10 +386,17 @@ function compileAST(
     }
 
     case ASTType.TCall: {
+      if (ast.body) {
+        const nextId = ctx.nextId;
+        compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
+        ctx.addLine(`ctx[zero] = b${nextId};`);
+      }
+
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       addToBlockDom(currentBlock, anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
+
       ctx.addLine(
         `${currentBlock.varName}.children[${currentBlock.childNumber - 1}] = call(\`${
           ast.name

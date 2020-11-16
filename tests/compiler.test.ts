@@ -408,6 +408,16 @@ describe("t-esc", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { state: { list: [1, 2] } })).toBe("<span>1,2</span>");
   });
+
+  test("t-esc is escaped", () => {
+    const template = `<div><t t-set="var"><p>escaped</p></t><t t-esc="var"/></div>`;
+    snapshotCompiledCode(template);
+    const bdom = renderToBdom(template);
+    const fixture = makeTestFixture();
+    bdom.mount(fixture);
+
+    expect(fixture.textContent).toBe("<p>escaped</p>");
+  });
 });
 
 // -----------------------------------------------------------------------------
@@ -681,5 +691,17 @@ describe("t-call (template calling)", () => {
 
     snapshotCompiledCode(main);
     expect(templateSet.renderToString("main", { flag: true })).toBe("<div><span>ok</span></div>");
+  });
+
+  test("with used body", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = '<h1><t t-esc="0"/></h1>';
+    const main = '<t t-call="sub">ok</t>';
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    snapshotCompiledCode(sub);
+    expect(templateSet.renderToString("main")).toBe("<h1>ok</h1>");
   });
 });

@@ -65,6 +65,7 @@ export interface ASTTSet {
 export interface ASTTCall {
   type: ASTType.TCall;
   name: string;
+  body: AST[] | null;
 }
 
 export type AST =
@@ -250,9 +251,20 @@ function parseTCall(node: Element, ctx: ParsingContext): AST | null {
     return null;
   }
   const subTemplate = node.getAttribute("t-call")!;
+
+  node.removeAttribute("t-call");
+  const body: AST[] = [];
+  for (let child of node.childNodes) {
+    const ast = parseNode(child, ctx);
+    if (ast) {
+      body.push(ast);
+    }
+  }
+
   return {
     type: ASTType.TCall,
     name: subTemplate,
+    body: body.length ? body : null,
   };
 }
 
