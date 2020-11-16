@@ -341,7 +341,7 @@ function compileAST(
       addToBlockDom(currentBlock, anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
-      const expr = compileExpr(ast.expr, {});
+      const expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr, {});
       ctx.addLine(
         `${currentBlock.varName}.children[${
           currentBlock.childNumber - 1
@@ -397,8 +397,8 @@ function compileAST(
     }
 
     case ASTType.TCall: {
-      ctx.addLine(`ctx = Object.create(ctx);`);
       if (ast.body) {
+        ctx.addLine(`ctx = Object.create(ctx);`);
         // check if all content is t-set
         const hasContent = ast.body.filter((elem) => elem.type !== ASTType.TSet).length;
         if (hasContent) {
@@ -420,7 +420,9 @@ function compileAST(
           ast.name
         }\`, ctx);`
       );
-      ctx.addLine(`ctx = ctx.__proto__;`);
+      if (ast.body) {
+        ctx.addLine(`ctx = ctx.__proto__;`);
+      }
       break;
     }
   }

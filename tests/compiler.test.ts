@@ -945,4 +945,25 @@ describe("t-call (template calling)", () => {
     snapshotCompiledCode(main);
     expect(templateSet.renderToString("main")).toBe("<div>4211</div>");
   });
+
+  test("call with several sub nodes on same line", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = `
+      <div>
+        <t t-raw="0"/>
+      </div>`;
+    const main = `
+      <div>
+        <t t-call="sub">
+          <span>hey</span> <span>yay</span>
+        </t>
+      </div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(sub);
+    snapshotCompiledCode(main);
+    const expected = "<div><div><span>hey</span> <span>yay</span></div></div>";
+    expect(templateSet.renderToString("main")).toBe(expected);
+  });
 });

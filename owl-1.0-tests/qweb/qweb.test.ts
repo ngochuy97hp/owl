@@ -840,24 +840,24 @@ describe("t-call (template calling", () => {
   //   expect(trim(renderToString(qweb, "caller"))).toBe(expected);
   // });
 
-  test("call with several sub nodes on same line", () => {
-    qweb.addTemplates(`
-        <templates>
-            <div t-name="SubTemplate">
-                <t t-raw="0"/>
-            </div>
+  // test("call with several sub nodes on same line", () => {
+  //   qweb.addTemplates(`
+  //       <templates>
+  //           <div t-name="SubTemplate">
+  //               <t t-raw="0"/>
+  //           </div>
 
-            <div t-name="main">
-                <t t-call="SubTemplate">
-                    <span>hey</span> <span>yay</span>
-                </t>
-            </div>
-        </templates>
-    `);
-    const expected = "<div><div><span>hey</span> <span>yay</span></div></div>";
-    expect(renderToString(qweb, "main")).toBe(expected);
-    expect(qweb.subTemplates["SubTemplate"].toString()).toMatchSnapshot();
-  });
+  //           <div t-name="main">
+  //               <t t-call="SubTemplate">
+  //                   <span>hey</span> <span>yay</span>
+  //               </t>
+  //           </div>
+  //       </templates>
+  //   `);
+  //   const expected = "<div><div><span>hey</span> <span>yay</span></div></div>";
+  //   expect(renderToString(qweb, "main")).toBe(expected);
+  //   expect(qweb.subTemplates["SubTemplate"].toString()).toMatchSnapshot();
+  // });
 
   test("cascading t-call t-raw='0'", () => {
     qweb.addTemplates(`
