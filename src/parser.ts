@@ -290,8 +290,9 @@ function parseTIf(node: Element, ctx: ParsingContext): AST | null {
   while (nextElement && nextElement.hasAttribute("t-elif")) {
     const condition = nextElement.getAttribute("t-elif");
     const tElif = parseNode(nextElement, ctx);
+    const next = nextElement.nextElementSibling;
     nextElement.remove();
-    nextElement = nextElement.nextElementSibling;
+    nextElement = next;
     if (tElif) {
       tElifs.push({ condition, content: tElif });
     }

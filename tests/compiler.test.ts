@@ -293,6 +293,18 @@ describe("t-if", () => {
     expect(renderToString(template, { condition: false })).toBe("<div>2</div>");
   });
 
+  test("boolean value condition elif", () => {
+    const template = `
+      <div>
+        <t t-if="color == 'black'">black pearl</t>
+        <t t-elif="color == 'yellow'">yellow submarine</t>
+        <t t-elif="color == 'red'">red is dead</t>
+        <t t-else="">beer</t>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { color: "red" })).toBe("<div>red is dead</div>");
+  });
+
   test("t-if in a t-if", () => {
     const template = `<div><t t-if="cond1"><span>1<t t-if="cond2">2</t></span></t></div>`;
     snapshotCompiledCode(template);

@@ -250,6 +250,27 @@ describe("qweb parser", () => {
     });
   });
 
+  test("t-if, t-elif and t-else", async () => {
+    expect(parse(`<t t-if="c1">hey</t><t t-elif="c2">elif</t><t t-else="">else</t>`)).toEqual({
+      type: ASTType.TIf,
+      condition: "c1",
+      content: {
+        type: ASTType.Text,
+        value: "hey",
+      },
+      tElif: [
+        {
+          condition: "c2",
+          content: { type: ASTType.Text, value: "elif" },
+        },
+      ],
+      tElse: {
+        type: ASTType.Text,
+        value: "else",
+      },
+    });
+  });
+
   // ---------------------------------------------------------------------------
   // t-set
   // ---------------------------------------------------------------------------

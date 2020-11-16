@@ -359,6 +359,17 @@ function compileAST(
       currentBlock.childNumber++;
       compileAST(ast.content, currentBlock, currentIndex, true, ctx);
       ctx.indentLevel--;
+      if (ast.tElif) {
+        for (let clause of ast.tElif) {
+          ctx.addLine(`} else if (${compileExpr(clause.condition, {})}) {`);
+          ctx.indentLevel++;
+          const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+          addToBlockDom(currentBlock, anchor);
+          currentBlock.childNumber++;
+          compileAST(clause.content, currentBlock, currentBlock.childNumber - 1, true, ctx);
+          ctx.indentLevel--;
+        }
+      }
       if (ast.tElse) {
         ctx.addLine(`} else {`);
         ctx.indentLevel++;
