@@ -422,4 +422,19 @@ describe("qweb parser", () => {
       body: [{ type: ASTType.Text, value: "ok" }],
     });
   });
+
+  test("t-call on a div node", async () => {
+    expect(parse(`<div t-call="blabla" />`)).toEqual({
+      type: ASTType.DomNode,
+      tag: "div",
+      attrs: {},
+      content: [
+        {
+          type: ASTType.TCall,
+          name: "blabla",
+          body: null,
+        },
+      ],
+    });
+  });
 });

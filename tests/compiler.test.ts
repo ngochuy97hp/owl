@@ -32,7 +32,7 @@ class TestTemplateSet extends TemplateSet {
 }
 
 // -----------------------------------------------------------------------------
-// Tests
+// Simple templates, mostly static
 // -----------------------------------------------------------------------------
 
 describe("simple templates, mostly static", () => {
@@ -219,6 +219,27 @@ describe("comments", () => {
       </div>`;
     expect(renderToString(template)).toBe("<div><span>true</span></div>");
     snapshotCompiledCode(template);
+  });
+});
+
+// -----------------------------------------------------------------------------
+// attributes
+// -----------------------------------------------------------------------------
+
+describe("attributes", () => {
+  test("static attributes", () => {
+    const template = `<div foo="a" bar="b" baz="c"/>`;
+    expect(renderToString(template)).toBe(`<div foo="a" bar="b" baz="c"></div>`);
+  });
+
+  test("static attributes with dashes", () => {
+    const template = `<div aria-label="Close"/>`;
+    expect(renderToString(template)).toBe(`<div aria-label="Close"></div>`);
+  });
+
+  test("static attributes on void elements", () => {
+    const template = `<img src="/test.jpg" alt="Test"/>`;
+    expect(renderToString(template)).toBe(`<img src="/test.jpg" alt="Test">`);
   });
 });
 
@@ -824,6 +845,38 @@ describe("t-call (template calling)", () => {
     expect(templateSet.renderToString("main", { flag: true })).toBe("<div><span>ok</span></div>");
   });
 
+  test("t-call allowed on a non t node", () => {
+    const templateSet = new TestTemplateSet();
+    const main = '<div t-call="sub"/>';
+    templateSet.add("main", main);
+    templateSet.add("sub", "<span>ok</span>");
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div><span>ok</span></div>");
+  });
+
+  test("with unused body", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = "<div>ok</div>";
+    const main = '<t t-call="sub">WHEEE</t>';
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div>ok</div>");
+  });
+
+  test("with unused setbody", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = "<div>ok</div>";
+    const main = `<t t-call="sub"><t t-set="qux" t-value="3"/></t>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div>ok</div>");
+  });
+
   test("with used body", () => {
     const templateSet = new TestTemplateSet();
     const sub = '<h1><t t-esc="0"/></h1>';
@@ -834,5 +887,16 @@ describe("t-call (template calling)", () => {
     snapshotCompiledCode(main);
     snapshotCompiledCode(sub);
     expect(templateSet.renderToString("main")).toBe("<h1>ok</h1>");
+  });
+
+  test("with used setbody", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = '<t t-esc="foo"/>';
+    const main = `<span><t t-call="sub"><t t-set="foo" t-value="'ok'"/></t></span>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<span>ok</span>");
   });
 });

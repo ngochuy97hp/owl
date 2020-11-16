@@ -492,6 +492,25 @@ exports[`t-call (template calling) basic caller, no parent node 1`] = `
 }"
 `;
 
+exports[`t-call (template calling) t-call allowed on a non t node 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = call(\`sub\`, ctx);
+    return b1;
+  }
+}"
+`;
+
 exports[`t-call (template calling) t-call with t-if 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -528,6 +547,43 @@ exports[`t-call (template calling) t-esc inside t-call, with t-set outside 1`] =
     ctx = Object.create(ctx);
     const b1 = new Block1();
     ctx[\`v\`] = \`Hi\`;
+    b1.children[0] = call(\`sub\`, ctx);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-call (template calling) with unused body 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`WHEEE\`);
+  }
+  
+  return ctx => {
+    const b1 = new MultiBlock(1);
+    const b2 = new Block1();
+    ctx[zero] = b2;
+    b1.children[0] = call(\`sub\`, ctx);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-call (template calling) with unused setbody 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new MultiBlock(1);
+    ctx[\`qux\`] = 3;
     b1.children[0] = call(\`sub\`, ctx);
     return b1;
   }
@@ -571,6 +627,27 @@ exports[`t-call (template calling) with used body 2`] = `
   return ctx => {
     const b1 = new Block1();
     b1.texts[0] = ctx[zero];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-call (template calling) with used setbody 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`foo\`] = 'ok';
+    b1.children[0] = call(\`sub\`, ctx);
     return b1;
   }
 }"

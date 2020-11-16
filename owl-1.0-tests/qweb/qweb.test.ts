@@ -562,25 +562,25 @@ describe("t-if", () => {
 });
 
 describe("attributes", () => {
-  test("static attributes", () => {
-    qweb.addTemplate("test", `<div foo="a" bar="b" baz="c"/>`);
-    const result = renderToString(qweb, "test");
-    const expected = `<div foo="a" bar="b" baz="c"></div>`;
-    expect(result).toBe(expected);
-  });
+  // test("static attributes", () => {
+  //   qweb.addTemplate("test", `<div foo="a" bar="b" baz="c"/>`);
+  //   const result = renderToString(qweb, "test");
+  //   const expected = `<div foo="a" bar="b" baz="c"></div>`;
+  //   expect(result).toBe(expected);
+  // });
 
-  test("static attributes with dashes", () => {
-    qweb.addTemplate("test", `<div aria-label="Close"/>`);
-    const result = renderToString(qweb, "test");
-    const expected = `<div aria-label="Close"></div>`;
-    expect(result).toBe(expected);
-  });
+  // test("static attributes with dashes", () => {
+  //   qweb.addTemplate("test", `<div aria-label="Close"/>`);
+  //   const result = renderToString(qweb, "test");
+  //   const expected = `<div aria-label="Close"></div>`;
+  //   expect(result).toBe(expected);
+  // });
 
-  test("static attributes on void elements", () => {
-    qweb.addTemplate("test", `<img src="/test.jpg" alt="Test"/>`);
-    const result = renderToString(qweb, "test");
-    expect(result).toBe(`<img src="/test.jpg" alt="Test">`);
-  });
+  // test("static attributes on void elements", () => {
+  //   qweb.addTemplate("test", `<img src="/test.jpg" alt="Test"/>`);
+  //   const result = renderToString(qweb, "test");
+  //   expect(result).toBe(`<img src="/test.jpg" alt="Test">`);
+  // });
 
   test("dynamic attributes", () => {
     qweb.addTemplate("test", `<div t-att-foo="'bar'"/>`);
@@ -773,44 +773,44 @@ describe("t-call (template calling", () => {
   //   expect(qweb.subTemplates["sub"]).toBeTruthy();
   // });
 
-  test("t-call allowed on a non t node", () => {
-    qweb.addTemplate("_basic-callee", "<span>ok</span>");
-    qweb.addTemplate("caller", '<div t-call="_basic-callee"/>');
-    const expected = "<div><span>ok</span></div>";
-    expect(renderToString(qweb, "caller")).toBe(expected);
-  });
+  // test("t-call allowed on a non t node", () => {
+  //   qweb.addTemplate("_basic-callee", "<span>ok</span>");
+  //   qweb.addTemplate("caller", '<div t-call="_basic-callee"/>');
+  //   const expected = "<div><span>ok</span></div>";
+  //   expect(renderToString(qweb, "caller")).toBe(expected);
+  // });
 
-  test("with unused body", () => {
-    qweb.addTemplate("_basic-callee", "<div>ok</div>");
-    qweb.addTemplate("caller", '<t t-call="_basic-callee">WHEEE</t>');
-    const expected = "<div>ok</div>";
-    expect(renderToString(qweb, "caller")).toBe(expected);
-  });
+  // test("with unused body", () => {
+  //   qweb.addTemplate("_basic-callee", "<div>ok</div>");
+  //   qweb.addTemplate("caller", '<t t-call="_basic-callee">WHEEE</t>');
+  //   const expected = "<div>ok</div>";
+  //   expect(renderToString(qweb, "caller")).toBe(expected);
+  // });
 
-  test("with unused setbody", () => {
-    qweb.addTemplate("_basic-callee", "<div>ok</div>");
-    qweb.addTemplate("caller", '<t t-call="_basic-callee"><t t-set="qux" t-value="3"/></t>');
-    const expected = "<div>ok</div>";
-    expect(renderToString(qweb, "caller")).toBe(expected);
-  });
+  // test("with unused setbody", () => {
+  //   qweb.addTemplate("_basic-callee", "<div>ok</div>");
+  //   qweb.addTemplate("caller", '<t t-call="_basic-callee"><t t-set="qux" t-value="3"/></t>');
+  //   const expected = "<div>ok</div>";
+  //   expect(renderToString(qweb, "caller")).toBe(expected);
+  // });
 
-  test("with used body", () => {
-    qweb.addTemplate("_callee-printsbody", '<h1><t t-esc="0"/></h1>');
-    qweb.addTemplate("caller", '<t t-call="_callee-printsbody">ok</t>');
-    const expected = "<h1>ok</h1>";
-    expect(renderToString(qweb, "caller")).toBe(expected);
-  });
+  // test("with used body", () => {
+  //   qweb.addTemplate("_callee-printsbody", '<h1><t t-esc="0"/></h1>');
+  //   qweb.addTemplate("caller", '<t t-call="_callee-printsbody">ok</t>');
+  //   const expected = "<h1>ok</h1>";
+  //   expect(renderToString(qweb, "caller")).toBe(expected);
+  // });
 
-  test("with used set body", () => {
-    qweb.addTemplate("_callee-uses-foo", '<t t-esc="foo"/>');
-    qweb.addTemplate(
-      "caller",
-      `
-        <span><t t-call="_callee-uses-foo"><t t-set="foo" t-value="'ok'"/></t></span>`
-    );
-    const expected = "<span>ok</span>";
-    expect(renderToString(qweb, "caller")).toBe(expected);
-  });
+  // test("with used set body", () => {
+  //   qweb.addTemplate("_callee-uses-foo", '<t t-esc="foo"/>');
+  //   qweb.addTemplate(
+  //     "caller",
+  //     `
+  //       <span><t t-call="_callee-uses-foo"><t t-set="foo" t-value="'ok'"/></t></span>`
+  //   );
+  //   const expected = "<span>ok</span>";
+  //   expect(renderToString(qweb, "caller")).toBe(expected);
+  // });
 
   test("inherit context", () => {
     qweb.addTemplate("_callee-uses-foo", '<t t-esc="foo"/>');

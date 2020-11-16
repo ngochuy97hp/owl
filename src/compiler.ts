@@ -158,7 +158,7 @@ class CompilationContext {
     for (let block of this.blocks) {
       this.addLine(`class ${block.name} extends ContentBlock {`);
       this.indentLevel++;
-      this.addLine(`static el = elem(\`${domToString(block.dom!)}\`);`);
+      this.addLine(`static el = elem(\`${block.dom ? domToString(block.dom) : ""}\`);`);
       if (block.childNumber) {
         this.addLine(`children = new Array(${block.childNumber});`);
       }
@@ -398,9 +398,15 @@ function compileAST(
 
     case ASTType.TCall: {
       if (ast.body) {
-        const nextId = ctx.nextId;
-        compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
-        ctx.addLine(`ctx[zero] = b${nextId};`);
+        // check if all content is t-set
+        const hasContent = ast.body.filter((elem) => elem.type !== ASTType.TSet).length;
+        if (hasContent) {
+          const nextId = ctx.nextId;
+          compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
+          ctx.addLine(`ctx[zero] = b${nextId};`);
+        } else {
+          compileAST({ type: ASTType.Multi, content: ast.body }, currentBlock, 0, false, ctx);
+        }
       }
 
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };

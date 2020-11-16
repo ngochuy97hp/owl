@@ -105,8 +105,8 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
   return (
     parseTIf(node, ctx) ||
     parseTEscNode(node, ctx) ||
-    parseDOMNode(node, ctx) ||
     parseTCall(node, ctx) ||
+    parseDOMNode(node, ctx) ||
     parseTSetNode(node, ctx) ||
     parseTRawNode(node, ctx) ||
     parseTNode(node, ctx)
@@ -254,6 +254,13 @@ function parseTCall(node: Element, ctx: ParsingContext): AST | null {
   const subTemplate = node.getAttribute("t-call")!;
 
   node.removeAttribute("t-call");
+  if (node.tagName !== "t") {
+    const ast = parseNode(node, ctx);
+    if (ast && ast.type === ASTType.DomNode) {
+      ast.content = [{ type: ASTType.TCall, name: subTemplate, body: null }];
+      return ast;
+    }
+  }
   const body: AST[] = [];
   for (let child of node.childNodes) {
     const ast = parseNode(child, ctx);
