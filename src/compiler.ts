@@ -426,5 +426,5 @@ function toString(value: any): string {
 }
 
 function withDefault(value: any, defaultValue: any): any {
-  return value === undefined || value === null ? defaultValue : value;
+  return value === undefined || value === null || value === false ? defaultValue : value;
 }

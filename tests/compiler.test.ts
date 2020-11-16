@@ -604,6 +604,40 @@ describe("t-set", () => {
 
     expect(renderToString(template)).toBe("<div><span>before</span></div>");
   });
+
+  test("t-set with t-value (falsy) and body", () => {
+    const template = `
+      <div>
+        <t t-set="v3" t-value="false"/>
+        <t t-set="v1" t-value="'before'"/>
+        <t t-set="v2" t-value="v3">
+          <span><t t-esc="v1"/></span>
+        </t>
+        <t t-set="v1" t-value="'after'"/>
+        <t t-set="v3" t-value="true"/>
+        <t t-raw="v2"/>
+      </div>`;
+    snapshotCompiledCode(template);
+
+    expect(renderToString(template)).toBe("<div><span>before</span></div>");
+  });
+
+  test("t-set with t-value (truthy) and body", () => {
+    const template = `
+      <div>
+        <t t-set="v3" t-value="'Truthy'"/>
+        <t t-set="v1" t-value="'before'"/>
+        <t t-set="v2" t-value="v3">
+          <span><t t-esc="v1"/></span>
+        </t>
+        <t t-set="v1" t-value="'after'"/>
+        <t t-set="v3" t-value="false"/>
+        <t t-raw="v2"/>
+      </div>`;
+    snapshotCompiledCode(template);
+
+    expect(renderToString(template)).toBe("<div>Truthy</div>");
+  });
 });
 
 // -----------------------------------------------------------------------------
@@ -637,5 +671,15 @@ describe("t-call (template calling)", () => {
 
     snapshotCompiledCode(main);
     expect(templateSet.renderToString("main")).toBe("<div><span>Hi</span></div>");
+  });
+
+  test("t-call with t-if", () => {
+    const templateSet = new TestTemplateSet();
+    const main = '<div><t t-if="flag" t-call="sub"/></div>';
+    templateSet.add("main", main);
+    templateSet.add("sub", "<span>ok</span>");
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main", { flag: true })).toBe("<div><span>ok</span></div>");
   });
 });

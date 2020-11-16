@@ -492,6 +492,27 @@ exports[`t-call (template calling) basic caller, no parent node 1`] = `
 }"
 `;
 
+exports[`t-call (template calling) t-call with t-if 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    if (ctx['flag']) {
+      b1.children[1] = call(\`sub\`, ctx);
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`t-call (template calling) t-esc inside t-call, with t-set outside 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -1433,6 +1454,74 @@ exports[`t-set t-set with content and sub t-esc 1`] = `
     const b4 = b2.children[1] = new Block3();
     ctx[\`setvar\`] = b2;
     b1.texts[0] = ctx['setvar'];
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set with t-value (falsy) and body 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`v3\`] = false;
+    ctx[\`v1\`] = 'before';
+    const b2 = new Block2();
+    b2.texts[0] = ctx['v1'];
+    ctx[\`v2\`] = withDefault(ctx['v3'], b2);
+    ctx[\`v1\`] = 'after';
+    ctx[\`v3\`] = true;
+    b1.children[0] = new HTMLBlock(ctx['v2']);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-set t-set with t-value (truthy) and body 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`v3\`] = 'Truthy';
+    ctx[\`v1\`] = 'before';
+    const b2 = new Block2();
+    b2.texts[0] = ctx['v1'];
+    ctx[\`v2\`] = withDefault(ctx['v3'], b2);
+    ctx[\`v1\`] = 'after';
+    ctx[\`v3\`] = false;
+    b1.children[0] = new HTMLBlock(ctx['v2']);
     return b1;
   }
 }"

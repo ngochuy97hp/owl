@@ -373,57 +373,57 @@ describe("t-set", () => {
   //   expect(renderToString(qweb, "test", { flag: false })).toBe("<div>0</div>");
   // });
 
-  test("t-set body is evaluated immediately", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-set="v1" t-value="'before'"/>
-        <t t-set="v2">
-          <span><t t-esc="v1"/></span>
-        </t>
-        <t t-set="v1" t-value="'after'"/>
-        <t t-raw="v2"/>
-      </div>`
-    );
+  // test("t-set body is evaluated immediately", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-set="v1" t-value="'before'"/>
+  //       <t t-set="v2">
+  //         <span><t t-esc="v1"/></span>
+  //       </t>
+  //       <t t-set="v1" t-value="'after'"/>
+  //       <t t-raw="v2"/>
+  //     </div>`
+  //   );
 
-    expect(renderToString(qweb, "test")).toBe("<div><span>before</span></div>");
-  });
+  //   expect(renderToString(qweb, "test")).toBe("<div><span>before</span></div>");
+  // });
 
-  test("t-set with t-value (falsy) and body", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-set="v3" t-value="false"/>
-        <t t-set="v1" t-value="'before'"/>
-        <t t-set="v2" t-value="v3">
-          <span><t t-esc="v1"/></span>
-        </t>
-        <t t-set="v1" t-value="'after'"/>
-        <t t-set="v3" t-value="true"/>
-        <t t-raw="v2"/>
-      </div>`
-    );
+  // test("t-set with t-value (falsy) and body", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-set="v3" t-value="false"/>
+  //       <t t-set="v1" t-value="'before'"/>
+  //       <t t-set="v2" t-value="v3">
+  //         <span><t t-esc="v1"/></span>
+  //       </t>
+  //       <t t-set="v1" t-value="'after'"/>
+  //       <t t-set="v3" t-value="true"/>
+  //       <t t-raw="v2"/>
+  //     </div>`
+  //   );
 
-    expect(renderToString(qweb, "test")).toBe("<div><span>before</span></div>");
-  });
+  //   expect(renderToString(qweb, "test")).toBe("<div><span>before</span></div>");
+  // });
 
-  test("t-set with t-value (truthy) and body", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-set="v3" t-value="'Truthy'"/>
-        <t t-set="v1" t-value="'before'"/>
-        <t t-set="v2" t-value="v3">
-          <span><t t-esc="v1"/></span>
-        </t>
-        <t t-set="v1" t-value="'after'"/>
-        <t t-set="v3" t-value="false"/>
-        <t t-raw="v2"/>
-      </div>`
-    );
+  // test("t-set with t-value (truthy) and body", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-set="v3" t-value="'Truthy'"/>
+  //       <t t-set="v1" t-value="'before'"/>
+  //       <t t-set="v2" t-value="v3">
+  //         <span><t t-esc="v1"/></span>
+  //       </t>
+  //       <t t-set="v1" t-value="'after'"/>
+  //       <t t-set="v3" t-value="false"/>
+  //       <t t-raw="v2"/>
+  //     </div>`
+  //   );
 
-    expect(renderToString(qweb, "test")).toBe("<div>Truthy</div>");
-  });
+  //   expect(renderToString(qweb, "test")).toBe("<div>Truthy</div>");
+  // });
 });
 
 describe("t-if", () => {
@@ -765,13 +765,13 @@ describe("t-call (template calling", () => {
   //   expect(qweb.subTemplates["_basic-callee"]).toBeTruthy();
   // });
 
-  test("t-call with t-if", () => {
-    qweb.addTemplate("sub", "<span>ok</span>");
-    qweb.addTemplate("caller", '<div><t t-if="flag" t-call="sub"/></div>');
-    const expected = "<div><span>ok</span></div>";
-    expect(renderToString(qweb, "caller", { flag: true })).toBe(expected);
-    expect(qweb.subTemplates["sub"]).toBeTruthy();
-  });
+  // test("t-call with t-if", () => {
+  //   qweb.addTemplate("sub", "<span>ok</span>");
+  //   qweb.addTemplate("caller", '<div><t t-if="flag" t-call="sub"/></div>');
+  //   const expected = "<div><span>ok</span></div>";
+  //   expect(renderToString(qweb, "caller", { flag: true })).toBe(expected);
+  //   expect(qweb.subTemplates["sub"]).toBeTruthy();
+  // });
 
   test("t-call allowed on a non t node", () => {
     qweb.addTemplate("_basic-callee", "<span>ok</span>");
