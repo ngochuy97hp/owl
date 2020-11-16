@@ -966,4 +966,86 @@ describe("t-call (template calling)", () => {
     const expected = "<div><div><span>hey</span> <span>yay</span></div></div>";
     expect(templateSet.renderToString("main")).toBe(expected);
   });
+
+  test("cascading t-call t-raw='0'", () => {
+    const templateSet = new TestTemplateSet();
+    const finalTemplate = `
+      <div>
+        <span>cascade 2</span>
+        <t t-raw="0"/>
+      </div>`;
+
+    const subSubTemplate = `
+      <div>
+        <t t-call="finalTemplate">
+          <span>cascade 1</span>
+          <t t-raw="0"/>
+        </t>
+      </div>`;
+
+    const subTemplate = `
+      <div>
+        <t t-call="subSubTemplate">
+          <span>cascade 0</span>
+          <t t-raw="0"/>
+        </t>
+      </div>`;
+
+    const main = `
+      <div>
+        <t t-call="subTemplate">
+          <span>hey</span> <span>yay</span>
+        </t>
+      </div>`;
+
+    templateSet.add("finalTemplate", finalTemplate);
+    templateSet.add("subSubTemplate", subSubTemplate);
+    templateSet.add("subTemplate", subTemplate);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(finalTemplate);
+    snapshotCompiledCode(subTemplate);
+    snapshotCompiledCode(subSubTemplate);
+    snapshotCompiledCode(main);
+    const expected =
+      "<div><div><div><div><span>cascade 2</span><span>cascade 1</span><span>cascade 0</span><span>hey</span> <span>yay</span></div></div></div></div>";
+    expect(templateSet.renderToString("main")).toBe(expected);
+  });
+
+  test("cascading t-call t-raw='0', without external divs", () => {
+    const templateSet = new TestTemplateSet();
+    const finalTemplate = `
+        <span>cascade 2</span>
+        <t t-raw="0"/>`;
+
+    const subSubTemplate = `
+        <t t-call="finalTemplate">
+          <span>cascade 1</span>
+          <t t-raw="0"/>
+        </t>`;
+
+    const subTemplate = `
+        <t t-call="subSubTemplate">
+          <span>cascade 0</span>
+          <t t-raw="0"/>
+        </t>`;
+
+    const main = `
+        <t t-call="subTemplate">
+          <span>hey</span> <span>yay</span>
+        </t>`;
+
+    templateSet.add("finalTemplate", finalTemplate);
+    templateSet.add("subSubTemplate", subSubTemplate);
+    templateSet.add("subTemplate", subTemplate);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(finalTemplate);
+    snapshotCompiledCode(subTemplate);
+    snapshotCompiledCode(subSubTemplate);
+    snapshotCompiledCode(main);
+    const expected =
+      "<span>cascade 2</span><span>cascade 1</span><span>cascade 0</span><span>hey</span> <span>yay</span>";
+    expect(templateSet.renderToString("main")).toBe(expected);
+  });
 });

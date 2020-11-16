@@ -342,11 +342,7 @@ function compileAST(
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
       const expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr, {});
-      ctx.addLine(
-        `${currentBlock.varName}.children[${
-          currentBlock.childNumber - 1
-        }] = new HTMLBlock(${expr});`
-      );
+      ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new HTMLBlock(${expr});`);
       break;
     }
 

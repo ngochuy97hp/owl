@@ -26,9 +26,9 @@ export class HTMLBlock extends Block {
   html: string;
   content: ChildNode[] = [];
   anchor: Text;
-  constructor(html: string) {
+  constructor(html: any) {
     super();
-    this.html = html;
+    this.html = String(html);
     this.anchor = document.createTextNode("");
   }
 
@@ -61,6 +61,10 @@ export class HTMLBlock extends Block {
     for (let elem of this.content) {
       this.anchor.before(elem);
     }
+  }
+
+  toString(): string {
+    return this.html;
   }
 }
 
