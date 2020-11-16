@@ -146,7 +146,7 @@ class CompilationContext {
   }
 
   generateCode(): string {
-    const mainCode = this.code;
+    let mainCode = this.code;
     this.code = [];
     this.indentLevel = 0;
     // define blocks and utility functions
@@ -178,6 +178,10 @@ class CompilationContext {
       this.addLine(`}`);
     }
 
+    // micro optimization: remove trailing ctx = ctx.__proto__;
+    if (mainCode[mainCode.length - 1] === `  ctx = ctx.__proto__;`) {
+      mainCode = mainCode.slice(0, -1);
+    }
     // generate main code
     this.indentLevel = 0;
     this.addLine(``);

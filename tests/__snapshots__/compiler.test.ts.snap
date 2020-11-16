@@ -540,7 +540,6 @@ exports[`t-call (template calling) call with several sub nodes on same line 2`] 
     const b5 = b2.children[2] = new Block4();
     ctx[zero] = b2;
     b1.children[0] = call(\`sub\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -587,7 +586,6 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 2`] = `
     b2.children[1] = new HTMLBlock(ctx[zero]);
     ctx[zero] = b2;
     b1.children[0] = call(\`subSubTemplate\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -615,7 +613,6 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 3`] = `
     b2.children[1] = new HTMLBlock(ctx[zero]);
     ctx[zero] = b2;
     b1.children[0] = call(\`finalTemplate\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -650,7 +647,6 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 4`] = `
     const b5 = b2.children[2] = new Block4();
     ctx[zero] = b2;
     b1.children[0] = call(\`subTemplate\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -693,7 +689,6 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
     b2.children[1] = new HTMLBlock(ctx[zero]);
     ctx[zero] = b2;
     b1.children[0] = call(\`subSubTemplate\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -717,7 +712,6 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
     b2.children[1] = new HTMLBlock(ctx[zero]);
     ctx[zero] = b2;
     b1.children[0] = call(\`finalTemplate\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -748,7 +742,6 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
     const b5 = b2.children[2] = new Block3();
     ctx[zero] = b2;
     b1.children[0] = call(\`subTemplate\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -909,7 +902,6 @@ exports[`t-call (template calling) with unused body 1`] = `
     const b2 = new Block1();
     ctx[zero] = b2;
     b1.children[0] = call(\`sub\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -928,7 +920,6 @@ exports[`t-call (template calling) with unused setbody 1`] = `
     ctx = Object.create(ctx);
     ctx[\`qux\`] = 3;
     b1.children[0] = call(\`sub\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -950,7 +941,6 @@ exports[`t-call (template calling) with used body 1`] = `
     const b2 = new Block1();
     ctx[zero] = b2;
     b1.children[0] = call(\`sub\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -995,7 +985,6 @@ exports[`t-call (template calling) with used setbody 1`] = `
     ctx = Object.create(ctx);
     ctx[\`foo\`] = 'ok';
     b1.children[0] = call(\`sub\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
@@ -1211,7 +1200,6 @@ exports[`t-esc t-esc=0 is escaped 1`] = `
     const b2 = new Block2();
     ctx[zero] = b2;
     b1.children[0] = call(\`sub\`, ctx);
-    ctx = ctx.__proto__;
     return b1;
   }
 }"
