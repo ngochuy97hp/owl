@@ -194,6 +194,7 @@ describe("qweb parser", () => {
             type: ASTType.Text,
             value: "hey",
           },
+          tElif: null,
           tElse: null,
         },
       ],
@@ -210,6 +211,7 @@ describe("qweb parser", () => {
         attrs: {},
         content: [{ type: ASTType.Text, value: "hey" }],
       },
+      tElif: null,
       tElse: null,
     });
   });
@@ -222,10 +224,29 @@ describe("qweb parser", () => {
         type: ASTType.Text,
         value: "hey",
       },
+      tElif: null,
       tElse: {
         type: ASTType.Text,
         value: "else",
       },
+    });
+  });
+
+  test("t-if and t elif", async () => {
+    expect(parse(`<t t-if="condition">hey</t><t t-elif="cond2">elif</t>`)).toEqual({
+      type: ASTType.TIf,
+      condition: "condition",
+      content: {
+        type: ASTType.Text,
+        value: "hey",
+      },
+      tElif: [
+        {
+          condition: "cond2",
+          content: { type: ASTType.Text, value: "elif" },
+        },
+      ],
+      tElse: null,
     });
   });
 
@@ -295,6 +316,7 @@ describe("qweb parser", () => {
         value: null,
         body: null,
       },
+      tElif: null,
       tElse: null,
     });
   });
@@ -311,6 +333,7 @@ describe("qweb parser", () => {
           type: ASTType.TIf,
           condition: "flag",
           content: { type: ASTType.Text, value: "1" },
+          tElif: null,
           tElse: { type: ASTType.TSet, name: "ourvar", value: "0", defaultValue: null, body: null },
         },
       ],

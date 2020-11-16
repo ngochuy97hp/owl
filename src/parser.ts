@@ -51,6 +51,7 @@ export interface ASTTif {
   type: ASTType.TIf;
   condition: string;
   content: AST;
+  tElif: { condition: string; content: AST }[] | null;
   tElse: AST | null;
 }
 
@@ -284,9 +285,20 @@ function parseTIf(node: Element, ctx: ParsingContext): AST | null {
   }
 
   let nextElement = node.nextElementSibling;
-  let tElse: AST | null = null;
+  // t-elifs
+  const tElifs: any[] = [];
+  while (nextElement && nextElement.hasAttribute("t-elif")) {
+    const condition = nextElement.getAttribute("t-elif");
+    const tElif = parseNode(nextElement, ctx);
+    nextElement.remove();
+    nextElement = nextElement.nextElementSibling;
+    if (tElif) {
+      tElifs.push({ condition, content: tElif });
+    }
+  }
 
   // t-else
+  let tElse: AST | null = null;
   if (nextElement && nextElement.hasAttribute("t-else")) {
     tElse = parseNode(nextElement, ctx);
     nextElement.remove();
@@ -296,6 +308,7 @@ function parseTIf(node: Element, ctx: ParsingContext): AST | null {
     type: ASTType.TIf,
     condition,
     content,
+    tElif: tElifs.length ? tElifs : null,
     tElse,
   };
 }
