@@ -171,12 +171,12 @@ describe("t-esc", () => {
   //   expect(domRendered.textContent).toBe("<p>escaped</p>");
   // });
 
-  test("t-esc=0 is escaped", () => {
-    qweb.addTemplate("test", `<span><t t-esc="0"/></span>`);
-    qweb.addTemplate("testCaller", `<div><t t-call="test"><p>escaped</p></t></div>`);
-    const domRendered = renderToDOM(qweb, "testCaller") as HTMLElement;
-    expect(domRendered.querySelector("span")!.textContent).toBe("<p>escaped</p>");
-  });
+  // test("t-esc=0 is escaped", () => {
+  //   qweb.addTemplate("test", `<span><t t-esc="0"/></span>`);
+  //   qweb.addTemplate("testCaller", `<div><t t-call="test"><p>escaped</p></t></div>`);
+  //   const domRendered = renderToDOM(qweb, "testCaller") as HTMLElement;
+  //   expect(domRendered.querySelector("span")!.textContent).toBe("<p>escaped</p>");
+  // });
 
   // test("div with falsy values", () => {
   //   qweb.addTemplate(

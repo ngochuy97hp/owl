@@ -418,6 +418,21 @@ describe("t-esc", () => {
 
     expect(fixture.textContent).toBe("<p>escaped</p>");
   });
+
+  test("t-esc=0 is escaped", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = '<span><t t-esc="0"/></span>';
+    const main = `<div><t t-call="sub"><p>escaped</p></t></div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    snapshotCompiledCode(sub);
+    const bdom = templateSet.getFunction("main")({});
+    const fixture = makeTestFixture();
+    bdom.mount(fixture);
+    expect(fixture.querySelector("span")!.textContent).toBe("<p>escaped</p>");
+  });
 });
 
 // -----------------------------------------------------------------------------

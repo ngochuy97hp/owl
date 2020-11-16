@@ -766,6 +766,52 @@ exports[`t-esc t-esc work with spread operator 1`] = `
 }"
 `;
 
+exports[`t-esc t-esc=0 is escaped 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<p>escaped</p>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    const b2 = new Block2();
+    ctx[zero] = b2;
+    b1.children[0] = call(\`sub\`, ctx);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-esc t-esc=0 is escaped 2`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = this.texts[0];
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.texts[0] = ctx[zero];
+    return b1;
+  }
+}"
+`;
+
 exports[`t-esc variable 1`] = `
 "function anonymous(Blocks, utils
 ) {
