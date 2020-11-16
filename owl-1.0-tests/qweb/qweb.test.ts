@@ -812,33 +812,33 @@ describe("t-call (template calling", () => {
   //   expect(renderToString(qweb, "caller")).toBe(expected);
   // });
 
-  test("inherit context", () => {
-    qweb.addTemplate("_callee-uses-foo", '<t t-esc="foo"/>');
-    qweb.addTemplate(
-      "caller",
-      `
-        <div><t t-set="foo" t-value="1"/><t t-call="_callee-uses-foo"/></div>`
-    );
-    const expected = "<div>1</div>";
-    expect(renderToString(qweb, "caller")).toBe(expected);
-  });
+  // test("inherit context", () => {
+  //   qweb.addTemplate("_callee-uses-foo", '<t t-esc="foo"/>');
+  //   qweb.addTemplate(
+  //     "caller",
+  //     `
+  //       <div><t t-set="foo" t-value="1"/><t t-call="_callee-uses-foo"/></div>`
+  //   );
+  //   const expected = "<div>1</div>";
+  //   expect(renderToString(qweb, "caller")).toBe(expected);
+  // });
 
-  test("scoped parameters", () => {
-    qweb.addTemplate("_basic-callee", `<t>ok</t>`);
-    qweb.addTemplate(
-      "caller",
-      `
-        <div>
-            <t t-call="_basic-callee">
-                <t t-set="foo" t-value="42"/>
-            </t>
-            <t t-esc="foo"/>
-        </div>
-      `
-    );
-    const expected = "<div>ok</div>";
-    expect(trim(renderToString(qweb, "caller"))).toBe(expected);
-  });
+  // test("scoped parameters", () => {
+  //   qweb.addTemplate("_basic-callee", `<t>ok</t>`);
+  //   qweb.addTemplate(
+  //     "caller",
+  //     `
+  //       <div>
+  //           <t t-call="_basic-callee">
+  //               <t t-set="foo" t-value="42"/>
+  //           </t>
+  //           <t t-esc="foo"/>
+  //       </div>
+  //     `
+  //   );
+  //   const expected = "<div>ok</div>";
+  //   expect(trim(renderToString(qweb, "caller"))).toBe(expected);
+  // });
 
   test("call with several sub nodes on same line", () => {
     qweb.addTemplates(`

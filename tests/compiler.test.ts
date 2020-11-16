@@ -899,4 +899,50 @@ describe("t-call (template calling)", () => {
     snapshotCompiledCode(main);
     expect(templateSet.renderToString("main")).toBe("<span>ok</span>");
   });
+
+  test("inherit context", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = '<t t-esc="foo"/>';
+    const main = `<div><t t-set="foo" t-value="1"/><t t-call="sub"/></div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div>1</div>");
+  });
+
+  test("scoped parameters", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = "<t>ok</t>";
+    const main = `
+      <div>
+        <t t-call="sub">
+          <t t-set="foo" t-value="42"/>
+        </t>
+        <t t-esc="foo"/>
+      </div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div>ok</div>");
+  });
+
+  test("scoped parameters, part 2", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = '<t t-esc="foo"/>';
+    const main = `
+      <div>
+        <t t-set="foo" t-value="11"/>
+        <t t-call="sub">
+          <t t-set="foo" t-value="42"/>
+        </t>
+        <t t-esc="foo"/>
+      </div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div>4211</div>");
+  });
 });

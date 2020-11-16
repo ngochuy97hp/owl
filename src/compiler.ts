@@ -397,6 +397,7 @@ function compileAST(
     }
 
     case ASTType.TCall: {
+      ctx.addLine(`ctx = Object.create(ctx);`);
       if (ast.body) {
         // check if all content is t-set
         const hasContent = ast.body.filter((elem) => elem.type !== ASTType.TSet).length;
@@ -419,6 +420,7 @@ function compileAST(
           ast.name
         }\`, ctx);`
       );
+      ctx.addLine(`ctx = ctx.__proto__;`);
       break;
     }
   }
