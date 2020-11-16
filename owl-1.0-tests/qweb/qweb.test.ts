@@ -427,20 +427,20 @@ describe("t-set", () => {
 });
 
 describe("t-if", () => {
-  test("boolean value true condition", () => {
-    qweb.addTemplate("test", `<div><t t-if="condition">ok</t></div>`);
-    expect(renderToString(qweb, "test", { condition: true })).toBe("<div>ok</div>");
-  });
+  // test("boolean value true condition", () => {
+  //   qweb.addTemplate("test", `<div><t t-if="condition">ok</t></div>`);
+  //   expect(renderToString(qweb, "test", { condition: true })).toBe("<div>ok</div>");
+  // });
 
-  test("boolean value false condition", () => {
-    qweb.addTemplate("test", `<div><t t-if="condition">ok</t></div>`);
-    expect(renderToString(qweb, "test", { condition: false })).toBe("<div></div>");
-  });
+  // test("boolean value false condition", () => {
+  //   qweb.addTemplate("test", `<div><t t-if="condition">ok</t></div>`);
+  //   expect(renderToString(qweb, "test", { condition: false })).toBe("<div></div>");
+  // });
 
-  test("boolean value condition missing", () => {
-    qweb.addTemplate("test", `<span><t t-if="condition">fail</t></span>`);
-    expect(renderToString(qweb, "test")).toBe("<span></span>");
-  });
+  // test("boolean value condition missing", () => {
+  //   qweb.addTemplate("test", `<span><t t-if="condition">fail</t></span>`);
+  //   expect(renderToString(qweb, "test")).toBe("<span></span>");
+  // });
 
   test("boolean value condition elif", () => {
     qweb.addTemplate(

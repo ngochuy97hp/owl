@@ -232,6 +232,7 @@ describe("t-if", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template, { condition: true })).toBe("<div>ok</div>");
     expect(renderToString(template, { condition: false })).toBe("<div></div>");
+    expect(renderToString(template, { })).toBe("<div></div>");
   });
 
   test("just a t-if", () => {
