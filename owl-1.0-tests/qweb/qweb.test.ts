@@ -202,18 +202,18 @@ describe("t-esc", () => {
   //   );
   // });
 
-  test("t-esc work with spread operator", () => {
-    qweb.addTemplate("test", `<span><t t-esc="[...state.list]"/></span>`);
-    const result = renderToString(qweb, "test", { state: { list: [1, 2] } });
-    expect(result).toBe("<span>1,2</span>");
-  });
+  // test("t-esc work with spread operator", () => {
+  //   qweb.addTemplate("test", `<span><t t-esc="[...state.list]"/></span>`);
+  //   const result = renderToString(qweb, "test", { state: { list: [1, 2] } });
+  //   expect(result).toBe("<span>1,2</span>");
+  // });
 
-  test("t-esc inside t-call, with t-set outside", () => {
-    qweb.addTemplate("main", `<div><t t-set="v">Hi</t><t t-call="sub"/></div>`);
-    qweb.addTemplate("sub", `<span t-esc="v"/>`);
-    const result = renderToString(qweb, "main");
-    expect(result).toBe("<div><span>Hi</span></div>");
-  });
+  // test("t-esc inside t-call, with t-set outside", () => {
+  //   qweb.addTemplate("main", `<div><t t-set="v">Hi</t><t t-call="sub"/></div>`);
+  //   qweb.addTemplate("sub", `<span t-esc="v"/>`);
+  //   const result = renderToString(qweb, "main");
+  //   expect(result).toBe("<div><span>Hi</span></div>");
+  // });
 });
 
 describe("t-raw", () => {
@@ -222,29 +222,29 @@ describe("t-raw", () => {
   //   expect(renderToString(qweb, "test")).toBe("<span>ok</span>");
   // });
 
-  test("variable", () => {
-    qweb.addTemplate("test", `<span><t t-raw="var"/></span>`);
-    expect(renderToString(qweb, "test", { var: "ok" })).toBe("<span>ok</span>");
-  });
+  // test("variable", () => {
+  //   qweb.addTemplate("test", `<span><t t-raw="var"/></span>`);
+  //   expect(renderToString(qweb, "test", { var: "ok" })).toBe("<span>ok</span>");
+  // });
 
-  test("not escaping", () => {
-    qweb.addTemplate("test", `<div><t t-raw="var"/></div>`);
-    expect(renderToString(qweb, "test", { var: "<ok></ok>" })).toBe("<div><ok></ok></div>");
-  });
+  // test("not escaping", () => {
+  //   qweb.addTemplate("test", `<div><t t-raw="var"/></div>`);
+  //   expect(renderToString(qweb, "test", { var: "<ok></ok>" })).toBe("<div><ok></ok></div>");
+  // });
 
-  test("t-raw and another sibling node", () => {
-    qweb.addTemplate("test", `<span><span>hello</span><t t-raw="var"/></span>`);
-    expect(renderToString(qweb, "test", { var: "<ok>world</ok>" })).toBe(
-      "<span><span>hello</span><ok>world</ok></span>"
-    );
-  });
+  // test("t-raw and another sibling node", () => {
+  //   qweb.addTemplate("test", `<span><span>hello</span><t t-raw="var"/></span>`);
+  //   expect(renderToString(qweb, "test", { var: "<ok>world</ok>" })).toBe(
+  //     "<span><span>hello</span><ok>world</ok></span>"
+  //   );
+  // });
 
-  test("t-raw with comment", () => {
-    qweb.addTemplate("test", `<span><t t-raw="var"/></span>`);
-    expect(renderToString(qweb, "test", { var: "<p>text<!-- top secret --></p>" })).toBe(
-      "<span><p>text<!-- top secret --></p></span>"
-    );
-  });
+  // test("t-raw with comment", () => {
+  //   qweb.addTemplate("test", `<span><t t-raw="var"/></span>`);
+  //   expect(renderToString(qweb, "test", { var: "<p>text<!-- top secret --></p>" })).toBe(
+  //     "<span><p>text<!-- top secret --></p></span>"
+  //   );
+  // });
 });
 
 describe("t-set", () => {

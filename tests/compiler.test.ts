@@ -402,6 +402,12 @@ describe("t-esc", () => {
       "<div><p>false</p><p></p><p></p><p>0</p><p></p></div>"
     );
   });
+
+  test("t-esc work with spread operator", () => {
+    const template = `<span><t t-esc="[...state.list]"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { state: { list: [1, 2] } })).toBe("<span>1,2</span>");
+  });
 });
 
 // -----------------------------------------------------------------------------
@@ -425,6 +431,27 @@ describe("t-raw", () => {
     const template = `<span><t t-raw="var"/></span>`;
     snapshotCompiledCode(template);
     expect(renderToString(template, { var: "ok" })).toBe("<span>ok</span>");
+  });
+
+  test("not escaping", () => {
+    const template = `<div><t t-raw="var"/></div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { var: "<ok></ok>" })).toBe("<div><ok></ok></div>");
+  });
+
+  test("t-raw and another sibling node", () => {
+    const template = `<span><span>hello</span><t t-raw="var"/></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template, { var: "<ok>world</ok>" })).toBe(
+      "<span><span>hello</span><ok>world</ok></span>"
+    );
+  });
+
+  test("t-raw with comment", () => {
+    const template = `<span><t t-raw="var"/></span>`;
+    expect(renderToString(template, { var: "<p>text<!-- top secret --></p>" })).toBe(
+      "<span><p>text<!-- top secret --></p></span>"
+    );
   });
 });
 
@@ -600,5 +627,15 @@ describe("t-call (template calling)", () => {
 
     snapshotCompiledCode(`<t t-call="_basic-callee"/>`);
     expect(templateSet.renderToString("caller")).toBe("<span>ok</span>");
+  });
+
+  test("t-esc inside t-call, with t-set outside", () => {
+    const templateSet = new TestTemplateSet();
+    const main = `<div><t t-set="v">Hi</t><t t-call="sub"/></div>`;
+    templateSet.add("main", main);
+    templateSet.add("sub", `<span t-esc="v"/>`);
+
+    snapshotCompiledCode(main);
+    expect(templateSet.renderToString("main")).toBe("<div><span>Hi</span></div>");
   });
 });
