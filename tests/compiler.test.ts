@@ -1108,4 +1108,26 @@ describe("t-call (template calling)", () => {
   //   const expected = "<div><div><p>a</p><div><p>b</p></div><div><p>c</p></div></div></div>";
   //   expect(templateSet.renderToString("Parent", root)).toBe(expected);
   // });
+
+  test("t-call, conditional and t-set in t-call body", () => {
+    const templateSet = new TestTemplateSet();
+    const callee1 = `<div>callee1</div>`;
+    const callee2 = `<div>callee2 <t t-esc="v"/></div>`;
+    const caller = `
+      <div>
+        <t t-set="v1" t-value="'elif'"/>
+        <t t-if="v1 === 'if'" t-call="callee1" />
+        <t t-elif="v1 === 'elif'" t-call="callee2" >
+          <t t-set="v" t-value="'success'" />
+        </t>
+      </div>`;
+
+    templateSet.add("callee1", callee1);
+    templateSet.add("callee2", callee2);
+    templateSet.add("caller", caller);
+
+    snapshotCompiledCode(caller);
+    const expected = `<div><div>callee2 success</div></div>`;
+    expect(templateSet.renderToString("caller")).toBe(expected);
+  });
 });

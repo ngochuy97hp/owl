@@ -882,6 +882,34 @@ exports[`t-call (template calling) t-call with t-if 1`] = `
 }"
 `;
 
+exports[`t-call (template calling) t-call, conditional and t-set in t-call body 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    ctx[\`v1\`] = 'elif';
+    if (ctx['v1']==='if') {
+      b1.children[0] = call(\`callee1\`, ctx);
+    } else if (ctx['v1']==='elif') {
+      ctx = Object.create(ctx);
+      ctx[\`v\`] = 'success';
+      b1.children[1] = call(\`callee2\`, ctx);
+      ctx = ctx.__proto__;
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`t-call (template calling) t-esc inside t-call, with t-set outside 1`] = `
 "function anonymous(Blocks, utils
 ) {
