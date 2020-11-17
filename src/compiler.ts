@@ -626,8 +626,9 @@ function call(name: string): BDom {
 function getValues(collection: any): [any[], any[], number] {
   if (Array.isArray(collection)) {
     return [collection, collection, collection.length];
-  } else {
+  } else if (collection) {
     const keys = Object.keys(collection);
     return [keys, Object.values(collection), keys.length];
   }
+  throw new Error("Invalid loop expression");
 }

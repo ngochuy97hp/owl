@@ -311,21 +311,21 @@ describe("t-set", () => {
   //   expect(renderToString(qweb, "test")).toBe("<div>3</div>");
   // });
 
-  test("t-set should reuse variable if possible", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-          <t t-set="v" t-value="1"/>
-          <div t-foreach="list" t-as="elem" t-key="elem_index">
-              <span>v<t t-esc="v"/></span>
-              <t t-set="v" t-value="elem"/>
-          </div>
-        </div>`
-    );
-    expect(normalize(renderToString(qweb, "test", { list: ["a", "b"] }))).toBe(
-      "<div><div><span>v1</span></div><div><span>va</span></div></div>"
-    );
-  });
+  // test("t-set should reuse variable if possible", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //         <t t-set="v" t-value="1"/>
+  //         <div t-foreach="list" t-as="elem" t-key="elem_index">
+  //             <span>v<t t-esc="v"/></span>
+  //             <t t-set="v" t-value="elem"/>
+  //         </div>
+  //       </div>`
+  //   );
+  //   expect(normalize(renderToString(qweb, "test", { list: ["a", "b"] }))).toBe(
+  //     "<div><div><span>v1</span></div><div><span>va</span></div></div>"
+  //   );
+  // });
 
   // test("t-set with content and sub t-esc", () => {
   //   qweb.addTemplate(
@@ -893,52 +893,52 @@ describe("t-call (template calling", () => {
   //   expect(renderToString(qweb, "main")).toBe(expected);
   // });
 
-  test("recursive template, part 1", () => {
-    qweb.addTemplates(`
-        <templates>
-            <div t-name="recursive">
-                <span>hey</span>
-                <t t-if="false">
-                    <t t-call="recursive"/>
-                </t>
-            </div>
-        </templates>
-    `);
-    const expected = "<div><span>hey</span></div>";
-    expect(renderToString(qweb, "recursive")).toBe(expected);
-    const subId = qweb.subTemplates["recursive"];
-    const recursiveFn = QWeb.subTemplates[subId] as any;
-    expect(recursiveFn.toString()).toMatchSnapshot();
-  });
+  // test("recursive template, part 1", () => {
+  //   qweb.addTemplates(`
+  //       <templates>
+  //           <div t-name="recursive">
+  //               <span>hey</span>
+  //               <t t-if="false">
+  //                   <t t-call="recursive"/>
+  //               </t>
+  //           </div>
+  //       </templates>
+  //   `);
+  //   const expected = "<div><span>hey</span></div>";
+  //   expect(renderToString(qweb, "recursive")).toBe(expected);
+  //   const subId = qweb.subTemplates["recursive"];
+  //   const recursiveFn = QWeb.subTemplates[subId] as any;
+  //   expect(recursiveFn.toString()).toMatchSnapshot();
+  // });
 
-  test("recursive template, part 2", () => {
-    qweb.addTemplates(`
-        <templates>
-            <div t-name="Parent">
-                <t t-call="nodeTemplate">
-                    <t t-set="node" t-value="root"/>
-                </t>
-            </div>
-            <div t-name="nodeTemplate">
-                <p><t t-esc="node.val"/></p>
-                <t t-foreach="node.children or []" t-as="subtree">
-                    <t t-call="nodeTemplate">
-                        <t t-set="node" t-value="subtree"/>
-                    </t>
-                </t>
-            </div>
+  // test("recursive template, part 2", () => {
+  //   qweb.addTemplates(`
+  //       <templates>
+  //           <div t-name="Parent">
+  //               <t t-call="nodeTemplate">
+  //                   <t t-set="node" t-value="root"/>
+  //               </t>
+  //           </div>
+  //           <div t-name="nodeTemplate">
+  //               <p><t t-esc="node.val"/></p>
+  //               <t t-foreach="node.children or []" t-as="subtree">
+  //                   <t t-call="nodeTemplate">
+  //                       <t t-set="node" t-value="subtree"/>
+  //                   </t>
+  //               </t>
+  //           </div>
 
-        </templates>
-    `);
-    const root = { val: "a", children: [{ val: "b" }, { val: "c" }] };
-    const expected = "<div><div><p>a</p><div><p>b</p></div><div><p>c</p></div></div></div>";
-    expect(renderToString(qweb, "Parent", { root }, { fiber: { vars: {}, scope: {} } })).toBe(
-      expected
-    );
-    const subId = qweb.subTemplates["nodeTemplate"];
-    const recursiveFn = QWeb.subTemplates[subId] as any;
-    expect(recursiveFn.toString()).toMatchSnapshot();
-  });
+  //       </templates>
+  //   `);
+  //   const root = { val: "a", children: [{ val: "b" }, { val: "c" }] };
+  //   const expected = "<div><div><p>a</p><div><p>b</p></div><div><p>c</p></div></div></div>";
+  //   expect(renderToString(qweb, "Parent", { root }, { fiber: { vars: {}, scope: {} } })).toBe(
+  //     expected
+  //   );
+  //   const subId = qweb.subTemplates["nodeTemplate"];
+  //   const recursiveFn = QWeb.subTemplates[subId] as any;
+  //   expect(recursiveFn.toString()).toMatchSnapshot();
+  // });
 
   test("recursive template, part 3", () => {
     qweb.addTemplates(`
@@ -1233,42 +1233,42 @@ describe("foreach", () => {
   //   );
   // });
 
-  test("t-call with body in t-foreach in t-foreach", () => {
-    qweb.addTemplate(
-      "test_called",
-      `<t>
-        [<t t-esc="a" />]
-        [<t t-esc="b" />]
-        [<t t-esc="c" />]
-       </t>`
-    );
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-foreach="numbers" t-as="a">
-          <t t-foreach="letters" t-as="b">
-            <t t-call="test_called" >
-              <t t-set="c" t-value="'x' + '_' + a + '_'+ b" />
-            </t>
-          </t>
-          <span t-esc="c"/>
-        </t>
-        <span>[<t t-esc="a" />][<t t-esc="b" />][<t t-esc="c" />]</span>
-      </div>`
-    );
-    const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
-    expect(renderToString(qweb, "test", context)).toBe(
-      "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>"
-    );
-  });
+  // test("t-call with body in t-foreach in t-foreach", () => {
+  //   qweb.addTemplate(
+  //     "test_called",
+  //     `<t>
+  //       [<t t-esc="a" />]
+  //       [<t t-esc="b" />]
+  //       [<t t-esc="c" />]
+  //      </t>`
+  //   );
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-foreach="numbers" t-as="a">
+  //         <t t-foreach="letters" t-as="b">
+  //           <t t-call="test_called" >
+  //             <t t-set="c" t-value="'x' + '_' + a + '_'+ b" />
+  //           </t>
+  //         </t>
+  //         <span t-esc="c"/>
+  //       </t>
+  //       <span>[<t t-esc="a" />][<t t-esc="b" />][<t t-esc="c" />]</span>
+  //     </div>`
+  //   );
+  //   const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
+  //   expect(renderToString(qweb, "test", context)).toBe(
+  //     "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>"
+  //   );
+  // });
 
-  test("throws error if invalid loop expression", () => {
-    qweb.addTemplate(
-      "test",
-      `<div><t t-foreach="abc" t-as="item"><span t-key="item_index"/></t></div>`
-    );
-    expect(() => qweb.render("test")).toThrow("Invalid loop expression");
-  });
+  // test("throws error if invalid loop expression", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div><t t-foreach="abc" t-as="item"><span t-key="item_index"/></t></div>`
+  //   );
+  //   expect(() => qweb.render("test")).toThrow("Invalid loop expression");
+  // });
 
   test("warn if no key in some case", () => {
     const consoleWarn = console.warn;

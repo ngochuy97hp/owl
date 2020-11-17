@@ -712,6 +712,20 @@ describe("t-set", () => {
     expect(renderToString(template)).toBe("<div>3</div>");
   });
 
+  test("t-set should reuse variable if possible", () => {
+    const template = `
+      <div>
+        <t t-set="v" t-value="1"/>
+        <div t-foreach="list" t-as="elem" t-key="elem_index">
+            <span>v<t t-esc="v"/></span>
+            <t t-set="v" t-value="elem"/>
+        </div>
+      </div>`;
+    snapshotCompiledCode(template);
+    const expected = "<div><div><span>v1</span></div><div><span>va</span></div></div>";
+    expect(renderToString(template, { list: ["a", "b"] })).toBe(expected);
+  });
+
   test("t-set with content and sub t-esc", () => {
     const template = `
       <div>
@@ -939,6 +953,44 @@ describe("t-foreach", () => {
     const expected =
       "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>";
     expect(templateSet.renderToString("main", context)).toBe(expected);
+  });
+
+  test("t-call with body in t-foreach in t-foreach", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = `
+      <t>
+        [<t t-esc="a" />]
+        [<t t-esc="b" />]
+        [<t t-esc="c" />]
+      </t>`;
+
+    const main = `
+      <div>
+        <t t-foreach="numbers" t-as="a">
+          <t t-foreach="letters" t-as="b">
+            <t t-call="sub" >
+              <t t-set="c" t-value="'x' + '_' + a + '_'+ b" />
+            </t>
+          </t>
+          <span t-esc="c"/>
+        </t>
+        <span>[<t t-esc="a" />][<t t-esc="b" />][<t t-esc="c" />]</span>
+      </div>`;
+
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+    snapshotCompiledCode(sub);
+    snapshotCompiledCode(main);
+
+    const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
+    const expected =
+      "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>";
+    expect(templateSet.renderToString("main", context)).toBe(expected);
+  });
+
+  test("throws error if invalid loop expression", () => {
+    const test = `<div><t t-foreach="abc" t-as="item"><span t-key="item_index"/></t></div>`;
+    expect(() => renderToString(test)).toThrow("Invalid loop expression");
   });
 });
 
@@ -1206,35 +1258,34 @@ describe("t-call (template calling)", () => {
     expect(templateSet.renderToString("recursive")).toBe(expected);
   });
 
-  // todo: implement t-foreach first
-  // test.skip("recursive template, part 2", () => {
-  //   const templateSet = new TestTemplateSet();
-  //   const Parent = `
-  //     <div>
-  //       <t t-call="nodeTemplate">
-  //           <t t-set="node" t-value="root"/>
-  //       </t>
-  //     </div>`;
+  test("recursive template, part 2", () => {
+    const templateSet = new TestTemplateSet();
+    const Parent = `
+      <div>
+        <t t-call="nodeTemplate">
+            <t t-set="node" t-value="root"/>
+        </t>
+      </div>`;
 
-  //   const nodeTemplate = `
-  //     <div>
-  //       <p><t t-esc="node.val"/></p>
-  //       <t t-foreach="node.children or []" t-as="subtree">
-  //           <t t-call="nodeTemplate">
-  //               <t t-set="node" t-value="subtree"/>
-  //           </t>
-  //       </t>
-  //     </div>`;
+    const nodeTemplate = `
+      <div>
+        <p><t t-esc="node.val"/></p>
+        <t t-foreach="node.children or []" t-as="subtree">
+            <t t-call="nodeTemplate">
+                <t t-set="node" t-value="subtree"/>
+            </t>
+        </t>
+      </div>`;
 
-  //   templateSet.add("Parent", Parent);
-  //   templateSet.add("nodeTemplate", nodeTemplate);
+    templateSet.add("Parent", Parent);
+    templateSet.add("nodeTemplate", nodeTemplate);
 
-  //   snapshotCompiledCode(Parent);
-  //   snapshotCompiledCode(nodeTemplate);
-  //   const root = { val: "a", children: [{ val: "b" }, { val: "c" }] };
-  //   const expected = "<div><div><p>a</p><div><p>b</p></div><div><p>c</p></div></div></div>";
-  //   expect(templateSet.renderToString("Parent", root)).toBe(expected);
-  // });
+    snapshotCompiledCode(Parent);
+    snapshotCompiledCode(nodeTemplate);
+    const root = { val: "a", children: [{ val: "b" }, { val: "c" }] };
+    const expected = "<div><div><p>a</p><div><p>b</p></div><div><p>c</p></div></div></div>";
+    expect(templateSet.renderToString("Parent", { root })).toBe(expected);
+  });
 
   test("t-call, conditional and t-set in t-call body", () => {
     const templateSet = new TestTemplateSet();
