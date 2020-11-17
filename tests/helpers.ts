@@ -79,9 +79,9 @@ export function makeTestFixture() {
 //   };
 // }
 
-// export function trim(str: string): string {
-//   return str.replace(/\s/g, "");
-// }
+export function trim(str: string): string {
+  return str.replace(/\s/g, "");
+}
 
 // export function renderToDOM(
 //   qweb: QWeb,

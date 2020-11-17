@@ -1,6 +1,6 @@
 import { BDom } from "../src/bdom";
 import { compile, compileTemplate, TemplateSet } from "../src/compiler";
-import { makeTestFixture } from "./helpers";
+import { makeTestFixture, trim } from "./helpers";
 
 // -----------------------------------------------------------------------------
 // Helpers
@@ -992,6 +992,24 @@ describe("t-foreach", () => {
     const test = `<div><t t-foreach="abc" t-as="item"><span t-key="item_index"/></t></div>`;
     expect(() => renderToString(test)).toThrow("Invalid loop expression");
   });
+
+  test.skip("warn if no key in some case", () => {
+    const consoleWarn = console.warn;
+    console.warn = jest.fn();
+
+    const template = `
+      <div>
+        <t t-foreach="[1, 2]" t-as="item">
+          <span><t t-esc="item"/></span>
+        </t>
+      </div>`;
+    renderToString(template);
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      "Directive t-foreach should always be used with a t-key! (in template: 'test')"
+    );
+    console.warn = consoleWarn;
+  });
 });
 
 // -----------------------------------------------------------------------------
@@ -1478,3 +1496,69 @@ describe("t-call (template calling)", () => {
     expect(templateSet.renderToString("main", { template: "bar", val: "quux" })).toBe(expected2);
   });
 });
+
+// -----------------------------------------------------------------------------
+// misc
+// -----------------------------------------------------------------------------
+
+describe("misc", () => {
+  test.skip("global", () => {
+    const templateSet = new TestTemplateSet();
+    const _calleeAsc = `<año t-att-falló="'agüero'" t-raw="0"/>`;
+    const _calleeUsesFoo = `<span t-esc="foo">foo default</span>`;
+    const _calleeAscToto = `<div t-raw="toto">toto default</div>`;
+    const caller = `
+      <div>
+        <t t-foreach="[4,5,6]" t-as="value">
+          <span t-esc="value"/>
+          <t t-call="_callee-asc">
+            <t t-call="_callee-uses-foo">
+                <t t-set="foo" t-value="'aaa'"/>
+            </t>
+            <t t-call="_callee-uses-foo"/>
+            <t t-set="foo" t-value="'bbb'"/>
+            <t t-call="_callee-uses-foo"/>
+          </t>
+        </t>
+        <t t-call="_callee-asc-toto"/>
+      </div>`;
+      templateSet.add("_callee-asc", _calleeAsc);
+      templateSet.add("_callee-uses-foo", _calleeUsesFoo);
+      templateSet.add("_callee-asc-toto", _calleeAscToto);
+      templateSet.add("caller", caller);
+
+    snapshotCompiledCode(caller);
+    snapshotCompiledCode(_calleeAscToto);
+    snapshotCompiledCode(_calleeAsc);
+    snapshotCompiledCode(_calleeUsesFoo);
+
+
+    const result = trim(templateSet.renderToString("caller"));
+    const expected = trim(`
+      <div>
+        <span>4</span>
+        <año falló="agüero">
+          <span>aaa</span>
+          <span>foo default</span>
+          <span>bbb</span>
+        </año>
+
+        <span>5</span>
+        <año falló="agüero">
+          <span>aaa</span>
+          <span>foo default</span>
+          <span>bbb</span>
+        </año>
+
+        <span>6</span>
+        <año falló="agüero">
+          <span>aaa</span>
+          <span>foo default</span>
+          <span>bbb</span>
+        </año>
+
+        <div>toto default</div>
+      </div>
+    `);
+    expect(result).toBe(expected);
+  });});
