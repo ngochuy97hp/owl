@@ -1,4 +1,4 @@
-import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock } from "./bdom";
+import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock, TextBlock } from "./bdom";
 import { compileExpr } from "./expression_parser";
 import { AST, ASTType, parse } from "./parser";
 
@@ -6,7 +6,7 @@ import { AST, ASTType, parse } from "./parser";
 // Compile functions
 // -----------------------------------------------------------------------------
 
-const Blocks = { ContentBlock, MultiBlock, HTMLBlock, CollectionBlock };
+const Blocks = { ContentBlock, MultiBlock, HTMLBlock, CollectionBlock, TextBlock };
 
 export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (blocks: typeof Blocks, utils: typeof UTILS) => RenderFunction;
@@ -31,6 +31,7 @@ export function compileTemplate(template: string): TemplateFunction {
   const ctx = new CompilationContext();
   compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();
+  // console.warn(code);
   return new Function("Blocks, utils", code) as TemplateFunction;
 }
 
@@ -154,7 +155,7 @@ class CompilationContext {
     this.code = [];
     this.indentLevel = 0;
     // define blocks and utility functions
-    this.addLine(`let {MultiBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;`);
+    this.addLine(`let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;`);
     this.addLine(`let {elem, toString, withDefault, call, zero, getValues} = utils;`);
     this.addLine(``);
 
@@ -246,18 +247,33 @@ function compileAST(
     // -------------------------------------------------------------------------
     // Comment/Text
     // -------------------------------------------------------------------------
-    case ASTType.Comment:
-    case ASTType.Text: {
+    case ASTType.Comment: {
       if (!currentBlock || forceNewBlock) {
         currentBlock = ctx.makeBlock({
           parentIndex: currentIndex,
           parentBlock: currentBlock ? currentBlock.varName : undefined,
         });
       }
-
-      const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
-      const text: Dom = { type, value: ast.value };
+      const text: Dom = { type: DomType.Comment, value: ast.value };
       addToBlockDom(currentBlock, text);
+      break;
+    }
+    case ASTType.Text: {
+      if (!currentBlock || forceNewBlock) {
+        if (currentBlock) {
+          ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new TextBlock(\`${ast.value}\`)`);
+        } else {
+          const id = ctx.generateId('b');
+          ctx.addLine(`const ${id} = new TextBlock(\`${ast.value}\`)`);
+          if (!ctx.rootBlock) {
+            ctx.rootBlock = id;
+          }
+        }
+      } else {
+        const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
+        const text: Dom = { type, value: ast.value };
+        addToBlockDom(currentBlock, text);
+      }
       break;
     }
 

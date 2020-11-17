@@ -68,6 +68,24 @@ export class HTMLBlock extends Block {
   }
 }
 
+export class TextBlock extends Block {
+  el: Text;
+  constructor(text: string) {
+    super();
+    this.el = document.createTextNode(text);
+  }
+
+  mountBefore(anchor: Text) {
+    anchor.before(this.el);
+  }
+
+  patch(){}
+
+  toString() {
+    return this.el.textContent;
+  }
+}
+
 export class ContentBlock extends Block {
   static el: HTMLElement | Text;
   el?: HTMLElement | Text;

@@ -38,8 +38,8 @@ class TestTemplateSet extends TemplateSet {
 describe("simple templates, mostly static", () => {
   test("simple string", () => {
     const template = `hello vdom`;
-    expect(renderToString(template)).toBe("hello vdom");
     snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("hello vdom");
   });
 
   test("simple string in t tag", () => {
