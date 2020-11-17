@@ -418,6 +418,7 @@ function compileAST(
       if (!currentBlock) {
         throw new Error("boom");
       }
+      ctx.shouldProtextScope = true;
 
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       addToBlockDom(currentBlock, anchor);

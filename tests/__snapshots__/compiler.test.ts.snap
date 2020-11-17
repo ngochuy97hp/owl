@@ -1221,6 +1221,35 @@ exports[`t-esc variable 1`] = `
 }"
 `;
 
+exports[`t-foreach does not pollute the rendering context 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    const [v2, k2, l2] = getValues([1]);
+    const b3 = b1.children[0] = new CollectionBlock(l2);
+    for (let i = 0; i < l2; i++) {
+      ctx[\`item\`] = v2[i];
+      ctx[\`item_first\`] = i === 0;
+      ctx[\`item_last\`] = i === v2.length - 1;
+      ctx[\`item_index\`] = i;
+      ctx[\`item_value\`] = k2[i];
+      b3.children[i] = new TextBlock(ctx['item'])
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`t-foreach iterate on items (on a element node) 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -1240,6 +1269,7 @@ exports[`t-foreach iterate on items (on a element node) 1`] = `
   }
   
   return ctx => {
+    ctx = Object.create(ctx);
     const b1 = new Block1();
     const [v2, k2, l2] = getValues([1,2]);
     const b3 = b1.children[0] = new CollectionBlock(l2);
@@ -1270,6 +1300,7 @@ exports[`t-foreach iterate on items 1`] = `
   }
   
   return ctx => {
+    ctx = Object.create(ctx);
     const b1 = new Block1();
     const [v2, k2, l2] = getValues([3,2,1]);
     const b3 = b1.children[0] = new CollectionBlock(l2);
@@ -1305,6 +1336,7 @@ exports[`t-foreach iterate, dict param 1`] = `
   }
   
   return ctx => {
+    ctx = Object.create(ctx);
     const b1 = new Block1();
     const [v2, k2, l2] = getValues(ctx['value']);
     const b3 = b1.children[0] = new CollectionBlock(l2);
@@ -1340,6 +1372,7 @@ exports[`t-foreach iterate, position 1`] = `
   }
   
   return ctx => {
+    ctx = Object.create(ctx);
     const b1 = new Block1();
     const [v2, k2, l2] = getValues(Array(5));
     const b3 = b1.children[0] = new CollectionBlock(l2);
@@ -1378,6 +1411,7 @@ exports[`t-foreach simple iteration 1`] = `
   }
   
   return ctx => {
+    ctx = Object.create(ctx);
     const b1 = new Block1();
     const [v2, k2, l2] = getValues([3,2,1]);
     const b3 = b1.children[0] = new CollectionBlock(l2);

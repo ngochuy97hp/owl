@@ -874,6 +874,17 @@ describe("t-foreach", () => {
     const context = { value: { a: 1, b: 2, c: 3 } };
     expect(renderToString(template, context)).toBe(expected);
   });
+
+  test("does not pollute the rendering context", () => {
+    const template = `
+      <div>
+        <t t-foreach="[1]" t-as="item"><t t-esc="item"/></t>
+      </div>`;
+    snapshotCompiledCode(template);
+    const context = { __owl__: {} };
+    renderToString(template, context);
+    expect(Object.keys(context)).toEqual(["__owl__"]);
+  });
 });
 
 // -----------------------------------------------------------------------------
