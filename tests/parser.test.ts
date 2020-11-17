@@ -174,6 +174,27 @@ describe("qweb parser", () => {
     expect(parse(`<t t-raw="text"/>`)).toEqual({
       type: ASTType.TRaw,
       expr: "text",
+      body: null,
+    });
+  });
+
+  test("t-raw node on a dom node", async () => {
+    expect(parse(`<div t-raw="text"/>`)).toEqual({
+      type: ASTType.DomNode,
+      tag: "div",
+      attrs: {},
+      content: [{ type: ASTType.TRaw, expr: "text", body: null }],
+    });
+  });
+
+  test("t-raw node with body", async () => {
+    expect(parse(`<div t-raw="text">body</div>`)).toEqual({
+      type: ASTType.DomNode,
+      tag: "div",
+      attrs: {},
+      content: [
+        { type: ASTType.TRaw, expr: "text", body: [{ type: ASTType.Text, value: "body" }] },
+      ],
     });
   });
 

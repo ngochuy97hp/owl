@@ -1,5 +1,49 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`attributes dynamic attributes 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.setAttribute(\`foo\`, this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.texts[0] = 'bar';
+    return b1;
+  }
+}"
+`;
+
+exports[`attributes dynamic class attribute 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div></div>\`);
+    texts = new Array(1);
+    update() {
+      this.el.setAttribute(\`class\`, this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.texts[0] = ctx['c'];
+    return b1;
+  }
+}"
+`;
+
 exports[`comments properly handle comments 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -41,6 +85,125 @@ exports[`comments properly handle comments between t-if/t-else 1`] = `
     } else {
       const b3 = b1.children[1] = new Block3();
     }
+    return b1;
+  }
+}"
+`;
+
+exports[`misc global 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    children = new Array(2);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const b1 = new Block1();
+    const [v2, k2, l2] = getValues([4,5,6]);
+    const b3 = b1.children[0] = new CollectionBlock(l2);
+    ctx = Object.create(ctx);
+    for (let i1 = 0; i1 < l2; i1++) {
+      ctx[\`value\`] = v2[i1];
+      ctx[\`value_first\`] = i1 === 0;
+      ctx[\`value_last\`] = i1 === v2.length - 1;
+      ctx[\`value_index\`] = i1;
+      ctx[\`value_value\`] = k2[i1];
+      const b4 = b3.children[i1] = new MultiBlock(2);
+      const b5 = b4.children[0] = new Block2();
+      b5.texts[0] = ctx['value'];
+      ctx = Object.create(ctx);
+      const b6 = new MultiBlock(3);
+      ctx = Object.create(ctx);
+      ctx[\`foo\`] = 'aaa';
+      b6.children[0] = call(\`_callee-uses-foo\`, ctx);
+      ctx = ctx.__proto__;
+      b6.children[1] = call(\`_callee-uses-foo\`, ctx);
+      ctx[\`foo\`] = 'bbb';
+      b6.children[2] = call(\`_callee-uses-foo\`, ctx);
+      ctx[zero] = b6;
+      b4.children[1] = call(\`_callee-asc\`, ctx);
+      ctx = ctx.__proto__;
+    }
+    ctx = ctx.__proto__;
+    b1.children[1] = call(\`_callee-asc-toto\`, ctx);
+    return b1;
+  }
+}"
+`;
+
+exports[`misc global 2`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    const b2 = new TextBlock(\`toto default\`)
+    b1.children[0] = new HTMLBlock(withDefault(ctx['toto'], b2));
+    return b1;
+  }
+}"
+`;
+
+exports[`misc global 3`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<año><owl-anchor></owl-anchor></año>\`);
+    children = new Array(1);
+    texts = new Array(1);
+    update() {
+      this.el.setAttribute(\`falló\`, this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.texts[0] = 'agüero';
+    b1.children[0] = new HTMLBlock(ctx[zero]);
+    return b1;
+  }
+}"
+`;
+
+exports[`misc global 4`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.texts[0] = withDefault(ctx['foo'], \`foo default\`);
     return b1;
   }
 }"
@@ -2683,6 +2846,49 @@ exports[`t-raw t-raw and another sibling node 1`] = `
   return ctx => {
     const b1 = new Block1();
     b1.children[0] = new HTMLBlock(ctx['var']);
+    return b1;
+  }
+}"
+`;
+
+exports[`t-raw t-raw on a node with a body, as a default 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    const b2 = new TextBlock(\`nope\`)
+    b1.children[0] = new HTMLBlock(withDefault(ctx['var'], b2));
+    return b1;
+  }
+}"
+`;
+
+exports[`t-raw t-raw on a node with a dom node in body, as a default 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<div>nope</div>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    const b2 = new Block2();
+    b1.children[0] = new HTMLBlock(withDefault(ctx['var'], b2));
     return b1;
   }
 }"

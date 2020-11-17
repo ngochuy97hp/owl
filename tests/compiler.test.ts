@@ -241,6 +241,20 @@ describe("attributes", () => {
     const template = `<img src="/test.jpg" alt="Test"/>`;
     expect(renderToString(template)).toBe(`<img src="/test.jpg" alt="Test">`);
   });
+
+  test("dynamic attributes", () => {
+    const template = `<div t-att-foo="'bar'"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template);
+    expect(result).toBe(`<div foo="bar"></div>`);
+  });
+
+  test("dynamic class attribute", () => {
+    const template = `<div t-att-class="c"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template, { c: "abc" });
+    expect(result).toBe(`<div class="abc"></div>`);
+  });
 });
 
 // -----------------------------------------------------------------------------
@@ -627,6 +641,18 @@ describe("t-raw", () => {
     expect(renderToString(template, { var: "<p>text<!-- top secret --></p>" })).toBe(
       "<span><p>text<!-- top secret --></p></span>"
     );
+  });
+
+  test("t-raw on a node with a body, as a default", () => {
+    const template = `<span t-raw="var">nope</span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span>nope</span>");
+  });
+
+  test("t-raw on a node with a dom node in body, as a default", () => {
+    const template = `<span t-raw="var"><div>nope</div></span>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<span><div>nope</div></span>");
   });
 });
 
@@ -1502,7 +1528,7 @@ describe("t-call (template calling)", () => {
 // -----------------------------------------------------------------------------
 
 describe("misc", () => {
-  test.skip("global", () => {
+  test("global", () => {
     const templateSet = new TestTemplateSet();
     const _calleeAsc = `<año t-att-falló="'agüero'" t-raw="0"/>`;
     const _calleeUsesFoo = `<span t-esc="foo">foo default</span>`;
@@ -1522,16 +1548,15 @@ describe("misc", () => {
         </t>
         <t t-call="_callee-asc-toto"/>
       </div>`;
-      templateSet.add("_callee-asc", _calleeAsc);
-      templateSet.add("_callee-uses-foo", _calleeUsesFoo);
-      templateSet.add("_callee-asc-toto", _calleeAscToto);
-      templateSet.add("caller", caller);
+    templateSet.add("_callee-asc", _calleeAsc);
+    templateSet.add("_callee-uses-foo", _calleeUsesFoo);
+    templateSet.add("_callee-asc-toto", _calleeAscToto);
+    templateSet.add("caller", caller);
 
     snapshotCompiledCode(caller);
     snapshotCompiledCode(_calleeAscToto);
     snapshotCompiledCode(_calleeAsc);
     snapshotCompiledCode(_calleeUsesFoo);
-
 
     const result = trim(templateSet.renderToString("caller"));
     const expected = trim(`
@@ -1561,4 +1586,5 @@ describe("misc", () => {
       </div>
     `);
     expect(result).toBe(expected);
-  });});
+  });
+});

@@ -47,6 +47,7 @@ export interface ASTTEsc {
 export interface ASTTRaw {
   type: ASTType.TRaw;
   expr: string;
+  body: AST[] | null;
 }
 
 export interface ASTTif {
@@ -125,9 +126,9 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     parseTCall(node, ctx) ||
     parseTForEach(node, ctx) ||
     parseTKey(node, ctx) ||
+    parseTRawNode(node, ctx) ||
     parseDOMNode(node, ctx) ||
     parseTSetNode(node, ctx) ||
-    parseTRawNode(node, ctx) ||
     parseTNode(node, ctx)
   );
 }
@@ -259,7 +260,24 @@ function parseTRawNode(node: Element, ctx: ParsingContext): AST | null {
     return null;
   }
   const expr = node.getAttribute("t-raw")!;
-  return { type: ASTType.TRaw, expr };
+  node.removeAttribute("t-raw");
+
+  const tRaw: AST = { type: ASTType.TRaw, expr, body: null };
+  const ast = parseNode(node, ctx);
+  if (!ast) {
+    return tRaw;
+  }
+  if (ast && ast.type === ASTType.DomNode) {
+    tRaw.body = ast.content.length ? ast.content : null;
+    return {
+      type: ASTType.DomNode,
+      tag: ast.tag,
+      attrs: ast.attrs,
+      content: [tRaw],
+    };
+  }
+
+  return tRaw;
 }
 
 // -----------------------------------------------------------------------------

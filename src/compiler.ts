@@ -303,7 +303,29 @@ function compileAST(
           parentBlock: currentBlock ? currentBlock.varName : undefined,
         });
       }
-      const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: ast.attrs, content: [] };
+      const staticAttrs: { [key: string]: string } = {};
+      const dynAttrs: { [key: string]: string } = {};
+      for (let key in ast.attrs) {
+        if (key.startsWith("t-att")) {
+          dynAttrs[key] = ast.attrs[key];
+        } else {
+          staticAttrs[key] = ast.attrs[key];
+        }
+      }
+
+      if (Object.keys(dynAttrs).length) {
+        const targetEl = `this.` + currentBlock.currentPath.join(".");
+        for (let key in dynAttrs) {
+          const idx = currentBlock.textNumber;
+          currentBlock.textNumber++;
+          ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${compileExpr(dynAttrs[key], {})};`);
+          currentBlock.updateFn.push(
+            `${targetEl}.setAttribute(\`${key.slice(6)}\`, this.texts[${idx}]);`
+          );
+        }
+      }
+
+      const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: staticAttrs, content: [] };
       addToBlockDom(currentBlock, dom);
       if (ast.content.length) {
         const initialDom = currentBlock.currentDom;
@@ -326,16 +348,16 @@ function compileAST(
     // t-esc
     // -------------------------------------------------------------------------
     case ASTType.TEsc: {
-      if (!currentBlock || forceNewBlock) {
-        let expr: string;
-        if (ast.expr === "0") {
-          expr = `ctx[zero]`;
-        } else {
-          expr = compileExpr(ast.expr, {});
-          if (ast.defaultValue) {
-            expr = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
-          }
+      let expr: string;
+      if (ast.expr === "0") {
+        expr = `ctx[zero]`;
+      } else {
+        expr = compileExpr(ast.expr, {});
+        if (ast.defaultValue) {
+          expr = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
         }
+      }
+      if (!currentBlock || forceNewBlock) {
         if (currentBlock) {
           ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new TextBlock(${expr})`);
         } else {
@@ -351,15 +373,10 @@ function compileAST(
         addToBlockDom(currentBlock, text);
         const idx = currentBlock.textNumber;
         currentBlock.textNumber++;
+        ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${expr};`);
         if (ast.expr === "0") {
-          ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ctx[zero];`);
           currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
         } else {
-          const expr = compileExpr(ast.expr, {});
-          const textValue = ast.defaultValue
-            ? `withDefault(${expr}, \`${ast.defaultValue}\`)`
-            : expr;
-          ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${textValue};`);
           currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
         }
       }
@@ -377,7 +394,12 @@ function compileAST(
       addToBlockDom(currentBlock, anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
-      const expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr, {});
+      let expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr, {});
+      if (ast.body) {
+        const nextId = ctx.nextId;
+        compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
+        expr = `withDefault(${expr}, b${nextId})`;
+      }
       ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new HTMLBlock(${expr});`);
       break;
     }

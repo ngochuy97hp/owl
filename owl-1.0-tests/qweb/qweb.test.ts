@@ -582,17 +582,17 @@ describe("attributes", () => {
   //   expect(result).toBe(`<img src="/test.jpg" alt="Test">`);
   // });
 
-  test("dynamic attributes", () => {
-    qweb.addTemplate("test", `<div t-att-foo="'bar'"/>`);
-    const result = renderToString(qweb, "test");
-    expect(result).toBe(`<div foo="bar"></div>`);
-  });
+  // test("dynamic attributes", () => {
+  //   qweb.addTemplate("test", `<div t-att-foo="'bar'"/>`);
+  //   const result = renderToString(qweb, "test");
+  //   expect(result).toBe(`<div foo="bar"></div>`);
+  // });
 
-  test("dynamic class attribute", () => {
-    qweb.addTemplate("test", `<div t-att-class="c"/>`);
-    const result = renderToString(qweb, "test", { c: "abc" });
-    expect(result).toBe(`<div class="abc"></div>`);
-  });
+  // test("dynamic class attribute", () => {
+  //   qweb.addTemplate("test", `<div t-att-class="c"/>`);
+  //   const result = renderToString(qweb, "test", { c: "abc" });
+  //   expect(result).toBe(`<div class="abc"></div>`);
+  // });
 
   test("dynamic empty class attribute", () => {
     qweb.addTemplate("test", `<div t-att-class="c"/>`);
