@@ -15,7 +15,7 @@ const UTILS = {
   elem,
   toString,
   withDefault,
-  call: null,
+  call,
   zero: Symbol("zero"),
 };
 
@@ -54,7 +54,11 @@ export class TemplateSet {
 
   getFunction(name: string): RenderFunction {
     if (!(name in this.compiledTemplates)) {
-      const templateFn = compileTemplate(this.templates[name]);
+      const template = this.templates[name];
+      if (!template) {
+        throw new Error(`Missing template: "${name}"`);
+      }
+      const templateFn = compileTemplate(template);
       const renderFn = templateFn(Blocks, this.utils);
       this.compiledTemplates[name] = renderFn;
     }
@@ -507,4 +511,8 @@ function toString(value: any): string {
 
 function withDefault(value: any, defaultValue: any): any {
   return value === undefined || value === null || value === false ? defaultValue : value;
+}
+
+function call(name: string): BDom {
+  throw new Error(`Missing template: "${name}"`);
 }

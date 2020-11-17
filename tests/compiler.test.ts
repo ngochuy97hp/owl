@@ -473,6 +473,19 @@ describe("error handling", () => {
     const template = "<div>";
     expect(() => compile(template)).toThrow("Invalid XML in template");
   });
+
+  test("missing template", () => {
+    const template = `<t t-call="othertemplate" />`;
+    expect(() => renderToString(template)).toThrowError("Missing");
+  });
+
+  test("missing template in template set", () => {
+    const templateSet = new TestTemplateSet();
+    const template = `<t t-call="othertemplate" />`;
+
+    templateSet.add("template", template);
+    expect(() => templateSet.renderToString("template")).toThrowError("Missing");
+  });
 });
 
 // -----------------------------------------------------------------------------
@@ -1065,4 +1078,34 @@ describe("t-call (template calling)", () => {
     const expected = "<div><span>hey</span></div>";
     expect(templateSet.renderToString("recursive")).toBe(expected);
   });
+
+  // todo: implement t-foreach first
+  // test.skip("recursive template, part 2", () => {
+  //   const templateSet = new TestTemplateSet();
+  //   const Parent = `
+  //     <div>
+  //       <t t-call="nodeTemplate">
+  //           <t t-set="node" t-value="root"/>
+  //       </t>
+  //     </div>`;
+
+  //   const nodeTemplate = `
+  //     <div>
+  //       <p><t t-esc="node.val"/></p>
+  //       <t t-foreach="node.children or []" t-as="subtree">
+  //           <t t-call="nodeTemplate">
+  //               <t t-set="node" t-value="subtree"/>
+  //           </t>
+  //       </t>
+  //     </div>`;
+
+  //   templateSet.add("Parent", Parent);
+  //   templateSet.add("nodeTemplate", nodeTemplate);
+
+  //   snapshotCompiledCode(Parent);
+  //   snapshotCompiledCode(nodeTemplate);
+  //   const root = { val: "a", children: [{ val: "b" }, { val: "c" }] };
+  //   const expected = "<div><div><p>a</p><div><p>b</p></div><div><p>c</p></div></div></div>";
+  //   expect(templateSet.renderToString("Parent", root)).toBe(expected);
+  // });
 });
