@@ -176,17 +176,9 @@ exports[`simple templates, mostly static dynamic text value 1`] = `
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
-    const b1 = new Block1();
-    b1.texts[0] = ctx['text'];
+    const b1 = new TextBlock(ctx['text'])
     return b1;
   }
 }"
@@ -279,19 +271,11 @@ exports[`simple templates, mostly static static text and dynamic text (no t tag)
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new MultiBlock(2);
     b1.children[0] = new TextBlock(\`hello \`)
-    const b2 = b1.children[1] = new Block1();
-    b2.texts[0] = ctx['text'];
+    b1.children[1] = new TextBlock(ctx['text'])
     return b1;
   }
 }"
@@ -303,19 +287,11 @@ exports[`simple templates, mostly static static text and dynamic text 1`] = `
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new MultiBlock(2);
     b1.children[0] = new TextBlock(\`hello \`)
-    const b2 = b1.children[1] = new Block1();
-    b2.texts[0] = ctx['text'];
+    b1.children[1] = new TextBlock(ctx['text'])
     return b1;
   }
 }"
@@ -393,27 +369,11 @@ exports[`simple templates, mostly static two t-escs next to each other 1`] = `
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new MultiBlock(2);
-    const b2 = b1.children[0] = new Block1();
-    b2.texts[0] = ctx['text1'];
-    const b3 = b1.children[1] = new Block2();
-    b3.texts[0] = ctx['text2'];
+    b1.children[0] = new TextBlock(ctx['text1'])
+    b1.children[1] = new TextBlock(ctx['text2'])
     return b1;
   }
 }"
@@ -1271,27 +1231,6 @@ exports[`t-foreach iterate on items 1`] = `
     static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
     children = new Array(1);
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
-  class Block3 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
-  class Block4 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new Block1();
@@ -1303,14 +1242,11 @@ exports[`t-foreach iterate on items 1`] = `
       ctx[\`item_value\`] = vals3[i];
       const b4 = b2.children[i] = new MultiBlock(7);
       b4.children[0] = new TextBlock(\` [\`)
-      const b5 = b4.children[1] = new Block2();
-      b5.texts[0] = ctx['item_index'];
+      b4.children[1] = new TextBlock(ctx['item_index'])
       b4.children[2] = new TextBlock(\`: \`)
-      const b6 = b4.children[3] = new Block3();
-      b6.texts[0] = ctx['item'];
+      b4.children[3] = new TextBlock(ctx['item'])
       b4.children[4] = new TextBlock(\` \`)
-      const b7 = b4.children[5] = new Block4();
-      b7.texts[0] = ctx['item_value'];
+      b4.children[5] = new TextBlock(ctx['item_value'])
       b4.children[6] = new TextBlock(\`] \`)
     }
     return b1;
@@ -1328,13 +1264,6 @@ exports[`t-foreach simple iteration 1`] = `
     static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
     children = new Array(1);
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new Block1();
@@ -1344,8 +1273,7 @@ exports[`t-foreach simple iteration 1`] = `
       ctx[\`item\`] = vals3[i];
       ctx[\`item_index\`] = i;
       ctx[\`item_value\`] = vals3[i];
-      const b4 = b2.children[i] = new Block2();
-      b4.texts[0] = ctx['item'];
+      b2.children[i] = new TextBlock(ctx['item'])
     }
     return b1;
   }
@@ -1668,21 +1596,13 @@ exports[`t-if t-esc with t-elif 1`] = `
     static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
     children = new Array(2);
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new Block1();
     if (false) {
       b1.children[0] = new TextBlock(\`abc\`)
     } else {
-      const b2 = b1.children[1] = new Block2();
-      b2.texts[0] = 'x';
+      b1.children[1] = new TextBlock('x')
     }
     return b1;
   }
@@ -1699,19 +1619,11 @@ exports[`t-if t-esc with t-if 1`] = `
     static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
     children = new Array(1);
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     const b1 = new Block1();
     if (true) {
-      const b2 = b1.children[0] = new Block2();
-      b2.texts[0] = 'x';
+      b1.children[0] = new TextBlock('x')
     }
     return b1;
   }
@@ -1804,21 +1716,13 @@ exports[`t-if t-set, then t-if 1`] = `
     static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
     children = new Array(1);
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     ctx = Object.create(ctx);
     const b1 = new Block1();
     ctx[\`title\`] = 'test';
     if (ctx['title']) {
-      const b2 = b1.children[0] = new Block2();
-      b2.texts[0] = ctx['title'];
+      b1.children[0] = new TextBlock(ctx['title'])
     }
     return b1;
   }
@@ -2073,19 +1977,11 @@ exports[`t-set set from attribute literal (no outside div) 1`] = `
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     ctx = Object.create(ctx);
     ctx[\`value\`] = 'ok';
-    const b1 = new Block1();
-    b1.texts[0] = ctx['value'];
+    const b1 = new TextBlock(ctx['value'])
     return b1;
   }
 }"
@@ -2145,19 +2041,11 @@ exports[`t-set set from body literal 1`] = `
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     ctx = Object.create(ctx);
     ctx[\`value\`] = \`ok\`;
-    const b1 = new Block1();
-    b1.texts[0] = ctx['value'];
+    const b1 = new TextBlock(ctx['value'])
     return b1;
   }
 }"
@@ -2176,19 +2064,11 @@ exports[`t-set set from body lookup 1`] = `
       this.el.firstChild.textContent = toString(this.texts[0]);
     }
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     ctx = Object.create(ctx);
     const b1 = new Block1();
-    const b2 = new Block2();
-    b2.texts[0] = ctx['value'];
+    const b2 = new TextBlock(ctx['value'])
     ctx[\`stuff\`] = b2;
     b1.texts[0] = ctx['stuff'];
     return b1;
@@ -2314,20 +2194,12 @@ exports[`t-set t-set with content and sub t-esc 1`] = `
       this.el.firstChild.textContent = toString(this.texts[0]);
     }
   }
-  class Block2 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     ctx = Object.create(ctx);
     const b1 = new Block1();
     const b2 = new MultiBlock(2);
-    const b3 = b2.children[0] = new Block2();
-    b3.texts[0] = ctx['beep'];
+    b2.children[0] = new TextBlock(ctx['beep'])
     b2.children[1] = new TextBlock(\` boop\`)
     ctx[\`setvar\`] = b2;
     b1.texts[0] = ctx['setvar'];
@@ -2468,13 +2340,6 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 3 1`] = `
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
-  class Block1 extends ContentBlock {
-    static el = elem(\`<owl-text></owl-text>\`);
-    texts = new Array(1);
-    update() {
-      this.el.textContent = toString(this.texts[0]);
-    }
-  }
   
   return ctx => {
     ctx = Object.create(ctx);
@@ -2484,8 +2349,7 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 3 1`] = `
     } else {
       ctx[\`ourvar\`] = \`0\`;
     }
-    const b2 = b1.children[1] = new Block1();
-    b2.texts[0] = ctx['ourvar'];
+    b1.children[1] = new TextBlock(ctx['ourvar'])
     return b1;
   }
 }"

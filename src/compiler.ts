@@ -261,9 +261,11 @@ function compileAST(
     case ASTType.Text: {
       if (!currentBlock || forceNewBlock) {
         if (currentBlock) {
-          ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new TextBlock(\`${ast.value}\`)`);
+          ctx.addLine(
+            `${currentBlock.varName}.children[${currentIndex}] = new TextBlock(\`${ast.value}\`)`
+          );
         } else {
-          const id = ctx.generateId('b');
+          const id = ctx.generateId("b");
           ctx.addLine(`const ${id} = new TextBlock(\`${ast.value}\`)`);
           if (!ctx.rootBlock) {
             ctx.rootBlock = id;
@@ -311,24 +313,41 @@ function compileAST(
     // -------------------------------------------------------------------------
     case ASTType.TEsc: {
       if (!currentBlock || forceNewBlock) {
-        currentBlock = ctx.makeBlock({
-          parentIndex: currentIndex,
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
-        });
-      }
-      const targetEl = `this.` + currentBlock.currentPath.join(".");
-      const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
-      addToBlockDom(currentBlock, text);
-      const idx = currentBlock.textNumber;
-      currentBlock.textNumber++;
-      if (ast.expr === "0") {
-        ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ctx[zero];`);
-        currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
+        let expr: string;
+        if (ast.expr === "0") {
+          expr = `ctx[zero]`;
+        } else {
+          expr = compileExpr(ast.expr, {});
+          if (ast.defaultValue) {
+            expr = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
+          }
+        }
+        if (currentBlock) {
+          ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new TextBlock(${expr})`);
+        } else {
+          const id = ctx.generateId("b");
+          ctx.addLine(`const ${id} = new TextBlock(${expr})`);
+          if (!ctx.rootBlock) {
+            ctx.rootBlock = id;
+          }
+        }
       } else {
-        const expr = compileExpr(ast.expr, {});
-        const textValue = ast.defaultValue ? `withDefault(${expr}, \`${ast.defaultValue}\`)` : expr;
-        ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${textValue};`);
-        currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
+        const targetEl = `this.` + currentBlock.currentPath.join(".");
+        const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
+        addToBlockDom(currentBlock, text);
+        const idx = currentBlock.textNumber;
+        currentBlock.textNumber++;
+        if (ast.expr === "0") {
+          ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ctx[zero];`);
+          currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
+        } else {
+          const expr = compileExpr(ast.expr, {});
+          const textValue = ast.defaultValue
+            ? `withDefault(${expr}, \`${ast.defaultValue}\`)`
+            : expr;
+          ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${textValue};`);
+          currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
+        }
       }
       break;
     }

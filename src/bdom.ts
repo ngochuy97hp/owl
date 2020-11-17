@@ -79,7 +79,9 @@ export class TextBlock extends Block {
     anchor.before(this.el);
   }
 
-  patch(){}
+  patch(other: any) {
+    this.el.textContent = other.el.textContent;
+  }
 
   toString() {
     return this.el.textContent;
