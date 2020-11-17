@@ -13,6 +13,7 @@ export const enum ASTType {
   TCall,
   TRaw,
   TForEach,
+  TKey,
 }
 
 export interface ASTText {
@@ -68,7 +69,13 @@ export interface ASTTForEach {
   type: ASTType.TForEach;
   collection: string;
   elem: string;
-  body: AST[];
+  body: AST;
+}
+
+export interface ASTTKey {
+  type: ASTType.TKey;
+  expr: string;
+  content: AST;
 }
 
 export interface ASTTCall {
@@ -87,7 +94,8 @@ export type AST =
   | ASTTSet
   | ASTTCall
   | ASTTRaw
-  | ASTTForEach;
+  | ASTTForEach
+  | ASTTKey;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -116,6 +124,7 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     parseTEscNode(node, ctx) ||
     parseTCall(node, ctx) ||
     parseTForEach(node, ctx) ||
+    parseTKey(node, ctx) ||
     parseDOMNode(node, ctx) ||
     parseTSetNode(node, ctx) ||
     parseTRawNode(node, ctx) ||
@@ -254,7 +263,7 @@ function parseTRawNode(node: Element, ctx: ParsingContext): AST | null {
 }
 
 // -----------------------------------------------------------------------------
-// t-foreach
+// t-foreach and t-key
 // -----------------------------------------------------------------------------
 
 function parseTForEach(node: Element, ctx: ParsingContext): AST | null {
@@ -265,12 +274,9 @@ function parseTForEach(node: Element, ctx: ParsingContext): AST | null {
   node.removeAttribute("t-foreach");
   const elem = node.getAttribute("t-as") || "";
   node.removeAttribute("t-as");
-  const body: AST[] = [];
-  for (let child of node.childNodes) {
-    const ast = parseNode(child, ctx);
-    if (ast) {
-      body.push(ast);
-    }
+  const body = parseNode(node, ctx);
+  if (!body) {
+    return null;
   }
   return {
     type: ASTType.TForEach,
@@ -278,6 +284,19 @@ function parseTForEach(node: Element, ctx: ParsingContext): AST | null {
     elem,
     body,
   };
+}
+
+function parseTKey(node: Element, ctx: ParsingContext): AST | null {
+  if (!node.hasAttribute("t-key")) {
+    return null;
+  }
+  const key = node.getAttribute("t-key")!;
+  node.removeAttribute("t-key");
+  const body = parseNode(node, ctx);
+  if (!body) {
+    return null;
+  }
+  return { type: ASTType.TKey, expr: key, content: body };
 }
 
 // -----------------------------------------------------------------------------

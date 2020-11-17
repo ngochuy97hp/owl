@@ -839,6 +839,16 @@ describe("t-foreach", () => {
     snapshotCompiledCode(template);
     expect(renderToString(template)).toBe("<div> [0: 3 3]  [1: 2 2]  [2: 1 1] </div>");
   });
+
+  test("iterate on items (on a element node)", () => {
+    const template = `
+      <div>
+        <span t-foreach="[1, 2]" t-as="item" t-key="item"><t t-esc="item"/></span>
+      </div>`;
+    snapshotCompiledCode(template);
+    const expected = `<div><span>1</span><span>2</span></div>`;
+    expect(renderToString(template)).toBe(expected);
+  });
 });
 
 // -----------------------------------------------------------------------------

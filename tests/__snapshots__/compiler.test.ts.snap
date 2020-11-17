@@ -1221,6 +1221,41 @@ exports[`t-esc variable 1`] = `
 }"
 `;
 
+exports[`t-foreach iterate on items (on a element node) 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  class Block2 extends ContentBlock {
+    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    texts = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.texts[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    const vals3 = getValues([1,2]);
+    const b2 = b1.children[0] = new CollectionBlock(vals3.length);
+    for (let i = 0; i < vals3.length; i++) {
+      ctx[\`item\`] = vals3[i];
+      ctx[\`item_index\`] = i;
+      ctx[\`item_value\`] = vals3[i];
+      const k4 = ctx['item'];
+      const b5 = b2.children[i] = new Block2();
+      b5.texts[0] = ctx['item'];
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`t-foreach iterate on items 1`] = `
 "function anonymous(Blocks, utils
 ) {

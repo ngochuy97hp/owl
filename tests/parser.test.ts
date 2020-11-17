@@ -412,7 +412,49 @@ describe("qweb parser", () => {
       type: ASTType.TForEach,
       collection: "list",
       elem: "item",
-      body: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+      body: { type: ASTType.TEsc, expr: "item", defaultValue: "" },
+    });
+  });
+
+  test("t-foreach expression on a span", async () => {
+    expect(parse(`<span t-foreach="list" t-as="item"><t t-esc="item"/></span>`)).toEqual({
+      type: ASTType.TForEach,
+      collection: "list",
+      elem: "item",
+      body: {
+        type: ASTType.DomNode,
+        tag: "span",
+        attrs: {},
+        content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+      },
+    });
+  });
+
+  test("simple t-key expression", async () => {
+    expect(parse(`<t t-key="k">abc</t>`)).toEqual({
+      type: ASTType.TKey,
+      expr: "k",
+      content: { type: ASTType.Text, value: "abc" },
+    });
+  });
+
+  test("t-foreach expression on a span with a t-key", async () => {
+    expect(
+      parse(`<span t-foreach="list" t-as="item" t-key="item_index"><t t-esc="item"/></span>`)
+    ).toEqual({
+      type: ASTType.TForEach,
+      collection: "list",
+      elem: "item",
+      body: {
+        type: ASTType.TKey,
+        expr: "item_index",
+        content: {
+          type: ASTType.DomNode,
+          tag: "span",
+          attrs: {},
+          content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+        },
+      },
     });
   });
 

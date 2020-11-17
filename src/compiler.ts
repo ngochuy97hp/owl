@@ -119,6 +119,7 @@ class CompilationContext {
   rootBlock: string | null = null;
   nextId = 1;
   shouldProtextScope: boolean = false;
+  key: string | null = null;
 
   addLine(line: string) {
     const prefix = new Array(this.indentLevel + 2).join("  ");
@@ -445,12 +446,23 @@ function compileAST(
       ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[i];`);
       ctx.addLine(`ctx[\`${ast.elem}_index\`] = i;`);
       ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${vals}[i];`);
-      const foreachContent: AST =
-        ast.body.length === 1 ? ast.body[0] : { type: ASTType.Multi, content: ast.body };
-      compileAST(foreachContent, collectionBlock, "i", true, ctx);
+      compileAST(ast.body, collectionBlock, "i", true, ctx);
       ctx.indentLevel--;
       ctx.addLine(`}`);
+      break;
+    }
 
+    // -------------------------------------------------------------------------
+    // t-foreach
+    // -------------------------------------------------------------------------
+
+    case ASTType.TKey: {
+      const id = ctx.generateId("k");
+      ctx.addLine(`const ${id} = ${compileExpr(ast.expr, {})};`);
+      const currentKey = ctx.key;
+      ctx.key = id;
+      compileAST(ast.content, currentBlock, currentIndex, forceNewBlock, ctx);
+      ctx.key = currentKey;
       break;
     }
 
