@@ -1,4 +1,4 @@
-import { parse, ASTType } from "../src/parser";
+import { ASTType, parse } from "../src/parser";
 
 describe("qweb parser", () => {
   // ---------------------------------------------------------------------------
@@ -400,6 +400,19 @@ describe("qweb parser", () => {
           tElse: { type: ASTType.TSet, name: "ourvar", value: "0", defaultValue: null, body: null },
         },
       ],
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // t-foreach
+  // ---------------------------------------------------------------------------
+
+  test("simple t-foreach expression", async () => {
+    expect(parse(`<t t-foreach="list" t-as="item"><t t-esc="item"/></t>`)).toEqual({
+      type: ASTType.TForEach,
+      collection: "list",
+      elem: "item",
+      body: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
     });
   });
 

@@ -193,3 +193,24 @@ export class MultiBlock extends Block {
     return this.children.map((c) => (c ? c.toString() : "")).join("");
   }
 }
+
+export class CollectionBlock extends Block {
+  children: Block[];
+  anchor?: Text;
+
+  constructor(n: number) {
+    super();
+    this.children = new Array(n);
+  }
+
+  mountBefore(anchor: Text) {
+    const _anchor = document.createTextNode("");
+    anchor.before(_anchor);
+    this.anchor = _anchor;
+    for (let child of this.children) {
+      child.mountBefore(_anchor);
+    }
+  }
+
+  patch() {}
+}

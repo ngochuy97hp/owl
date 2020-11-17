@@ -816,6 +816,32 @@ describe("t-set", () => {
 });
 
 // -----------------------------------------------------------------------------
+// t-foreach
+// -----------------------------------------------------------------------------
+
+describe("t-foreach", () => {
+  test("simple iteration", () => {
+    const template = `
+      <div>
+        <t t-foreach="[3, 2, 1]" t-as="item"><t t-esc="item"/></t>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div>321</div>");
+  });
+
+  test("iterate on items", () => {
+    const template = `
+      <div>
+        <t t-foreach="[3, 2, 1]" t-as="item">
+          [<t t-esc="item_index"/>: <t t-esc="item"/> <t t-esc="item_value"/>]
+        </t>
+      </div>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("<div> [0: 3 3]  [1: 2 2]  [2: 1 1] </div>");
+  });
+});
+
+// -----------------------------------------------------------------------------
 // t-call
 // -----------------------------------------------------------------------------
 

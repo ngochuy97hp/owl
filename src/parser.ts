@@ -12,6 +12,7 @@ export const enum ASTType {
   TSet,
   TCall,
   TRaw,
+  TForEach,
 }
 
 export interface ASTText {
@@ -63,6 +64,13 @@ export interface ASTTSet {
   body: AST[] | null; // content of body if not text
 }
 
+export interface ASTTForEach {
+  type: ASTType.TForEach;
+  collection: string;
+  elem: string;
+  body: AST[];
+}
+
 export interface ASTTCall {
   type: ASTType.TCall;
   name: string;
@@ -78,7 +86,8 @@ export type AST =
   | ASTTif
   | ASTTSet
   | ASTTCall
-  | ASTTRaw;
+  | ASTTRaw
+  | ASTTForEach;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -106,6 +115,7 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     parseTIf(node, ctx) ||
     parseTEscNode(node, ctx) ||
     parseTCall(node, ctx) ||
+    parseTForEach(node, ctx) ||
     parseDOMNode(node, ctx) ||
     parseTSetNode(node, ctx) ||
     parseTRawNode(node, ctx) ||
@@ -241,6 +251,33 @@ function parseTRawNode(node: Element, ctx: ParsingContext): AST | null {
   }
   const expr = node.getAttribute("t-raw")!;
   return { type: ASTType.TRaw, expr };
+}
+
+// -----------------------------------------------------------------------------
+// t-foreach
+// -----------------------------------------------------------------------------
+
+function parseTForEach(node: Element, ctx: ParsingContext): AST | null {
+  if (!node.hasAttribute("t-foreach")) {
+    return null;
+  }
+  const collection = node.getAttribute("t-foreach")!;
+  node.removeAttribute("t-foreach");
+  const elem = node.getAttribute("t-as") || "";
+  node.removeAttribute("t-as");
+  const body: AST[] = [];
+  for (let child of node.childNodes) {
+    const ast = parseNode(child, ctx);
+    if (ast) {
+      body.push(ast);
+    }
+  }
+  return {
+    type: ASTType.TForEach,
+    collection,
+    elem,
+    body,
+  };
 }
 
 // -----------------------------------------------------------------------------

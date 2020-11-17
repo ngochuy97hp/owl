@@ -1,4 +1,4 @@
-import { BDom, ContentBlock, HTMLBlock, MultiBlock } from "./bdom";
+import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock } from "./bdom";
 import { compileExpr } from "./expression_parser";
 import { AST, ASTType, parse } from "./parser";
 
@@ -6,7 +6,7 @@ import { AST, ASTType, parse } from "./parser";
 // Compile functions
 // -----------------------------------------------------------------------------
 
-const Blocks = { ContentBlock, MultiBlock, HTMLBlock };
+const Blocks = { ContentBlock, MultiBlock, HTMLBlock, CollectionBlock };
 
 export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (blocks: typeof Blocks, utils: typeof UTILS) => RenderFunction;
@@ -17,6 +17,7 @@ const UTILS = {
   withDefault,
   call,
   zero: Symbol("zero"),
+  getValues,
 };
 
 export function compile(template: string, utils: typeof UTILS = UTILS): RenderFunction {
@@ -30,7 +31,6 @@ export function compileTemplate(template: string): TemplateFunction {
   const ctx = new CompilationContext();
   compileAST(ast, null, 0, false, ctx);
   const code = ctx.generateCode();
-  // console.warn(code);
   return new Function("Blocks, utils", code) as TemplateFunction;
 }
 
@@ -108,7 +108,7 @@ type Dom = DomText | DomComment | DomNode;
 interface MakeBlockParams {
   multi?: number;
   parentBlock?: string | null;
-  parentIndex?: number | null;
+  parentIndex?: number | string | null;
 }
 
 class CompilationContext {
@@ -154,8 +154,8 @@ class CompilationContext {
     this.code = [];
     this.indentLevel = 0;
     // define blocks and utility functions
-    this.addLine(`let {MultiBlock, ContentBlock, HTMLBlock} = Blocks;`);
-    this.addLine(`let {elem, toString, withDefault, call, zero} = utils;`);
+    this.addLine(`let {MultiBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;`);
+    this.addLine(`let {elem, toString, withDefault, call, zero, getValues} = utils;`);
     this.addLine(``);
 
     // define all blocks
@@ -238,7 +238,7 @@ function addToBlockDom(block: BlockDescription, dom: Dom) {
 function compileAST(
   ast: AST,
   currentBlock: BlockDescription | null,
-  currentIndex: number,
+  currentIndex: number | string,
   forceNewBlock: boolean,
   ctx: CompilationContext
 ) {
@@ -371,6 +371,51 @@ function compileAST(
         ctx.indentLevel--;
       }
       ctx.addLine("}");
+      break;
+    }
+
+    // -------------------------------------------------------------------------
+    // t-foreach
+    // -------------------------------------------------------------------------
+
+    case ASTType.TForEach: {
+      if (!currentBlock) {
+        throw new Error("boom");
+      }
+
+      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+      addToBlockDom(currentBlock, anchor);
+      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
+      currentBlock.childNumber++;
+
+      const id = ctx.generateId("b");
+      const collectionBlock: BlockDescription = {
+        name: "Collection",
+        varName: id,
+        updateFn: [],
+        currentPath: [],
+        textNumber: 0,
+        childNumber: 0,
+      };
+      const vals = ctx.generateId("vals");
+      ctx.addLine(`const ${vals} = getValues(${compileExpr(ast.collection, {})});`);
+
+      ctx.addLine(
+        `const ${id} = ${currentBlock.varName}.children[${
+          currentBlock.childNumber - 1
+        }] = new CollectionBlock(${vals}.length);`
+      );
+      ctx.addLine(`for (let i = 0; i < ${vals}.length; i++) {`);
+      ctx.indentLevel++;
+      ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[i];`);
+      ctx.addLine(`ctx[\`${ast.elem}_index\`] = i;`);
+      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${vals}[i];`);
+      const foreachContent: AST =
+        ast.body.length === 1 ? ast.body[0] : { type: ASTType.Multi, content: ast.body };
+      compileAST(foreachContent, collectionBlock, "i", true, ctx);
+      ctx.indentLevel--;
+      ctx.addLine(`}`);
+
       break;
     }
 
@@ -515,4 +560,8 @@ function withDefault(value: any, defaultValue: any): any {
 
 function call(name: string): BDom {
   throw new Error(`Missing template: "${name}"`);
+}
+
+function getValues(collection: any): any[] {
+  return collection;
 }
