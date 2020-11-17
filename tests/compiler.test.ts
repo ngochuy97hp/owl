@@ -849,6 +849,31 @@ describe("t-foreach", () => {
     const expected = `<div><span>1</span><span>2</span></div>`;
     expect(renderToString(template)).toBe(expected);
   });
+
+  test("iterate, position", () => {
+    const template = `
+      <div>
+        <t t-foreach="Array(5)" t-as="elem">
+          -<t t-if="elem_first"> first</t><t t-if="elem_last"> last</t> (<t t-esc="elem_index"/>)
+        </t>
+      </div>`;
+    snapshotCompiledCode(template);
+    const expected = `<div> - first (0)  - (1)  - (2)  - (3)  - last (4) </div>`;
+    expect(renderToString(template)).toBe(expected);
+  });
+
+  test("iterate, dict param", () => {
+    const template = `
+      <div>
+        <t t-foreach="value" t-as="item">
+          [<t t-esc="item_index"/>: <t t-esc="item"/> <t t-esc="item_value"/>]
+        </t>
+      </div>`;
+    snapshotCompiledCode(template);
+    const expected = `<div> [0: a 1]  [1: b 2]  [2: c 3] </div>`;
+    const context = { value: { a: 1, b: 2, c: 3 } };
+    expect(renderToString(template, context)).toBe(expected);
+  });
 });
 
 // -----------------------------------------------------------------------------

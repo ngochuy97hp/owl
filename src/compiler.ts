@@ -424,6 +424,14 @@ function compileAST(
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
 
+      const cId = ctx.generateId();
+      const vals = `v${cId}`;
+      const keys = `k${cId}`;
+      const l = `l${cId}`;
+      ctx.addLine(
+        `const [${vals}, ${keys}, ${l}] = getValues(${compileExpr(ast.collection, {})});`
+      );
+
       const id = ctx.generateId("b");
       const collectionBlock: BlockDescription = {
         name: "Collection",
@@ -433,19 +441,19 @@ function compileAST(
         textNumber: 0,
         childNumber: 0,
       };
-      const vals = ctx.generateId("vals");
-      ctx.addLine(`const ${vals} = getValues(${compileExpr(ast.collection, {})});`);
 
       ctx.addLine(
         `const ${id} = ${currentBlock.varName}.children[${
           currentBlock.childNumber - 1
-        }] = new CollectionBlock(${vals}.length);`
+        }] = new CollectionBlock(${l});`
       );
-      ctx.addLine(`for (let i = 0; i < ${vals}.length; i++) {`);
+      ctx.addLine(`for (let i = 0; i < ${l}; i++) {`);
       ctx.indentLevel++;
       ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[i];`);
+      ctx.addLine(`ctx[\`${ast.elem}_first\`] = i === 0;`);
+      ctx.addLine(`ctx[\`${ast.elem}_last\`] = i === ${vals}.length - 1;`);
       ctx.addLine(`ctx[\`${ast.elem}_index\`] = i;`);
-      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${vals}[i];`);
+      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[i];`);
       compileAST(ast.body, collectionBlock, "i", true, ctx);
       ctx.indentLevel--;
       ctx.addLine(`}`);
@@ -609,6 +617,11 @@ function call(name: string): BDom {
   throw new Error(`Missing template: "${name}"`);
 }
 
-function getValues(collection: any): any[] {
-  return collection;
+function getValues(collection: any): [any[], any[], number] {
+  if (Array.isArray(collection)) {
+    return [collection, collection, collection.length];
+  } else {
+    const keys = Object.keys(collection);
+    return [keys, Object.values(collection), keys.length];
+  }
 }
