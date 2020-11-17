@@ -1399,7 +1399,7 @@ exports[`t-foreach iterate, position 1`] = `
 }"
 `;
 
-exports[`t-foreach simple iteration 1`] = `
+exports[`t-foreach simple iteration (in a node) 1`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
@@ -1424,6 +1424,30 @@ exports[`t-foreach simple iteration 1`] = `
       b3.children[i] = new TextBlock(ctx['item'])
     }
     return b1;
+  }
+}"
+`;
+
+exports[`t-foreach simple iteration 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  
+  return ctx => {
+    ctx = Object.create(ctx);
+    const [v1, k1, l1] = getValues([3,2,1]);
+    const b2 = new CollectionBlock(l1);
+    for (let i = 0; i < l1; i++) {
+      ctx[\`item\`] = v1[i];
+      ctx[\`item_first\`] = i === 0;
+      ctx[\`item_last\`] = i === v1.length - 1;
+      ctx[\`item_index\`] = i;
+      ctx[\`item_value\`] = k1[i];
+      b2.children[i] = new TextBlock(ctx['item'])
+    }
+    return b2;
   }
 }"
 `;

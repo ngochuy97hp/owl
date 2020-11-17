@@ -821,6 +821,12 @@ describe("t-set", () => {
 
 describe("t-foreach", () => {
   test("simple iteration", () => {
+    const template = `<t t-foreach="[3, 2, 1]" t-as="item"><t t-esc="item"/></t>`;
+    snapshotCompiledCode(template);
+    expect(renderToString(template)).toBe("321");
+  });
+
+  test("simple iteration (in a node)", () => {
     const template = `
       <div>
         <t t-foreach="[3, 2, 1]" t-as="item"><t t-esc="item"/></t>

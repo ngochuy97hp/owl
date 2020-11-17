@@ -415,15 +415,7 @@ function compileAST(
     // -------------------------------------------------------------------------
 
     case ASTType.TForEach: {
-      if (!currentBlock) {
-        throw new Error("boom");
-      }
       ctx.shouldProtextScope = true;
-
-      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      addToBlockDom(currentBlock, anchor);
-      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-      currentBlock.childNumber++;
 
       const cId = ctx.generateId();
       const vals = `v${cId}`;
@@ -434,6 +426,33 @@ function compileAST(
       );
 
       const id = ctx.generateId("b");
+
+      if (currentBlock) {
+        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+        addToBlockDom(currentBlock, anchor);
+        currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
+        currentBlock.childNumber++;
+
+        ctx.addLine(
+          `const ${id} = ${currentBlock.varName}.children[${
+            currentBlock.childNumber - 1
+          }] = new CollectionBlock(${l});`
+        );
+      } else {
+        ctx.addLine(`const ${id} = new CollectionBlock(${l});`);
+        if (!ctx.rootBlock) {
+          ctx.rootBlock = id;
+        }
+      }
+
+      ctx.addLine(`for (let i = 0; i < ${l}; i++) {`);
+      ctx.indentLevel++;
+      ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[i];`);
+      ctx.addLine(`ctx[\`${ast.elem}_first\`] = i === 0;`);
+      ctx.addLine(`ctx[\`${ast.elem}_last\`] = i === ${vals}.length - 1;`);
+      ctx.addLine(`ctx[\`${ast.elem}_index\`] = i;`);
+      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[i];`);
+
       const collectionBlock: BlockDescription = {
         name: "Collection",
         varName: id,
@@ -442,19 +461,6 @@ function compileAST(
         textNumber: 0,
         childNumber: 0,
       };
-
-      ctx.addLine(
-        `const ${id} = ${currentBlock.varName}.children[${
-          currentBlock.childNumber - 1
-        }] = new CollectionBlock(${l});`
-      );
-      ctx.addLine(`for (let i = 0; i < ${l}; i++) {`);
-      ctx.indentLevel++;
-      ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[i];`);
-      ctx.addLine(`ctx[\`${ast.elem}_first\`] = i === 0;`);
-      ctx.addLine(`ctx[\`${ast.elem}_last\`] = i === ${vals}.length - 1;`);
-      ctx.addLine(`ctx[\`${ast.elem}_index\`] = i;`);
-      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[i];`);
       compileAST(ast.body, collectionBlock, "i", true, ctx);
       ctx.indentLevel--;
       ctx.addLine(`}`);
