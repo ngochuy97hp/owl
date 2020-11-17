@@ -1176,62 +1176,62 @@ describe("foreach", () => {
   //   expect(result).toBe(expected);
   // });
 
-  test("does not pollute the rendering context", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-foreach="[1]" t-as="item"><t t-esc="item"/></t>
-      </div>`
-    );
-    const context = { __owl__: {} };
-    renderToString(qweb, "test", context);
-    expect(Object.keys(context)).toEqual(["__owl__"]);
-  });
+  // test("does not pollute the rendering context", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-foreach="[1]" t-as="item"><t t-esc="item"/></t>
+  //     </div>`
+  //   );
+  //   const context = { __owl__: {} };
+  //   renderToString(qweb, "test", context);
+  //   expect(Object.keys(context)).toEqual(["__owl__"]);
+  // });
 
-  test("t-foreach in t-forach", () => {
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-foreach="numbers" t-as="number">
-          <t t-foreach="letters" t-as="letter">
-            [<t t-esc="number"/><t t-esc="letter"/>]
-          </t>
-        </t>
-      </div>`
-    );
-    const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
-    expect(renderToString(qweb, "test", context)).toBe(
-      "<div> [1a]  [1b]  [2a]  [2b]  [3a]  [3b] </div>"
-    );
-  });
+  // test("t-foreach in t-forach", () => {
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-foreach="numbers" t-as="number">
+  //         <t t-foreach="letters" t-as="letter">
+  //           [<t t-esc="number"/><t t-esc="letter"/>]
+  //         </t>
+  //       </t>
+  //     </div>`
+  //   );
+  //   const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
+  //   expect(renderToString(qweb, "test", context)).toBe(
+  //     "<div> [1a]  [1b]  [2a]  [2b]  [3a]  [3b] </div>"
+  //   );
+  // });
 
-  test("t-call without body in t-foreach in t-foreach", () => {
-    qweb.addTemplate(
-      "test_called",
-      `<t>
-        <t t-set="c" t-value="'x' + '_' + a + '_'+ b" />
-        [<t t-esc="a" />]
-        [<t t-esc="b" />]
-        [<t t-esc="c" />]
-       </t>`
-    );
-    qweb.addTemplate(
-      "test",
-      `<div>
-        <t t-foreach="numbers" t-as="a">
-          <t t-foreach="letters" t-as="b">
-            <t t-call="test_called" />
-          </t>
-          <span t-esc="c"/>
-        </t>
-        <span>[<t t-esc="a" />][<t t-esc="b" />][<t t-esc="c" />]</span>
-      </div>`
-    );
-    const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
-    expect(renderToString(qweb, "test", context)).toBe(
-      "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>"
-    );
-  });
+  // test("t-call without body in t-foreach in t-foreach", () => {
+  //   qweb.addTemplate(
+  //     "test_called",
+  //     `<t>
+  //       <t t-set="c" t-value="'x' + '_' + a + '_'+ b" />
+  //       [<t t-esc="a" />]
+  //       [<t t-esc="b" />]
+  //       [<t t-esc="c" />]
+  //      </t>`
+  //   );
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //       <t t-foreach="numbers" t-as="a">
+  //         <t t-foreach="letters" t-as="b">
+  //           <t t-call="test_called" />
+  //         </t>
+  //         <span t-esc="c"/>
+  //       </t>
+  //       <span>[<t t-esc="a" />][<t t-esc="b" />][<t t-esc="c" />]</span>
+  //     </div>`
+  //   );
+  //   const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
+  //   expect(renderToString(qweb, "test", context)).toBe(
+  //     "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>"
+  //   );
+  // });
 
   test("t-call with body in t-foreach in t-foreach", () => {
     qweb.addTemplate(

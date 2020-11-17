@@ -891,6 +891,55 @@ describe("t-foreach", () => {
     renderToString(template, context);
     expect(Object.keys(context)).toEqual(["__owl__"]);
   });
+
+  test("t-foreach in t-foreach", () => {
+    const template = `
+      <div>
+        <t t-foreach="numbers" t-as="number">
+          <t t-foreach="letters" t-as="letter">
+            [<t t-esc="number"/><t t-esc="letter"/>]
+          </t>
+        </t>
+      </div>`;
+
+    snapshotCompiledCode(template);
+
+    const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
+    const expected = "<div> [1a]  [1b]  [2a]  [2b]  [3a]  [3b] </div>";
+    expect(renderToString(template, context)).toBe(expected);
+  });
+
+  test("t-call without body in t-foreach in t-foreach", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = `
+      <t>
+        <t t-set="c" t-value="'x' + '_' + a + '_'+ b" />
+        [<t t-esc="a" />]
+        [<t t-esc="b" />]
+        [<t t-esc="c" />]
+      </t>`;
+
+    const main = `
+      <div>
+        <t t-foreach="numbers" t-as="a">
+          <t t-foreach="letters" t-as="b">
+            <t t-call="sub" />
+          </t>
+          <span t-esc="c"/>
+        </t>
+        <span>[<t t-esc="a" />][<t t-esc="b" />][<t t-esc="c" />]</span>
+      </div>`;
+
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+    snapshotCompiledCode(sub);
+    snapshotCompiledCode(main);
+
+    const context = { numbers: [1, 2, 3], letters: ["a", "b"] };
+    const expected =
+      "<div> [1] [a] [x_1_a]  [1] [b] [x_1_b] <span></span> [2] [a] [x_2_a]  [2] [b] [x_2_b] <span></span> [3] [a] [x_3_a]  [3] [b] [x_3_b] <span></span><span>[][][]</span></div>";
+    expect(templateSet.renderToString("main", context)).toBe(expected);
+  });
 });
 
 // -----------------------------------------------------------------------------

@@ -118,8 +118,9 @@ class CompilationContext {
   blocks: BlockDescription[] = [];
   rootBlock: string | null = null;
   nextId = 1;
-  shouldProtextScope: boolean = false;
+  shouldProtectScope: boolean = false;
   key: string | null = null;
+  loopLevel: number = 0;
 
   addLine(line: string) {
     const prefix = new Array(this.indentLevel + 2).join("  ");
@@ -193,7 +194,7 @@ class CompilationContext {
     this.indentLevel = 0;
     this.addLine(``);
     this.addLine(`return ctx => {`);
-    if (this.shouldProtextScope) {
+    if (this.shouldProtectScope) {
       this.addLine(`  ctx = Object.create(ctx);`);
     }
     for (let line of mainCode) {
@@ -415,8 +416,6 @@ function compileAST(
     // -------------------------------------------------------------------------
 
     case ASTType.TForEach: {
-      ctx.shouldProtextScope = true;
-
       const cId = ctx.generateId();
       const vals = `v${cId}`;
       const keys = `k${cId}`;
@@ -434,9 +433,7 @@ function compileAST(
         currentBlock.childNumber++;
 
         ctx.addLine(
-          `const ${id} = ${currentBlock.varName}.children[${
-            currentBlock.childNumber - 1
-          }] = new CollectionBlock(${l});`
+          `const ${id} = ${currentBlock.varName}.children[${currentIndex}] = new CollectionBlock(${l});`
         );
       } else {
         ctx.addLine(`const ${id} = new CollectionBlock(${l});`);
@@ -444,14 +441,16 @@ function compileAST(
           ctx.rootBlock = id;
         }
       }
-
-      ctx.addLine(`for (let i = 0; i < ${l}; i++) {`);
+      ctx.loopLevel++;
+      const loopVar = `i${ctx.loopLevel}`;
+      ctx.addLine(`ctx = Object.create(ctx);`);
+      ctx.addLine(`for (let ${loopVar} = 0; ${loopVar} < ${l}; ${loopVar}++) {`);
       ctx.indentLevel++;
-      ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[i];`);
-      ctx.addLine(`ctx[\`${ast.elem}_first\`] = i === 0;`);
-      ctx.addLine(`ctx[\`${ast.elem}_last\`] = i === ${vals}.length - 1;`);
-      ctx.addLine(`ctx[\`${ast.elem}_index\`] = i;`);
-      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[i];`);
+      ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[${loopVar}];`);
+      ctx.addLine(`ctx[\`${ast.elem}_first\`] = ${loopVar} === 0;`);
+      ctx.addLine(`ctx[\`${ast.elem}_last\`] = ${loopVar} === ${vals}.length - 1;`);
+      ctx.addLine(`ctx[\`${ast.elem}_index\`] = ${loopVar};`);
+      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[${loopVar}];`);
 
       const collectionBlock: BlockDescription = {
         name: "Collection",
@@ -461,14 +460,16 @@ function compileAST(
         textNumber: 0,
         childNumber: 0,
       };
-      compileAST(ast.body, collectionBlock, "i", true, ctx);
+      compileAST(ast.body, collectionBlock, loopVar, true, ctx);
       ctx.indentLevel--;
       ctx.addLine(`}`);
+      ctx.loopLevel--;
+      ctx.addLine(`ctx = ctx.__proto__;`);
       break;
     }
 
     // -------------------------------------------------------------------------
-    // t-foreach
+    // t-key
     // -------------------------------------------------------------------------
 
     case ASTType.TKey: {
@@ -541,9 +542,7 @@ function compileAST(
         }
 
         ctx.addLine(
-          `${currentBlock.varName}.children[${currentBlock.childNumber - 1}] = call(\`${
-            ast.name
-          }\`, ctx);`
+          `${currentBlock.varName}.children[${currentIndex}] = call(\`${ast.name}\`, ctx);`
         );
       } else {
         const id = ctx.generateId("b");
@@ -560,7 +559,7 @@ function compileAST(
     // t-set/t-value
     // -------------------------------------------------------------------------
     case ASTType.TSet: {
-      ctx.shouldProtextScope = true;
+      ctx.shouldProtectScope = true;
       const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
       if (ast.body) {
         const nextId = ctx.nextId;
