@@ -2,6 +2,18 @@ import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock, TextBlock }
 import { compileExpr } from "./expression_parser";
 import { AST, ASTType, parse } from "./parser";
 
+export const INTERP_REGEXP = /\{\{.*?\}\}/g;
+
+function interpolate(s: string): string {
+  let matches = s.match(INTERP_REGEXP);
+  if (matches && matches[0].length === s.length) {
+    return `(${compileExpr(s.slice(2, -2), {})})`;
+  }
+
+  let r = s.replace(/\{\{.*?\}\}/g, (s) => "${" + compileExpr(s.slice(2, -2), {}) + "}");
+  return "`" + r + "`";
+}
+
 // -----------------------------------------------------------------------------
 // Compile functions
 // -----------------------------------------------------------------------------
@@ -533,6 +545,9 @@ function compileAST(
         }
       }
 
+      const isDynamic = INTERP_REGEXP.test(ast.name);
+      const subTemplate = isDynamic ? interpolate(ast.name) : "`" + ast.name + "`";
+
       if (currentBlock) {
         if (!forceNewBlock) {
           const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
@@ -542,12 +557,12 @@ function compileAST(
         }
 
         ctx.addLine(
-          `${currentBlock.varName}.children[${currentIndex}] = call(\`${ast.name}\`, ctx);`
+          `${currentBlock.varName}.children[${currentIndex}] = call(${subTemplate}, ctx);`
         );
       } else {
         const id = ctx.generateId("b");
         ctx.rootBlock = id;
-        ctx.addLine(`const ${id} = call(\`${ast.name}\`, ctx);`);
+        ctx.addLine(`const ${id} = call(${subTemplate}, ctx);`);
       }
       if (ast.body) {
         ctx.addLine(`ctx = ctx.__proto__;`);

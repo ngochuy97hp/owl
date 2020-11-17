@@ -1460,4 +1460,21 @@ describe("t-call (template calling)", () => {
     snapshotCompiledCode(main);
     expect(templateSet.renderToString("main")).toBe(expected);
   });
+
+  test("dynamic t-call", () => {
+    const templateSet = new TestTemplateSet();
+    const foo = `<foo><t t-esc="val"/></foo>`;
+    const bar = `<bar><t t-esc="val"/></bar>`;
+    const main = `<div><t t-call="{{template}}"/></div>`;
+
+    templateSet.add("foo", foo);
+    templateSet.add("bar", bar);
+    templateSet.add("main", main);
+
+    snapshotCompiledCode(main);
+    const expected1 = "<div><foo>foo</foo></div>";
+    expect(templateSet.renderToString("main", { template: "foo", val: "foo" })).toBe(expected1);
+    const expected2 = "<div><bar>quux</bar></div>";
+    expect(templateSet.renderToString("main", { template: "bar", val: "quux" })).toBe(expected2);
+  });
 });

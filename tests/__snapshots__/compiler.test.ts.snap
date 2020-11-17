@@ -679,6 +679,25 @@ exports[`t-call (template calling) cascading t-call t-raw='0', without external 
 }"
 `;
 
+exports[`t-call (template calling) dynamic t-call 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = call((ctx['template']), ctx);
+    return b1;
+  }
+}"
+`;
+
 exports[`t-call (template calling) inherit context 1`] = `
 "function anonymous(Blocks, utils
 ) {
