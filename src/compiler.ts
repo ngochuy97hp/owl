@@ -182,7 +182,7 @@ class CompilationContext {
         this.addLine(`children = new Array(${block.childNumber});`);
       }
       if (block.textNumber) {
-        this.addLine(`texts = new Array(${block.textNumber});`);
+        this.addLine(`data = new Array(${block.textNumber});`);
       }
       if (block.updateFn.length) {
         this.addLine(`update() {`);
@@ -318,9 +318,9 @@ function compileAST(
         for (let key in dynAttrs) {
           const idx = currentBlock.textNumber;
           currentBlock.textNumber++;
-          ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${compileExpr(dynAttrs[key], {})};`);
+          ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${compileExpr(dynAttrs[key], {})};`);
           currentBlock.updateFn.push(
-            `${targetEl}.setAttribute(\`${key.slice(6)}\`, this.texts[${idx}]);`
+            `${targetEl}.setAttribute(\`${key.slice(6)}\`, this.data[${idx}]);`
           );
         }
       }
@@ -373,11 +373,11 @@ function compileAST(
         addToBlockDom(currentBlock, text);
         const idx = currentBlock.textNumber;
         currentBlock.textNumber++;
-        ctx.addLine(`${currentBlock.varName}.texts[${idx}] = ${expr};`);
+        ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${expr};`);
         if (ast.expr === "0") {
-          currentBlock.updateFn.push(`${targetEl}.textContent = this.texts[${idx}];`);
+          currentBlock.updateFn.push(`${targetEl}.textContent = this.data[${idx}];`);
         } else {
-          currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.texts[${idx}]);`);
+          currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.data[${idx}]);`);
         }
       }
       break;

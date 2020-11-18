@@ -93,7 +93,7 @@ export class ContentBlock extends Block {
   el?: HTMLElement | Text;
   children: (ContentBlock | null)[] | null = null;
   anchors?: Text[];
-  texts: string[] = [];
+  data: any[] = [];
 
   toString(): string {
     const div = document.createElement("div");
@@ -133,7 +133,7 @@ export class ContentBlock extends Block {
   }
 
   patch(newTree: any) {
-    this.texts = newTree.texts;
+    this.data = newTree.data;
     this.update();
     if (this.children) {
       const children = this.children;
