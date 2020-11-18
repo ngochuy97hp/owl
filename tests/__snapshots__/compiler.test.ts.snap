@@ -32,7 +32,29 @@ exports[`attributes dynamic class attribute 1`] = `
     static el = elem(\`<div></div>\`);
     data = new Array(1);
     update() {
-      this.el.setAttribute(\`class\`, this.data[0]);
+      this.updateClass(this.el, this.data[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = ctx['c'];
+    return b1;
+  }
+}"
+`;
+
+exports[`attributes dynamic empty class attribute 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div></div>\`);
+    data = new Array(1);
+    update() {
+      this.updateClass(this.el, this.data[0]);
     }
   }
   

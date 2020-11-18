@@ -307,7 +307,7 @@ function compileAST(
       const dynAttrs: { [key: string]: string } = {};
       for (let key in ast.attrs) {
         if (key.startsWith("t-att")) {
-          dynAttrs[key] = ast.attrs[key];
+          dynAttrs[key.slice(6)] = ast.attrs[key];
         } else {
           staticAttrs[key] = ast.attrs[key];
         }
@@ -319,9 +319,11 @@ function compileAST(
           const idx = currentBlock.textNumber;
           currentBlock.textNumber++;
           ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${compileExpr(dynAttrs[key], {})};`);
-          currentBlock.updateFn.push(
-            `${targetEl}.setAttribute(\`${key.slice(6)}\`, this.data[${idx}]);`
-          );
+          if (key === "class") {
+            currentBlock.updateFn.push(`this.updateClass(${targetEl}, this.data[${idx}]);`);
+          } else {
+            currentBlock.updateFn.push(`${targetEl}.setAttribute(\`${key}\`, this.data[${idx}]);`);
+          }
         }
       }
 

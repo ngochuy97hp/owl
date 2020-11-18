@@ -117,6 +117,12 @@ export class ContentBlock extends Block {
 
   update() {}
 
+  updateClass(elem: HTMLElement, _class: string) {
+    if (_class) {
+      elem.classList.add(_class);
+    }
+  }
+
   protected build() {
     this.el = (this.constructor as any).el.cloneNode(true);
     if (this.children) {

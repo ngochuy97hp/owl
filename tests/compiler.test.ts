@@ -255,6 +255,13 @@ describe("attributes", () => {
     const result = renderToString(template, { c: "abc" });
     expect(result).toBe(`<div class="abc"></div>`);
   });
+
+  test("dynamic empty class attribute", () => {
+    const template = `<div t-att-class="c"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template, { c: "" });
+    expect(result).toBe(`<div></div>`);
+  });
 });
 
 // -----------------------------------------------------------------------------
