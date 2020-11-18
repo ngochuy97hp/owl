@@ -262,6 +262,20 @@ describe("attributes", () => {
     const result = renderToString(template, { c: "" });
     expect(result).toBe(`<div></div>`);
   });
+
+  test("dynamic attribute with a dash", () => {
+    const template = `<div t-att-data-action-id="id"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template, { id: 32 });
+    expect(result).toBe(`<div data-action-id="32"></div>`);
+  });
+
+  test("dynamic formatted attributes with a dash", () => {
+    const template = `<div t-attf-aria-label="Some text {{id}}"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template, { id: 32 });
+    expect(result).toBe(`<div aria-label="Some text 32"></div>`);
+  });
 });
 
 // -----------------------------------------------------------------------------

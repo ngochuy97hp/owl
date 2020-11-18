@@ -594,17 +594,17 @@ describe("attributes", () => {
   //   expect(result).toBe(`<div class="abc"></div>`);
   // });
 
-  test("dynamic empty class attribute", () => {
-    qweb.addTemplate("test", `<div t-att-class="c"/>`);
-    const result = renderToString(qweb, "test", { c: "" });
-    expect(result).toBe(`<div></div>`);
-  });
+  // test("dynamic empty class attribute", () => {
+  //   qweb.addTemplate("test", `<div t-att-class="c"/>`);
+  //   const result = renderToString(qweb, "test", { c: "" });
+  //   expect(result).toBe(`<div></div>`);
+  // });
 
-  test("dynamic attribute with a dash", () => {
-    qweb.addTemplate("test", `<div t-att-data-action-id="id"/>`);
-    const result = renderToString(qweb, "test", { id: 32 });
-    expect(result).toBe(`<div data-action-id="32"></div>`);
-  });
+  // test("dynamic attribute with a dash", () => {
+  //   qweb.addTemplate("test", `<div t-att-data-action-id="id"/>`);
+  //   const result = renderToString(qweb, "test", { id: 32 });
+  //   expect(result).toBe(`<div data-action-id="32"></div>`);
+  // });
 
   test("dynamic formatted attributes with a dash", () => {
     qweb.addTemplate("test", `<div t-attf-aria-label="Some text {{id}}"/>`);
