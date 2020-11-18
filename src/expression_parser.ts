@@ -1,5 +1,3 @@
-// AAA expression parser
-
 /**
  * Owl QWeb Expression Parser
  *
@@ -31,7 +29,7 @@ const RESERVED_WORDS = "true,false,NaN,null,undefined,debugger,console,window,in
   ","
 );
 
-const WORD_REPLACEMENT = {
+const WORD_REPLACEMENT: { [key: string]: string } = {
   and: "&&",
   or: "||",
   gt: ">",
@@ -139,7 +137,7 @@ let tokenizeSymbol: Tokenizer = function (expr) {
       i++;
     }
     if (s in WORD_REPLACEMENT) {
-      return { type: "OPERATOR", value: (WORD_REPLACEMENT as any)[s], size: s.length };
+      return { type: "OPERATOR", value: WORD_REPLACEMENT[s], size: s.length };
     }
     return { type: "SYMBOL", value: s };
   } else {
@@ -238,6 +236,7 @@ export function tokenize(expr: string): Token[] {
  * the list of variables so it does not get replaced by a lookup in the context
  */
 export function compileExprToArray(expr: string): Token[] {
+  const localVars = new Set<string>();
   const tokens = tokenize(expr);
   for (let i = 0; i < tokens.length; i++) {
     let token = tokens[i];
@@ -255,10 +254,27 @@ export function compileExprToArray(expr: string): Token[] {
         }
       }
     }
+    if (nextToken && nextToken.type === "OPERATOR" && nextToken.value === "=>") {
+      if (token.type === "RIGHT_PAREN") {
+        let j = i - 1;
+        while (j > 0 && tokens[j].type !== "LEFT_PAREN") {
+          if (tokens[j].type === "SYMBOL" && tokens[j].originalValue) {
+            tokens[j].value = tokens[j].originalValue!;
+            localVars.add(tokens[j].value);
+          }
+          j--;
+        }
+      } else {
+        localVars.add(token.value);
+      }
+    }
 
     if (isVar) {
       token.varName = token.value;
-      token.value = `ctx['${token.value}']`;
+      if (!localVars.has(token.value)) {
+        token.originalValue = token.value;
+        token.value = `ctx['${token.value}']`;
+      }
     }
   }
   return tokens;
