@@ -1,5 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`attributes dynamic attribute falsy variable  1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div></div>\`);
+    data = new Array(1);
+    update() {
+      this.updateAttr(this.el, \`foo\`, this.data[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`attributes dynamic attribute with a dash 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -10,7 +32,7 @@ exports[`attributes dynamic attribute with a dash 1`] = `
     static el = elem(\`<div></div>\`);
     data = new Array(1);
     update() {
-      this.el.setAttribute(\`data-action-id\`, this.data[0]);
+      this.updateAttr(this.el, \`data-action-id\`, this.data[0]);
     }
   }
   
@@ -32,7 +54,7 @@ exports[`attributes dynamic attributes 1`] = `
     static el = elem(\`<div></div>\`);
     data = new Array(1);
     update() {
-      this.el.setAttribute(\`foo\`, this.data[0]);
+      this.updateAttr(this.el, \`foo\`, this.data[0]);
     }
   }
   
@@ -98,13 +120,35 @@ exports[`attributes dynamic formatted attributes with a dash 1`] = `
     static el = elem(\`<div></div>\`);
     data = new Array(1);
     update() {
-      this.el.setAttribute(\`aria-label\`, this.data[0]);
+      this.updateAttr(this.el, \`aria-label\`, this.data[0]);
     }
   }
   
   return ctx => {
     const b1 = new Block1();
     b1.data[0] = \`Some text \${ctx['id']}\`;
+    return b1;
+  }
+}"
+`;
+
+exports[`attributes fixed variable 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div></div>\`);
+    data = new Array(1);
+    update() {
+      this.updateAttr(this.el, \`foo\`, this.data[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = ctx['value'];
     return b1;
   }
 }"
@@ -240,7 +284,7 @@ exports[`misc global 3`] = `
     children = new Array(1);
     data = new Array(1);
     update() {
-      this.el.setAttribute(\`falló\`, this.data[0]);
+      this.updateAttr(this.el, \`falló\`, this.data[0]);
     }
   }
   

@@ -123,6 +123,14 @@ export class ContentBlock extends Block {
     }
   }
 
+  updateAttr(elem: HTMLElement, attr: string, value: any) {
+    if (value) {
+      elem.setAttribute(attr, value);
+    } else {
+      elem.removeAttribute(attr)
+    }
+  }
+
   protected build() {
     this.el = (this.constructor as any).el.cloneNode(true);
     if (this.children) {

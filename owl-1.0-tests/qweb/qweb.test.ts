@@ -606,23 +606,23 @@ describe("attributes", () => {
   //   expect(result).toBe(`<div data-action-id="32"></div>`);
   // });
 
-  test("dynamic formatted attributes with a dash", () => {
-    qweb.addTemplate("test", `<div t-attf-aria-label="Some text {{id}}"/>`);
-    const result = renderToString(qweb, "test", { id: 32 });
-    expect(result).toBe(`<div aria-label="Some text 32"></div>`);
-  });
+  // test("dynamic formatted attributes with a dash", () => {
+  //   qweb.addTemplate("test", `<div t-attf-aria-label="Some text {{id}}"/>`);
+  //   const result = renderToString(qweb, "test", { id: 32 });
+  //   expect(result).toBe(`<div aria-label="Some text 32"></div>`);
+  // });
 
-  test("fixed variable", () => {
-    qweb.addTemplate("test", `<div t-att-foo="value"/>`);
-    const result = renderToString(qweb, "test", { value: "ok" });
-    expect(result).toBe(`<div foo="ok"></div>`);
-  });
+  // test("fixed variable", () => {
+  //   qweb.addTemplate("test", `<div t-att-foo="value"/>`);
+  //   const result = renderToString(qweb, "test", { value: "ok" });
+  //   expect(result).toBe(`<div foo="ok"></div>`);
+  // });
 
-  test("dynamic attribute falsy variable ", () => {
-    qweb.addTemplate("test", `<div t-att-foo="value"/>`);
-    const result = renderToString(qweb, "test", { value: false });
-    expect(result).toBe(`<div></div>`);
-  });
+  // test("dynamic attribute falsy variable ", () => {
+  //   qweb.addTemplate("test", `<div t-att-foo="value"/>`);
+  //   const result = renderToString(qweb, "test", { value: false });
+  //   expect(result).toBe(`<div></div>`);
+  // });
 
   test("tuple literal", () => {
     qweb.addTemplate("test", `<div t-att="['foo', 'bar']"/>`);
@@ -1293,58 +1293,58 @@ describe("foreach", () => {
 });
 
 describe("misc", () => {
-  test("global", () => {
-    qweb.addTemplate("_callee-asc", `<año t-att-falló="'agüero'" t-raw="0"/>`);
-    qweb.addTemplate("_callee-uses-foo", `<span t-esc="foo">foo default</span>`);
-    qweb.addTemplate("_callee-asc-toto", `<div t-raw="toto">toto default</div>`);
-    qweb.addTemplate(
-      "caller",
-      `
-      <div>
-        <t t-foreach="[4,5,6]" t-as="value">
-          <span t-esc="value"/>
-          <t t-call="_callee-asc">
-            <t t-call="_callee-uses-foo">
-                <t t-set="foo" t-value="'aaa'"/>
-            </t>
-            <t t-call="_callee-uses-foo"/>
-            <t t-set="foo" t-value="'bbb'"/>
-            <t t-call="_callee-uses-foo"/>
-          </t>
-        </t>
-        <t t-call="_callee-asc-toto"/>
-      </div>
-    `
-    );
-    const result = trim(renderToString(qweb, "caller"));
-    const expected = trim(`
-      <div>
-        <span>4</span>
-        <año falló="agüero">
-          <span>aaa</span>
-          <span>foo default</span>
-          <span>bbb</span>
-        </año>
+  // test("global", () => {
+  //   qweb.addTemplate("_callee-asc", `<año t-att-falló="'agüero'" t-raw="0"/>`);
+  //   qweb.addTemplate("_callee-uses-foo", `<span t-esc="foo">foo default</span>`);
+  //   qweb.addTemplate("_callee-asc-toto", `<div t-raw="toto">toto default</div>`);
+  //   qweb.addTemplate(
+  //     "caller",
+  //     `
+  //     <div>
+  //       <t t-foreach="[4,5,6]" t-as="value">
+  //         <span t-esc="value"/>
+  //         <t t-call="_callee-asc">
+  //           <t t-call="_callee-uses-foo">
+  //               <t t-set="foo" t-value="'aaa'"/>
+  //           </t>
+  //           <t t-call="_callee-uses-foo"/>
+  //           <t t-set="foo" t-value="'bbb'"/>
+  //           <t t-call="_callee-uses-foo"/>
+  //         </t>
+  //       </t>
+  //       <t t-call="_callee-asc-toto"/>
+  //     </div>
+  //   `
+  //   );
+  //   const result = trim(renderToString(qweb, "caller"));
+  //   const expected = trim(`
+  //     <div>
+  //       <span>4</span>
+  //       <año falló="agüero">
+  //         <span>aaa</span>
+  //         <span>foo default</span>
+  //         <span>bbb</span>
+  //       </año>
 
-        <span>5</span>
-        <año falló="agüero">
-          <span>aaa</span>
-          <span>foo default</span>
-          <span>bbb</span>
-        </año>
+  //       <span>5</span>
+  //       <año falló="agüero">
+  //         <span>aaa</span>
+  //         <span>foo default</span>
+  //         <span>bbb</span>
+  //       </año>
 
-        <span>6</span>
-        <año falló="agüero">
-          <span>aaa</span>
-          <span>foo default</span>
-          <span>bbb</span>
-        </año>
+  //       <span>6</span>
+  //       <año falló="agüero">
+  //         <span>aaa</span>
+  //         <span>foo default</span>
+  //         <span>bbb</span>
+  //       </año>
 
-        <div>toto default</div>
-      </div>
-    `);
-    expect(result).toBe(expected);
-  });
+  //       <div>toto default</div>
+  //     </div>
+  //   `);
+  //   expect(result).toBe(expected);
+  // });
 });
 
 describe("t-on", () => {

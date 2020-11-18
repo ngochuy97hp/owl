@@ -324,7 +324,7 @@ function compileAST(
           if (key === "class") {
             currentBlock.updateFn.push(`this.updateClass(${targetEl}, this.data[${idx}]);`);
           } else {
-            currentBlock.updateFn.push(`${targetEl}.setAttribute(\`${key}\`, this.data[${idx}]);`);
+            currentBlock.updateFn.push(`this.updateAttr(${targetEl}, \`${key}\`, this.data[${idx}]);`);
           }
         }
       }

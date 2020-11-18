@@ -276,6 +276,21 @@ describe("attributes", () => {
     const result = renderToString(template, { id: 32 });
     expect(result).toBe(`<div aria-label="Some text 32"></div>`);
   });
+
+  test("fixed variable", () => {
+    const template = `<div t-att-foo="value"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template, { value: "ok" });
+    expect(result).toBe(`<div foo="ok"></div>`);
+  });
+
+  test("dynamic attribute falsy variable ", () => {
+    const template = `<div t-att-foo="value"/>`;
+    snapshotCompiledCode(template);
+    const result = renderToString(template, { value: false });
+    expect(result).toBe(`<div></div>`);
+  });
+
 });
 
 // -----------------------------------------------------------------------------
