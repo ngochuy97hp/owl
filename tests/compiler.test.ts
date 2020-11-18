@@ -290,7 +290,6 @@ describe("attributes", () => {
     const result = renderToString(template, { value: false });
     expect(result).toBe(`<div></div>`);
   });
-
 });
 
 // -----------------------------------------------------------------------------

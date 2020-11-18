@@ -237,8 +237,7 @@ export function tokenize(expr: string): Token[] {
  * the arrow operator, then we add the current (or some previous tokens) token to
  * the list of variables so it does not get replaced by a lookup in the context
  */
-export function compileExprToArray(expr: string, scope: { [key: string]: QWebVar }): Token[] {
-  scope = Object.create(scope);
+export function compileExprToArray(expr: string): Token[] {
   const tokens = tokenize(expr);
   for (let i = 0; i < tokens.length; i++) {
     let token = tokens[i];
@@ -256,36 +255,17 @@ export function compileExprToArray(expr: string, scope: { [key: string]: QWebVar
         }
       }
     }
-    if (nextToken && nextToken.type === "OPERATOR" && nextToken.value === "=>") {
-      if (token.type === "RIGHT_PAREN") {
-        let j = i - 1;
-        while (j > 0 && tokens[j].type !== "LEFT_PAREN") {
-          if (tokens[j].type === "SYMBOL" && tokens[j].originalValue) {
-            tokens[j].value = tokens[j].originalValue!;
-            scope[tokens[j].value] = { id: tokens[j].value, expr: tokens[j].value };
-          }
-          j--;
-        }
-      } else {
-        scope[token.value] = { id: token.value, expr: token.value };
-      }
-    }
 
     if (isVar) {
       token.varName = token.value;
-      if (token.value in scope && "id" in scope[token.value]) {
-        token.value = scope[token.value].expr!;
-      } else {
-        token.originalValue = token.value;
-        token.value = `ctx['${token.value}']`;
-      }
+      token.value = `ctx['${token.value}']`;
     }
   }
   return tokens;
 }
 
-export function compileExpr(expr: string, scope: { [key: string]: QWebVar }): string {
-  return compileExprToArray(expr, scope)
+export function compileExpr(expr: string): string {
+  return compileExprToArray(expr)
     .map((t) => t.value)
     .join("");
 }

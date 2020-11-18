@@ -7,10 +7,10 @@ export const INTERP_REGEXP = /\{\{.*?\}\}/g;
 function interpolate(s: string): string {
   let matches = s.match(INTERP_REGEXP);
   if (matches && matches[0].length === s.length) {
-    return `(${compileExpr(s.slice(2, -2), {})})`;
+    return `(${compileExpr(s.slice(2, -2))})`;
   }
 
-  let r = s.replace(/\{\{.*?\}\}/g, (s) => "${" + compileExpr(s.slice(2, -2), {}) + "}");
+  let r = s.replace(/\{\{.*?\}\}/g, (s) => "${" + compileExpr(s.slice(2, -2)) + "}");
   return "`" + r + "`";
 }
 
@@ -309,7 +309,7 @@ function compileAST(
         if (key.startsWith("t-attf")) {
           dynAttrs[key.slice(7)] = interpolate(ast.attrs[key]);
         } else if (key.startsWith("t-att")) {
-          dynAttrs[key.slice(6)] = compileExpr(ast.attrs[key], {});
+          dynAttrs[key.slice(6)] = compileExpr(ast.attrs[key]);
         } else {
           staticAttrs[key] = ast.attrs[key];
         }
@@ -324,7 +324,9 @@ function compileAST(
           if (key === "class") {
             currentBlock.updateFn.push(`this.updateClass(${targetEl}, this.data[${idx}]);`);
           } else {
-            currentBlock.updateFn.push(`this.updateAttr(${targetEl}, \`${key}\`, this.data[${idx}]);`);
+            currentBlock.updateFn.push(
+              `this.updateAttr(${targetEl}, \`${key}\`, this.data[${idx}]);`
+            );
           }
         }
       }
@@ -356,7 +358,7 @@ function compileAST(
       if (ast.expr === "0") {
         expr = `ctx[zero]`;
       } else {
-        expr = compileExpr(ast.expr, {});
+        expr = compileExpr(ast.expr);
         if (ast.defaultValue) {
           expr = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
         }
@@ -398,7 +400,7 @@ function compileAST(
       addToBlockDom(currentBlock, anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
-      let expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr, {});
+      let expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr);
       if (ast.body) {
         const nextId = ctx.nextId;
         compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
@@ -416,7 +418,7 @@ function compileAST(
         const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
         currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
       }
-      ctx.addLine(`if (${compileExpr(ast.condition, {})}) {`);
+      ctx.addLine(`if (${compileExpr(ast.condition)}) {`);
       ctx.indentLevel++;
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       addToBlockDom(currentBlock, anchor);
@@ -426,7 +428,7 @@ function compileAST(
       ctx.indentLevel--;
       if (ast.tElif) {
         for (let clause of ast.tElif) {
-          ctx.addLine(`} else if (${compileExpr(clause.condition, {})}) {`);
+          ctx.addLine(`} else if (${compileExpr(clause.condition)}) {`);
           ctx.indentLevel++;
           const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
           addToBlockDom(currentBlock, anchor);
@@ -458,9 +460,7 @@ function compileAST(
       const vals = `v${cId}`;
       const keys = `k${cId}`;
       const l = `l${cId}`;
-      ctx.addLine(
-        `const [${vals}, ${keys}, ${l}] = getValues(${compileExpr(ast.collection, {})});`
-      );
+      ctx.addLine(`const [${vals}, ${keys}, ${l}] = getValues(${compileExpr(ast.collection)});`);
 
       const id = ctx.generateId("b");
 
@@ -512,7 +512,7 @@ function compileAST(
 
     case ASTType.TKey: {
       const id = ctx.generateId("k");
-      ctx.addLine(`const ${id} = ${compileExpr(ast.expr, {})};`);
+      ctx.addLine(`const ${id} = ${compileExpr(ast.expr)};`);
       const currentKey = ctx.key;
       ctx.key = id;
       compileAST(ast.content, currentBlock, currentIndex, forceNewBlock, ctx);
@@ -601,7 +601,7 @@ function compileAST(
     // -------------------------------------------------------------------------
     case ASTType.TSet: {
       ctx.shouldProtectScope = true;
-      const expr = ast.value ? compileExpr(ast.value || "", {}) : "null";
+      const expr = ast.value ? compileExpr(ast.value || "") : "null";
       if (ast.body) {
         const nextId = ctx.nextId;
         compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);

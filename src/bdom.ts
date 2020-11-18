@@ -127,7 +127,7 @@ export class ContentBlock extends Block {
     if (value) {
       elem.setAttribute(attr, value);
     } else {
-      elem.removeAttribute(attr)
+      elem.removeAttribute(attr);
     }
   }
 
