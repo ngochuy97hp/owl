@@ -285,3 +285,15 @@ export function compileExpr(expr: string): string {
     .map((t) => t.value)
     .join("");
 }
+
+export const INTERP_REGEXP = /\{\{.*?\}\}/g;
+
+export function interpolate(s: string): string {
+  let matches = s.match(INTERP_REGEXP);
+  if (matches && matches[0].length === s.length) {
+    return `(${compileExpr(s.slice(2, -2))})`;
+  }
+
+  let r = s.replace(/\{\{.*?\}\}/g, (s) => "${" + compileExpr(s.slice(2, -2)) + "}");
+  return "`" + r + "`";
+}

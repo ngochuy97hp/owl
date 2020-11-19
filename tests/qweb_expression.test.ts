@@ -1,4 +1,4 @@
-import { compileExpr, tokenize } from "../src/expression_parser";
+import { compileExpr, tokenize } from "../src/qweb_expressions";
 
 describe("tokenizer", () => {
   test("simple tokens", () => {

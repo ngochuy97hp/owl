@@ -1,19 +1,7 @@
-import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock, TextBlock } from "./bdom";
-import { compileExpr } from "./expression_parser";
+import { BDom, CollectionBlock, ContentBlock, HTMLBlock, MultiBlock, TextBlock } from "./bdom";
+import { compileExpr, interpolate, INTERP_REGEXP } from "./qweb_expressions";
 import { AST, ASTType, parse } from "./qweb_parser";
 import { UTILS } from "./qweb_utils";
-
-export const INTERP_REGEXP = /\{\{.*?\}\}/g;
-
-function interpolate(s: string): string {
-  let matches = s.match(INTERP_REGEXP);
-  if (matches && matches[0].length === s.length) {
-    return `(${compileExpr(s.slice(2, -2))})`;
-  }
-
-  let r = s.replace(/\{\{.*?\}\}/g, (s) => "${" + compileExpr(s.slice(2, -2)) + "}");
-  return "`" + r + "`";
-}
 
 // -----------------------------------------------------------------------------
 // Compile functions
@@ -249,14 +237,14 @@ class CompilationContext {
 
       if (block.handlerFn.length) {
         const updateInfo = block.handlerFn;
-        this.addLine(`update() {`);
+        this.addLine(`setupHandlers() {`);
         this.indentLevel++;
         if (updateInfo.length === 1) {
           const { path, inserter } = updateInfo[0];
           const target = `this.${path.join(".")}`;
           this.addLine(inserter(target));
         } else {
-          writeBlockFunction(this, block.updateFn);
+          writeBlockFunction(this, block.handlerFn);
         }
         this.indentLevel--;
         this.addLine(`}`);

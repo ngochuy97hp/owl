@@ -1674,4 +1674,26 @@ describe("t-on", () => {
     fixture.querySelector("button")!.click();
     expect(a).toBe(3);
   });
+
+  test("can bind two event handlers", () => {
+    const template = `
+      <button t-on-click="handleClick" t-on-dblclick="handleDblClick">Click</button>`;
+    snapshotTemplateCode(template);
+    let steps: string[] = [];
+    const block = renderToBdom(template, {
+      handleClick() {
+        steps.push("click");
+      },
+      handleDblClick() {
+        steps.push("dblclick");
+      },
+    });
+    const fixture = makeTestFixture();
+    block.mount(fixture);
+    expect(steps).toEqual([]);
+    fixture.querySelector("button")!.click();
+    expect(steps).toEqual(["click"]);
+    fixture.querySelector("button")!.dispatchEvent(new Event("dblclick"));
+    expect(steps).toEqual(["click", "dblclick"]);
+  });
 });
