@@ -1,7 +1,7 @@
 import { BDom, CollectionBlock, ContentBlock, HTMLBlock, MultiBlock, TextBlock } from "./bdom";
 import { compileExpr, interpolate, INTERP_REGEXP } from "./qweb_expressions";
 import { AST, ASTType, parse } from "./qweb_parser";
-import { UTILS } from "./qweb_utils";
+import { UTILS, Dom, DomNode, domToString, DomType } from "./qweb_utils";
 
 // -----------------------------------------------------------------------------
 // Compile functions
@@ -79,30 +79,6 @@ interface BlockDescription {
   currentDom?: DomNode;
   childNumber: number;
 }
-
-const enum DomType {
-  Text,
-  Comment,
-  Node,
-}
-
-interface DomText {
-  type: DomType.Text;
-  value: string;
-}
-
-interface DomComment {
-  type: DomType.Comment;
-  value: string;
-}
-interface DomNode {
-  type: DomType.Node;
-  tag: string;
-  attrs: { [key: string]: string };
-  content: Dom[];
-}
-
-type Dom = DomText | DomComment | DomNode;
 
 interface MakeBlockParams {
   multi?: number;
@@ -281,23 +257,6 @@ class CompilationContext {
 // -----------------------------------------------------------------------------
 // Compiler code
 // -----------------------------------------------------------------------------
-function domToString(dom: Dom): string {
-  switch (dom.type) {
-    case DomType.Text:
-      return dom.value;
-    case DomType.Comment:
-      return `<!--${dom.value}-->`;
-    case DomType.Node:
-      const content = dom.content.map(domToString).join("");
-      const attrs: string[] = [];
-      for (let [key, value] of Object.entries(dom.attrs)) {
-        if (!(key === "class" && value === "")) {
-          attrs.push(`${key}="${value}"`);
-        }
-      }
-      return `<${dom.tag}${attrs.length ? " " + attrs.join(" ") : ""}>${content}</${dom.tag}>`;
-  }
-}
 
 function addToBlockDom(block: BlockDescription, dom: Dom) {
   if (block.currentDom) {

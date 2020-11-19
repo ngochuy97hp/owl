@@ -7,7 +7,7 @@ exports[`attributes dynamic attribute falsy variable  1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateAttr(this.el, \`foo\`, this.data[0]);
@@ -29,7 +29,7 @@ exports[`attributes dynamic attribute with a dash 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateAttr(this.el, \`data-action-id\`, this.data[0]);
@@ -51,7 +51,7 @@ exports[`attributes dynamic attributes 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateAttr(this.el, \`foo\`, this.data[0]);
@@ -73,7 +73,7 @@ exports[`attributes dynamic class attribute 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateClass(this.el, this.data[0]);
@@ -95,7 +95,7 @@ exports[`attributes dynamic empty class attribute 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateClass(this.el, this.data[0]);
@@ -117,7 +117,7 @@ exports[`attributes dynamic formatted attributes with a dash 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateAttr(this.el, \`aria-label\`, this.data[0]);
@@ -139,7 +139,7 @@ exports[`attributes fixed variable 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(1);
     update() {
       this.updateAttr(this.el, \`foo\`, this.data[0]);
@@ -161,7 +161,7 @@ exports[`attributes two dynamic attributes 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
     data = new Array(2);
     update() {
       const el1 = this.el;
@@ -203,7 +203,7 @@ exports[`comments properly handle comments between t-if/t-else 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   class Block2 extends ContentBlock {
@@ -232,11 +232,11 @@ exports[`misc global 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -285,7 +285,7 @@ exports[`misc global 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -305,7 +305,7 @@ exports[`misc global 3`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<año><owl-anchor></owl-anchor></año>\`);
+    static el = elem(\`<año><owl-anchor/></año>\`);
     children = new Array(1);
     data = new Array(1);
     update() {
@@ -329,7 +329,7 @@ exports[`misc global 4`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -470,7 +470,7 @@ exports[`simple templates, mostly static dom node with t-esc 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -506,7 +506,7 @@ exports[`simple templates, mostly static empty div 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div></div>\`);
+    static el = elem(\`<div/>\`);
   }
   
   return ctx => {
@@ -619,7 +619,7 @@ exports[`simple templates, mostly static t-esc in dom node 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -641,7 +641,7 @@ exports[`simple templates, mostly static t-esc in dom node, variations 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div>hello <owl-text></owl-text></div>\`);
+    static el = elem(\`<div>hello <owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.nextSibling.textContent = toString(this.data[0]);
@@ -663,7 +663,7 @@ exports[`simple templates, mostly static t-esc in dom node, variations 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div>hello <owl-text></owl-text> world</div>\`);
+    static el = elem(\`<div>hello <owl-text/> world</div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.nextSibling.textContent = toString(this.data[0]);
@@ -701,7 +701,7 @@ exports[`simple templates, mostly static two t-escs next to each other, in a div
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/><owl-text/></div>\`);
     data = new Array(2);
     update() {
       const el1 = this.el.firstChild;
@@ -726,7 +726,7 @@ exports[`t-call (template calling) basic caller 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -759,7 +759,7 @@ exports[`t-call (template calling) call with several sub nodes on same line 1`] 
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -778,7 +778,7 @@ exports[`t-call (template calling) call with several sub nodes on same line 2`] 
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -809,7 +809,7 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><span>cascade 2</span><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><span>cascade 2</span><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -828,7 +828,7 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -855,7 +855,7 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 3`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -882,7 +882,7 @@ exports[`t-call (template calling) cascading t-call t-raw='0' 4`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -1002,7 +1002,7 @@ exports[`t-call (template calling) dynamic t-call 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1021,7 +1021,7 @@ exports[`t-call (template calling) inherit context 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1042,7 +1042,7 @@ exports[`t-call (template calling) recursive template, part 1 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><span>hey</span><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><span>hey</span><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1063,7 +1063,7 @@ exports[`t-call (template calling) recursive template, part 2 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1085,7 +1085,7 @@ exports[`t-call (template calling) recursive template, part 2 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><p><owl-text></owl-text></p><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><p><owl-text/></p><owl-anchor/></div>\`);
     children = new Array(1);
     data = new Array(1);
     update() {
@@ -1123,7 +1123,7 @@ exports[`t-call (template calling) recursive template, part 3 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1145,7 +1145,7 @@ exports[`t-call (template calling) recursive template, part 3 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><p><owl-text></owl-text></p><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><p><owl-text/></p><owl-anchor/></div>\`);
     children = new Array(1);
     data = new Array(1);
     update() {
@@ -1183,7 +1183,7 @@ exports[`t-call (template calling) recursive template, part 4: with t-set recurs
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1206,7 +1206,7 @@ exports[`t-call (template calling) recursive template, part 4: with t-set recurs
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><p><owl-text></owl-text> <owl-text></owl-text></p><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><p><owl-text/> <owl-text/></p><owl-anchor/></div>\`);
     children = new Array(1);
     data = new Array(2);
     update() {
@@ -1248,7 +1248,7 @@ exports[`t-call (template calling) scoped parameters 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-text/></div>\`);
     children = new Array(1);
     data = new Array(1);
     update() {
@@ -1276,7 +1276,7 @@ exports[`t-call (template calling) scoped parameters, part 2 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-text/></div>\`);
     children = new Array(1);
     data = new Array(1);
     update() {
@@ -1305,7 +1305,7 @@ exports[`t-call (template calling) t-call allowed on a non t node 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1324,7 +1324,7 @@ exports[`t-call (template calling) t-call with body content as root of a templat
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<foo><owl-anchor></owl-anchor></foo>\`);
+    static el = elem(\`<foo><owl-anchor/></foo>\`);
     children = new Array(1);
   }
   
@@ -1363,7 +1363,7 @@ exports[`t-call (template calling) t-call with t-if 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1384,7 +1384,7 @@ exports[`t-call (template calling) t-call with t-set inside and body text conten
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1406,7 +1406,7 @@ exports[`t-call (template calling) t-call with t-set inside and body text conten
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<p><owl-text></owl-text></p>\`);
+    static el = elem(\`<p><owl-text/></p>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1428,7 +1428,7 @@ exports[`t-call (template calling) t-call with t-set inside and outside 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1462,7 +1462,7 @@ exports[`t-call (template calling) t-call with t-set inside and outside 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1484,7 +1484,7 @@ exports[`t-call (template calling) t-call with t-set inside and outside. 2 1`] =
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1518,7 +1518,7 @@ exports[`t-call (template calling) t-call with t-set inside and outside. 2 2`] =
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1542,7 +1542,7 @@ exports[`t-call (template calling) t-call, conditional and t-set in t-call body 
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   
@@ -1570,7 +1570,7 @@ exports[`t-call (template calling) t-esc inside t-call, with t-set outside 1`] =
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1642,7 +1642,7 @@ exports[`t-call (template calling) with used body 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<h1><owl-text></owl-text></h1>\`);
+    static el = elem(\`<h1><owl-text/></h1>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = this.data[0];
@@ -1664,7 +1664,7 @@ exports[`t-call (template calling) with used setbody 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
@@ -1686,7 +1686,7 @@ exports[`t-esc div with falsy values 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><p><owl-text></owl-text></p><p><owl-text></owl-text></p><p><owl-text></owl-text></p><p><owl-text></owl-text></p><p><owl-text></owl-text></p></div>\`);
+    static el = elem(\`<div><p><owl-text/></p><p><owl-text/></p><p><owl-text/></p><p><owl-text/></p><p><owl-text/></p></div>\`);
     data = new Array(5);
     update() {
       const el1 = this.el.firstChild;
@@ -1720,7 +1720,7 @@ exports[`t-esc escaping 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1742,7 +1742,7 @@ exports[`t-esc escaping on a node 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1764,7 +1764,7 @@ exports[`t-esc escaping on a node with a body 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1786,7 +1786,7 @@ exports[`t-esc escaping on a node with a body, as a default 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1808,7 +1808,7 @@ exports[`t-esc literal 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1830,7 +1830,7 @@ exports[`t-esc t-esc is escaped 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1858,7 +1858,7 @@ exports[`t-esc t-esc work with spread operator 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1880,7 +1880,7 @@ exports[`t-esc t-esc=0 is escaped 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -1905,7 +1905,7 @@ exports[`t-esc t-esc=0 is escaped 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = this.data[0];
@@ -1927,7 +1927,7 @@ exports[`t-esc variable 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -1949,7 +1949,7 @@ exports[`t-foreach does not pollute the rendering context 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -1978,11 +1978,11 @@ exports[`t-foreach iterate on items (on a element node) 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -2016,7 +2016,7 @@ exports[`t-foreach iterate on items 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2052,7 +2052,7 @@ exports[`t-foreach iterate, dict param 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2088,7 +2088,7 @@ exports[`t-foreach iterate, position 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2127,7 +2127,7 @@ exports[`t-foreach multiple calls to t-raw 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><div>Greeter</div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><div>Greeter</div><owl-anchor/></div>\`);
     children = new Array(2);
   }
   
@@ -2147,7 +2147,7 @@ exports[`t-foreach multiple calls to t-raw 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -2172,7 +2172,7 @@ exports[`t-foreach simple iteration (in a node) 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2246,7 +2246,7 @@ exports[`t-foreach t-call with body in t-foreach in t-foreach 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><span>[<owl-text></owl-text>][<owl-text></owl-text>][<owl-text></owl-text>]</span></div>\`);
+    static el = elem(\`<div><owl-anchor/><span>[<owl-text/>][<owl-text/>][<owl-text/>]</span></div>\`);
     children = new Array(1);
     data = new Array(3);
     update() {
@@ -2258,7 +2258,7 @@ exports[`t-foreach t-call with body in t-foreach in t-foreach 2`] = `
     }
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -2335,7 +2335,7 @@ exports[`t-foreach t-call without body in t-foreach in t-foreach 2`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><span>[<owl-text></owl-text>][<owl-text></owl-text>][<owl-text></owl-text>]</span></div>\`);
+    static el = elem(\`<div><owl-anchor/><span>[<owl-text/>][<owl-text/>][<owl-text/>]</span></div>\`);
     children = new Array(1);
     data = new Array(3);
     update() {
@@ -2347,7 +2347,7 @@ exports[`t-foreach t-call without body in t-foreach in t-foreach 2`] = `
     }
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -2397,7 +2397,7 @@ exports[`t-foreach t-foreach in t-foreach 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2510,7 +2510,7 @@ exports[`t-if boolean value condition elif 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(4);
   }
   
@@ -2537,7 +2537,7 @@ exports[`t-if boolean value condition else 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><span>begin</span><owl-anchor></owl-anchor><owl-anchor></owl-anchor><span>end</span></div>\`);
+    static el = elem(\`<div><span>begin</span><owl-anchor/><owl-anchor/><span>end</span></div>\`);
     children = new Array(2);
   }
   
@@ -2560,7 +2560,7 @@ exports[`t-if boolean value condition false else 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><span>begin</span><owl-anchor></owl-anchor><owl-anchor></owl-anchor><span>end</span></div>\`);
+    static el = elem(\`<div><span>begin</span><owl-anchor/><owl-anchor/><span>end</span></div>\`);
     children = new Array(2);
   }
   
@@ -2583,7 +2583,7 @@ exports[`t-if can use some boolean operators in expressions 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(8);
   }
   
@@ -2625,7 +2625,7 @@ exports[`t-if div containing a t-if with two inner nodes 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -2654,7 +2654,7 @@ exports[`t-if dynamic content after t-if with two children nodes 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-text/></div>\`);
     children = new Array(1);
     data = new Array(1);
     update() {
@@ -2724,7 +2724,7 @@ exports[`t-if simple t-if/t-else in a div 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   
@@ -2747,7 +2747,7 @@ exports[`t-if t-esc with t-elif 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   
@@ -2770,7 +2770,7 @@ exports[`t-if t-esc with t-if 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2818,7 +2818,7 @@ exports[`t-if t-if in a div 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2839,11 +2839,11 @@ exports[`t-if t-if in a t-if 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span>1<owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span>1<owl-anchor/></span>\`);
     children = new Array(1);
   }
   
@@ -2867,7 +2867,7 @@ exports[`t-if t-set, then t-if 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -2890,7 +2890,7 @@ exports[`t-if t-set, then t-if, part 2 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -2917,7 +2917,7 @@ exports[`t-if t-set, then t-if, part 3 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   class Block2 extends ContentBlock {
@@ -2969,7 +2969,7 @@ exports[`t-if two consecutive t-if in a div 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/></div>\`);
     children = new Array(2);
   }
   
@@ -3040,7 +3040,7 @@ exports[`t-raw literal 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
@@ -3074,7 +3074,7 @@ exports[`t-raw not escaping 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -3093,7 +3093,7 @@ exports[`t-raw t-raw and another sibling node 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><span>hello</span><owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span><span>hello</span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
@@ -3112,7 +3112,7 @@ exports[`t-raw t-raw on a node with a body, as a default 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
@@ -3132,7 +3132,7 @@ exports[`t-raw t-raw on a node with a dom node in body, as a default 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
@@ -3155,7 +3155,7 @@ exports[`t-raw variable 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<span><owl-anchor></owl-anchor></span>\`);
+    static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
@@ -3174,7 +3174,7 @@ exports[`t-set evaluate value expression 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3198,7 +3198,7 @@ exports[`t-set evaluate value expression, part 2 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3238,7 +3238,7 @@ exports[`t-set set from attribute literal 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3262,7 +3262,7 @@ exports[`t-set set from attribute lookup 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3302,7 +3302,7 @@ exports[`t-set set from body lookup 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3327,7 +3327,7 @@ exports[`t-set set from empty body 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3351,7 +3351,7 @@ exports[`t-set t-set and t-if 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   
@@ -3374,11 +3374,11 @@ exports[`t-set t-set body is evaluated immediately 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3406,7 +3406,7 @@ exports[`t-set t-set evaluates an expression only once 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/><owl-text/></div>\`);
     data = new Array(2);
     update() {
       const el1 = this.el.firstChild;
@@ -3433,11 +3433,11 @@ exports[`t-set t-set should reuse variable if possible 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<div><span>v<owl-text></owl-text></span></div>\`);
+    static el = elem(\`<div><span>v<owl-text/></span></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.firstChild.nextSibling.textContent = toString(this.data[0]);
@@ -3474,7 +3474,7 @@ exports[`t-set t-set with content and sub t-esc 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3501,11 +3501,11 @@ exports[`t-set t-set with t-value (falsy) and body 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3535,11 +3535,11 @@ exports[`t-set t-set with t-value (truthy) and body 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor></div>\`);
+    static el = elem(\`<div><owl-anchor/></div>\`);
     children = new Array(1);
   }
   class Block2 extends ContentBlock {
-    static el = elem(\`<span><owl-text></owl-text></span>\`);
+    static el = elem(\`<span><owl-text/></span>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3569,7 +3569,7 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 1 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/><owl-text/></div>\`);
     children = new Array(2);
     data = new Array(1);
     update() {
@@ -3598,7 +3598,7 @@ exports[`t-set t-set, t-if, and mix of expression/body lookup, 2 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-anchor></owl-anchor><owl-anchor></owl-anchor><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-anchor/><owl-anchor/><owl-text/></div>\`);
     children = new Array(2);
     data = new Array(1);
     update() {
@@ -3648,7 +3648,7 @@ exports[`t-set value priority (with non text body 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
@@ -3676,7 +3676,7 @@ exports[`t-set value priority 1`] = `
   let {elem, toString, withDefault, call, zero, getValues} = utils;
   
   class Block1 extends ContentBlock {
-    static el = elem(\`<div><owl-text></owl-text></div>\`);
+    static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
       this.el.firstChild.textContent = toString(this.data[0]);
