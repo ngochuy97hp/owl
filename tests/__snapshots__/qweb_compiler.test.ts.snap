@@ -344,6 +344,23 @@ exports[`misc global 4`] = `
 }"
 `;
 
+exports[`simple templates, mostly static can render a table row 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<tr><td>cell</td></tr>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    return b1;
+  }
+}"
+`;
+
 exports[`simple templates, mostly static div with a class attribute 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -3654,7 +3671,6 @@ exports[`white space handling nothing is done in pre tags 1`] = `
   
   class Block1 extends ContentBlock {
     static el = elem(\`<pre>
-
         some text
       </pre>\`);
   }

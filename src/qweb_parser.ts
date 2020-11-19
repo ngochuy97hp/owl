@@ -202,12 +202,6 @@ function parseDOMNode(node: Element, ctx: ParsingContext): AST | null {
       children.push(ast);
     }
   }
-  if (node.tagName === "pre" && children[0].type === ASTType.Text) {
-    // weird fix: because owl will serialize this value, and deserialize it
-    // later, the leading \n character will be dropped, as per the html spec
-    // therefore we need to add an extra \n to get the expected result
-    children[0].value = `\n` + children[0].value;
-  }
 
   const attrs: ASTDomNode["attrs"] = {};
   for (let attr of node.getAttributeNames()) {

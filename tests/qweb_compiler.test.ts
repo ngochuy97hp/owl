@@ -150,6 +150,12 @@ describe("simple templates, mostly static", () => {
     expect(renderToString(template)).toBe("<div><span>word</span></div>");
     snapshotTemplateCode(template);
   });
+
+  test("can render a table row", () => {
+    const template = `<tr><td>cell</td></tr>`;
+    expect(renderToString(template)).toBe(template);
+    snapshotTemplateCode(template);
+  });
 });
 
 // -----------------------------------------------------------------------------

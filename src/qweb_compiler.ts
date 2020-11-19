@@ -681,15 +681,38 @@ function compileAST(
 // Helpers
 // -----------------------------------------------------------------------------
 
-function elem(html: string): HTMLElement | Text {
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  // replace all "owl-text" by text nodes
-  const texts = div.getElementsByTagName("owl-text");
-  while (texts.length) {
-    texts[0].replaceWith(document.createTextNode(""));
+function toDom(node: ChildNode): HTMLElement | Text | Comment {
+  switch (node.nodeType) {
+    case 1: {
+      // HTMLElement
+      if ((node as Element).tagName === "owl-text") {
+        return document.createTextNode("");
+      }
+      const result = document.createElement((node as Element).tagName);
+      const attrs = (node as Element).attributes;
+      for (let i = 0; i < attrs.length; i++) {
+        result.setAttribute(attrs[i].name, attrs[i].value);
+      }
+      for (let child of (node as Element).childNodes) {
+        result.appendChild(toDom(child));
+      }
+      return result;
+    }
+    case 3: {
+      // text node
+      return document.createTextNode(node.textContent!);
+    }
+    case 8: {
+      // comment node
+      return document.createComment(node.textContent!);
+    }
   }
-  return (div.firstChild as HTMLElement | Text) || document.createTextNode("");
+  throw new Error("boom");
+}
+
+function elem(html: string): HTMLElement | Text | Comment {
+  const doc = new DOMParser().parseFromString(html, "text/xml");
+  return toDom(doc.firstChild!);
 }
 
 function toString(value: any): string {
