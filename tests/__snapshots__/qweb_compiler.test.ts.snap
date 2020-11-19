@@ -154,6 +154,31 @@ exports[`attributes fixed variable 1`] = `
 }"
 `;
 
+exports[`attributes two dynamic attributes 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div></div>\`);
+    data = new Array(2);
+    update() {
+      const el1 = this.el;
+      this.updateAttr(el1, \`foo\`, this.data[0]);
+      this.updateAttr(el1, \`bar\`, this.data[1]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = 'bar';
+    b1.data[1] = 'foo';
+    return b1;
+  }
+}"
+`;
+
 exports[`comments properly handle comments 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -662,8 +687,9 @@ exports[`simple templates, mostly static two t-escs next to each other, in a div
     static el = elem(\`<div><owl-text></owl-text><owl-text></owl-text></div>\`);
     data = new Array(2);
     update() {
-      this.el.firstChild.textContent = toString(this.data[0]);
-      this.el.firstChild.nextSibling.textContent = toString(this.data[1]);
+      const el1 = this.el.firstChild;
+      el1.textContent = toString(this.data[0]);
+      el1.nextSibling.textContent = toString(this.data[1]);
     }
   }
   
@@ -1167,8 +1193,9 @@ exports[`t-call (template calling) recursive template, part 4: with t-set recurs
     children = new Array(1);
     data = new Array(2);
     update() {
-      this.el.firstChild.firstChild.textContent = toString(this.data[0]);
-      this.el.firstChild.firstChild.nextSibling.nextSibling.textContent = toString(this.data[1]);
+      const el1 = this.el.firstChild.firstChild;
+      el1.textContent = toString(this.data[0]);
+      el1.nextSibling.nextSibling.textContent = toString(this.data[1]);
     }
   }
   
@@ -1645,11 +1672,15 @@ exports[`t-esc div with falsy values 1`] = `
     static el = elem(\`<div><p><owl-text></owl-text></p><p><owl-text></owl-text></p><p><owl-text></owl-text></p><p><owl-text></owl-text></p><p><owl-text></owl-text></p></div>\`);
     data = new Array(5);
     update() {
-      this.el.firstChild.firstChild.textContent = toString(this.data[0]);
-      this.el.firstChild.nextSibling.firstChild.textContent = toString(this.data[1]);
-      this.el.firstChild.nextSibling.nextSibling.firstChild.textContent = toString(this.data[2]);
-      this.el.firstChild.nextSibling.nextSibling.nextSibling.firstChild.textContent = toString(this.data[3]);
-      this.el.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.firstChild.textContent = toString(this.data[4]);
+      const el1 = this.el.firstChild;
+      const el2 = el1.nextSibling;
+      const el3 = el2.nextSibling;
+      const el4 = el3.nextSibling;
+      el1.firstChild.textContent = toString(this.data[0]);
+      el2.firstChild.textContent = toString(this.data[1]);
+      el3.firstChild.textContent = toString(this.data[2]);
+      el4.firstChild.textContent = toString(this.data[3]);
+      el4.nextSibling.firstChild.textContent = toString(this.data[4]);
     }
   }
   
@@ -2202,9 +2233,11 @@ exports[`t-foreach t-call with body in t-foreach in t-foreach 2`] = `
     children = new Array(1);
     data = new Array(3);
     update() {
-      this.anchors[0].nextSibling.firstChild.nextSibling.textContent = toString(this.data[0]);
-      this.anchors[0].nextSibling.firstChild.nextSibling.nextSibling.nextSibling.textContent = toString(this.data[1]);
-      this.anchors[0].nextSibling.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.textContent = toString(this.data[2]);
+      const el1 = this.anchors[0].nextSibling.firstChild.nextSibling;
+      const el2 = el1.nextSibling.nextSibling;
+      el1.textContent = toString(this.data[0]);
+      el2.textContent = toString(this.data[1]);
+      el2.nextSibling.nextSibling.textContent = toString(this.data[2]);
     }
   }
   class Block2 extends ContentBlock {
@@ -2289,9 +2322,11 @@ exports[`t-foreach t-call without body in t-foreach in t-foreach 2`] = `
     children = new Array(1);
     data = new Array(3);
     update() {
-      this.anchors[0].nextSibling.firstChild.nextSibling.textContent = toString(this.data[0]);
-      this.anchors[0].nextSibling.firstChild.nextSibling.nextSibling.nextSibling.textContent = toString(this.data[1]);
-      this.anchors[0].nextSibling.firstChild.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.textContent = toString(this.data[2]);
+      const el1 = this.anchors[0].nextSibling.firstChild.nextSibling;
+      const el2 = el1.nextSibling.nextSibling;
+      el1.textContent = toString(this.data[0]);
+      el2.textContent = toString(this.data[1]);
+      el2.nextSibling.nextSibling.textContent = toString(this.data[2]);
     }
   }
   class Block2 extends ContentBlock {
@@ -3310,8 +3345,9 @@ exports[`t-set t-set evaluates an expression only once 1`] = `
     static el = elem(\`<div><owl-text></owl-text><owl-text></owl-text></div>\`);
     data = new Array(2);
     update() {
-      this.el.firstChild.textContent = toString(this.data[0]);
-      this.el.firstChild.nextSibling.textContent = toString(this.data[1]);
+      const el1 = this.el.firstChild;
+      el1.textContent = toString(this.data[0]);
+      el1.nextSibling.textContent = toString(this.data[1]);
     }
   }
   

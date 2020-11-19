@@ -85,7 +85,7 @@ export class TemplateSet {
 
 interface BlockDescription {
   name: string;
-  updateFn: string[];
+  updateFn: { path: string[]; inserter(target: string): string }[];
   varName: string;
   currentPath: string[];
   textNumber: number;
@@ -185,10 +185,56 @@ class CompilationContext {
         this.addLine(`data = new Array(${block.textNumber});`);
       }
       if (block.updateFn.length) {
+        const updateInfo = block.updateFn;
         this.addLine(`update() {`);
         this.indentLevel++;
-        for (let line of block.updateFn) {
-          this.addLine(line);
+        if (updateInfo.length === 1) {
+          const { path, inserter } = updateInfo[0];
+          const target = `this.${path.join(".")}`;
+          this.addLine(inserter(target));
+        } else {
+          // build tree of paths
+          const tree: any = {};
+          let i = 1;
+          for (let line of block.updateFn) {
+            let current: any = tree;
+            let el: string = `this`;
+            for (let p of line.path.slice()) {
+              if (current[p]) {
+              } else {
+                current[p] = { firstChild: null, nextSibling: null };
+              }
+              if (current.firstChild && current.nextSibling && !current.name) {
+                current.name = `el${i++}`;
+                this.addLine(`const ${current.name} = ${el};`);
+              }
+              el = `${current.name ? current.name : el}.${p}`;
+              current = current[p];
+              if (current.target && !current.name) {
+                current.name = `el${i++}`;
+                this.addLine(`const ${current.name} = ${el};`);
+              }
+            }
+            current.target = true;
+          }
+          for (let line of block.updateFn) {
+            const { path, inserter } = line;
+            let current: any = tree;
+            let el = `this`;
+            for (let p of path.slice()) {
+              current = current[p];
+              if (current) {
+                if (current.name) {
+                  el = current.name;
+                } else {
+                  el = `${el}.${p}`;
+                }
+              } else {
+                el = `${el}.${p}`;
+              }
+            }
+            this.addLine(inserter(el));
+          }
         }
         this.indentLevel--;
         this.addLine(`}`);
@@ -248,6 +294,10 @@ function addToBlockDom(block: BlockDescription, dom: Dom) {
   } else {
     block.dom = dom;
   }
+}
+
+function updateBlockFn(block: BlockDescription, inserter: (target: string) => string) {
+  block.updateFn.push({ path: block.currentPath.slice(), inserter });
 }
 
 function compileAST(
@@ -316,16 +366,19 @@ function compileAST(
       }
 
       if (Object.keys(dynAttrs).length) {
-        const targetEl = `this.` + currentBlock.currentPath.join(".");
         for (let key in dynAttrs) {
           const idx = currentBlock.textNumber;
           currentBlock.textNumber++;
           ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${dynAttrs[key]};`);
           if (key === "class") {
-            currentBlock.updateFn.push(`this.updateClass(${targetEl}, this.data[${idx}]);`);
+            updateBlockFn(
+              currentBlock,
+              (targetEl) => `this.updateClass(${targetEl}, this.data[${idx}]);`
+            );
           } else {
-            currentBlock.updateFn.push(
-              `this.updateAttr(${targetEl}, \`${key}\`, this.data[${idx}]);`
+            updateBlockFn(
+              currentBlock,
+              (targetEl) => `this.updateAttr(${targetEl}, \`${key}\`, this.data[${idx}]);`
             );
           }
         }
@@ -374,16 +427,15 @@ function compileAST(
           }
         }
       } else {
-        const targetEl = `this.` + currentBlock.currentPath.join(".");
         const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
         addToBlockDom(currentBlock, text);
         const idx = currentBlock.textNumber;
         currentBlock.textNumber++;
         ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${expr};`);
         if (ast.expr === "0") {
-          currentBlock.updateFn.push(`${targetEl}.textContent = this.data[${idx}];`);
+          updateBlockFn(currentBlock, (el) => `${el}.textContent = this.data[${idx}];`);
         } else {
-          currentBlock.updateFn.push(`${targetEl}.textContent = toString(this.data[${idx}]);`);
+          updateBlockFn(currentBlock, (el) => `${el}.textContent = toString(this.data[${idx}]);`);
         }
       }
       break;

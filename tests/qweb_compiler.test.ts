@@ -82,8 +82,8 @@ describe("simple templates, mostly static", () => {
 
   test("two t-escs next to each other, in a div", () => {
     const template = `<div><t t-esc="text1"/><t t-esc="text2"/></div>`;
-    expect(renderToString(template, { text1: "hello", text2: "owl" })).toBe("<div>helloowl</div>");
     snapshotTemplateCode(template);
+    expect(renderToString(template, { text1: "hello", text2: "owl" })).toBe("<div>helloowl</div>");
   });
 
   test("static text and dynamic text", () => {
@@ -243,6 +243,13 @@ describe("attributes", () => {
     snapshotTemplateCode(template);
     const result = renderToString(template);
     expect(result).toBe(`<div foo="bar"></div>`);
+  });
+
+  test("two dynamic attributes", () => {
+    const template = `<div t-att-foo="'bar'" t-att-bar="'foo'"/>`;
+    snapshotTemplateCode(template);
+    const result = renderToString(template);
+    expect(result).toBe(`<div foo="bar" bar="foo"></div>`);
   });
 
   test("dynamic class attribute", () => {
