@@ -1,6 +1,6 @@
 import { BDom } from "../src/bdom";
-import { compile, compileTemplate, TemplateSet } from "../src/qweb_compiler";
-import { makeTestFixture, trim } from "./helpers";
+import { compile, TemplateSet } from "../src/qweb_compiler";
+import { makeTestFixture, trim, snapshotCompiledCode } from "./helpers";
 
 // -----------------------------------------------------------------------------
 // Helpers
@@ -15,10 +15,6 @@ function renderToString(template: string, context: any = {}): string {
   const bdom = renderToBdom(template, context);
   bdom.mount(fixture);
   return fixture.innerHTML;
-}
-
-function snapshotCompiledCode(template: string) {
-  expect(compileTemplate(template).toString()).toMatchSnapshot();
 }
 
 class TestTemplateSet extends TemplateSet {

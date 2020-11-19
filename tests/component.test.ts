@@ -1,4 +1,4 @@
-import { makeTestFixture } from "./helpers";
+import { fromName, makeTestFixture, snapshotTemplateCode } from "./helpers";
 import { mount, Component, xml } from "../src/core";
 
 let fixture: HTMLElement;
@@ -16,6 +16,7 @@ describe("basics", () => {
     const component = await mount(Test, { target: fixture });
     expect(fixture.innerHTML).toBe("<span>simple vnode</span>");
     expect(component.el).toEqual(fixture.querySelector("span"));
+    snapshotTemplateCode(Test.template);
   });
 
   test("can mount a simple class component", async () => {
@@ -26,6 +27,7 @@ describe("basics", () => {
     const component = await mount(Test, { target: fixture });
     expect(fixture.innerHTML).toBe("<span>simple vnode</span>");
     expect(component.el).toEqual(fixture.querySelector("span"));
+    snapshotTemplateCode(fromName(Test.template));
   });
 
   test("simple functional component with text node", async () => {
@@ -35,6 +37,7 @@ describe("basics", () => {
 
     await mount(Test, { target: fixture });
     expect(fixture.innerHTML).toBe("look, just text!");
+    snapshotTemplateCode(fromName(Test.template));
   });
 
   test("class component with dynamic text", async () => {
@@ -46,6 +49,7 @@ describe("basics", () => {
 
     await mount(Test, { target: fixture });
     expect(fixture.innerHTML).toBe("<span>My value: 42</span>");
+    snapshotTemplateCode(fromName(Test.template));
   });
 
   test("Multi root component", async () => {
@@ -57,5 +61,6 @@ describe("basics", () => {
 
     await mount(Test, { target: fixture });
     expect(fixture.innerHTML).toBe(`<span>1</span>text<span>2</span>`);
+    snapshotTemplateCode(fromName(Test.template));
   });
 });

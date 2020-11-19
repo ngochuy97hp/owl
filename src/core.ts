@@ -23,12 +23,12 @@ interface MountParameters {
 }
 
 let nextId = 1;
-const templateSet = new TemplateSet();
+export const globalTemplates = new TemplateSet();
 
 export function xml(strings: TemplateStringsArray, ...args: any[]) {
   const name = `__template__${nextId++}`;
   const value = String.raw(strings, ...args);
-  templateSet.add(name, value);
+  globalTemplates.add(name, value);
   return name;
 }
 
@@ -51,7 +51,7 @@ export async function mount<T extends Type<Component>>(
     component = new FComponent(C);
     template = C.template;
   }
-  const renderFunction = templateSet.getFunction(template);
+  const renderFunction = globalTemplates.getFunction(template);
   const bdom = renderFunction(component);
   const __owl__ = { renderFunction, bdom };
   component.__owl__ = __owl__;
