@@ -20,6 +20,8 @@ abstract class Block {
   abstract patch(other: Block): void;
 
   remove() {}
+
+  el: HTMLElement | Text | null = null;
 }
 
 export class HTMLBlock extends Block {
@@ -44,6 +46,7 @@ export class HTMLBlock extends Block {
     const div = document.createElement("div");
     div.innerHTML = this.html;
     this.content = [...div.childNodes];
+    this.el = this.content[0] as any;
   }
 
   remove() {
@@ -90,7 +93,7 @@ export class TextBlock extends Block {
 
 export class ContentBlock extends Block {
   static el: HTMLElement | Text;
-  el?: HTMLElement | Text;
+  // el?: HTMLElement | Text;
   children: (ContentBlock | null)[] | null = null;
   anchors?: Text[];
   data: any[] = [];

@@ -1071,6 +1071,31 @@ describe("t-foreach", () => {
     );
     console.warn = consoleWarn;
   });
+
+  test("multiple calls to t-raw", () => {
+    const templateSet = new TestTemplateSet();
+    const sub = `
+      <div>
+        <t t-raw="0"/>
+        <div>Greeter</div>
+        <t t-raw="0"/>
+      </div>`;
+
+    const main = `
+      <div>
+        <t t-call="sub">
+          <span>coucou</span>
+        </t>
+      </div>`;
+
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+    snapshotCompiledCode(sub);
+    snapshotCompiledCode(main);
+    const expected =
+      "<div><div><span>coucou</span><div>Greeter</div><span>coucou</span></div></div>";
+    expect(templateSet.renderToString("main")).toBe(expected);
+  });
 });
 
 // -----------------------------------------------------------------------------
