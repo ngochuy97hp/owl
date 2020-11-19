@@ -76,6 +76,28 @@ exports[`basics class component with dynamic text 1`] = `
 }"
 `;
 
+exports[`basics functional component: setup return value is context 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span>My value: <owl-text></owl-text></span>\`);
+    data = new Array(1);
+    update() {
+      this.el.firstChild.nextSibling.textContent = toString(this.data[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = ctx['value'];
+    return b1;
+  }
+}"
+`;
+
 exports[`basics simple functional component with text node 1`] = `
 "function anonymous(Blocks, utils
 ) {

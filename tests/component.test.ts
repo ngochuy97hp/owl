@@ -52,6 +52,19 @@ describe("basics", () => {
     snapshotTemplateCode(fromName(Test.template));
   });
 
+  test("functional component: setup return value is context", async () => {
+    const Test = {
+      template: xml`<span>My value: <t t-esc="value"/></span>`,
+      setup() {
+        return { value: 42 };
+      },
+    };
+
+    await mount(Test, { target: fixture });
+    expect(fixture.innerHTML).toBe("<span>My value: 42</span>");
+    snapshotTemplateCode(fromName(Test.template));
+  });
+
   test("Multi root component", async () => {
     class Test extends Component {
       static template = xml`<span>1</span>text<span>2</span>`;

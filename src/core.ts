@@ -8,10 +8,19 @@ export class Component {
   }
 }
 
-export class FComponent extends Component {
-  constructor(C: any) {
+export class FComponent<T> extends Component {
+  constructor(FC: FunctionalComponent<T>) {
     super();
+    const value = FC.setup ? FC.setup() : null;
+    if (value) {
+      Object.assign(this, value);
+    }
   }
+}
+
+export interface FunctionalComponent<T> {
+  template: string;
+  setup?(): T;
 }
 
 type Env = any;
@@ -36,10 +45,15 @@ interface Type<T> extends Function {
   new (...args: any[]): T;
 }
 
-export async function mount<T extends Type<Component>>(
-  C: T | any,
+export function mount<T extends Type<Component>>(
+  C: T,
   params: MountParameters
-): Promise<InstanceType<T>> {
+): Promise<InstanceType<T>>;
+export function mount<T>(
+  C: FunctionalComponent<T>,
+  params: MountParameters
+): Promise<Component & T>;
+export async function mount(C: any, params: MountParameters) {
   const { target } = params;
 
   let component: Component;
