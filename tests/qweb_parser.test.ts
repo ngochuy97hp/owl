@@ -1,4 +1,4 @@
-import { ASTType, parse } from "../src/parser";
+import { ASTType, parse } from "../src/qweb_parser";
 
 describe("qweb parser", () => {
   // ---------------------------------------------------------------------------

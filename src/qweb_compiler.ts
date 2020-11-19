@@ -1,6 +1,6 @@
 import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock, TextBlock } from "./bdom";
 import { compileExpr } from "./expression_parser";
-import { AST, ASTType, parse } from "./parser";
+import { AST, ASTType, parse } from "./qweb_parser";
 
 export const INTERP_REGEXP = /\{\{.*?\}\}/g;
 

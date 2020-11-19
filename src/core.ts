@@ -1,4 +1,4 @@
-import { TemplateSet } from "./compiler";
+import { TemplateSet } from "./qweb_compiler";
 export class Component {
   static template: string;
 

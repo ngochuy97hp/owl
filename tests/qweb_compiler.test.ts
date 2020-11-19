@@ -1,5 +1,5 @@
 import { BDom } from "../src/bdom";
-import { compile, compileTemplate, TemplateSet } from "../src/compiler";
+import { compile, compileTemplate, TemplateSet } from "../src/qweb_compiler";
 import { makeTestFixture, trim } from "./helpers";
 
 // -----------------------------------------------------------------------------
