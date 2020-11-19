@@ -60,75 +60,57 @@ export class TemplateSet {
 }
 
 // -----------------------------------------------------------------------------
-// Compilation Context
+// BlockDescription
 // -----------------------------------------------------------------------------
 
 interface FunctionLine {
   path: string[];
   inserter(el: string): string;
 }
-interface BlockDescription {
-  name: string;
-  updateFn: FunctionLine[];
-  handlerFn: FunctionLine[];
+
+class BlockDescription {
   varName: string;
-  currentPath: string[];
-  dataNumber: number;
-  handlerNumber: number;
+  blockName: string;
+  updateFn: FunctionLine[] = [];
+  handlerFn: FunctionLine[] = [];
+  currentPath: string[] = ["el"];
+  dataNumber: number = 0;
+  handlerNumber: number = 0;
   dom?: Dom;
   currentDom?: DomNode;
-  childNumber: number;
+  childNumber: number = 0;
+
+  constructor(varName: string, blockName: string) {
+    this.varName = varName;
+    this.blockName = blockName;
+  }
+
+  insert(dom: Dom) {
+    if (this.currentDom) {
+      this.currentDom.content.push(dom);
+    } else {
+      this.dom = dom;
+    }
+  }
+
+  insertUpdate(inserter: (target: string) => string) {
+    this.updateFn.push({ path: this.currentPath.slice(), inserter });
+  }
+
+  insertHandler(inserter: (target: string) => string) {
+    this.handlerFn.push({ path: this.currentPath.slice(), inserter });
+  }
 }
+
+
+// -----------------------------------------------------------------------------
+// Compilation Context
+// -----------------------------------------------------------------------------
 
 interface MakeBlockParams {
   multi?: number;
   parentBlock?: string | null;
   parentIndex?: number | string | null;
-}
-
-function writeBlockFunction(ctx: CompilationContext, lines: FunctionLine[]) {
-  // build tree of paths
-  const tree: any = {};
-  let i = 1;
-  for (let line of lines) {
-    let current: any = tree;
-    let el: string = `this`;
-    for (let p of line.path.slice()) {
-      if (current[p]) {
-      } else {
-        current[p] = { firstChild: null, nextSibling: null };
-      }
-      if (current.firstChild && current.nextSibling && !current.name) {
-        current.name = `el${i++}`;
-        ctx.addLine(`const ${current.name} = ${el};`);
-      }
-      el = `${current.name ? current.name : el}.${p}`;
-      current = current[p];
-      if (current.target && !current.name) {
-        current.name = `el${i++}`;
-        ctx.addLine(`const ${current.name} = ${el};`);
-      }
-    }
-    current.target = true;
-  }
-  for (let line of lines) {
-    const { path, inserter } = line;
-    let current: any = tree;
-    let el = `this`;
-    for (let p of path.slice()) {
-      current = current[p];
-      if (current) {
-        if (current.name) {
-          el = current.name;
-        } else {
-          el = `${el}.${p}`;
-        }
-      } else {
-        el = `${el}.${p}`;
-      }
-    }
-    ctx.addLine(inserter(el));
-  }
 }
 
 class CompilationContext {
@@ -152,16 +134,7 @@ class CompilationContext {
 
   makeBlock({ multi, parentBlock, parentIndex }: MakeBlockParams = {}): BlockDescription {
     const name = multi ? "MultiBlock" : `Block${this.blocks.length + 1}`;
-    const block: BlockDescription = {
-      name,
-      varName: this.generateId("b"),
-      updateFn: [],
-      handlerFn: [],
-      currentPath: ["el"],
-      dataNumber: 0,
-      handlerNumber: 0,
-      childNumber: 0,
-    };
+    const block = new BlockDescription(this.generateId("b"), name);
     if (!multi) {
       this.blocks.push(block);
     }
@@ -169,7 +142,7 @@ class CompilationContext {
       this.rootBlock = block.varName;
     }
     const parentStr = parentBlock ? `${parentBlock}.children[${parentIndex}] = ` : "";
-    this.addLine(`const ${block.varName} = ${parentStr}new ${block.name}(${multi || ""});`);
+    this.addLine(`const ${block.varName} = ${parentStr}new ${name}(${multi || ""});`);
     return block;
   }
 
@@ -184,50 +157,7 @@ class CompilationContext {
 
     // define all blocks
     for (let block of this.blocks) {
-      this.addLine(`class ${block.name} extends ContentBlock {`);
-      this.indentLevel++;
-      this.addLine(`static el = elem(\`${block.dom ? domToString(block.dom) : ""}\`);`);
-      if (block.childNumber) {
-        this.addLine(`children = new Array(${block.childNumber});`);
-      }
-      if (block.dataNumber) {
-        this.addLine(`data = new Array(${block.dataNumber});`);
-      }
-      if (block.handlerNumber) {
-        this.addLine(`handlers = new Array(${block.handlerNumber});`);
-      }
-      if (block.updateFn.length) {
-        const updateInfo = block.updateFn;
-        this.addLine(`update() {`);
-        this.indentLevel++;
-        if (updateInfo.length === 1) {
-          const { path, inserter } = updateInfo[0];
-          const target = `this.${path.join(".")}`;
-          this.addLine(inserter(target));
-        } else {
-          writeBlockFunction(this, block.updateFn);
-        }
-        this.indentLevel--;
-        this.addLine(`}`);
-      }
-
-      if (block.handlerFn.length) {
-        const updateInfo = block.handlerFn;
-        this.addLine(`setupHandlers() {`);
-        this.indentLevel++;
-        if (updateInfo.length === 1) {
-          const { path, inserter } = updateInfo[0];
-          const target = `this.${path.join(".")}`;
-          this.addLine(inserter(target));
-        } else {
-          writeBlockFunction(this, block.handlerFn);
-        }
-        this.indentLevel--;
-        this.addLine(`}`);
-      }
-
-      this.indentLevel--;
-      this.addLine(`}`);
+      this.generateBlockCode(block);
     }
 
     // micro optimization: remove trailing ctx = ctx.__proto__;
@@ -252,27 +182,103 @@ class CompilationContext {
     this.addLine("}");
     return this.code.join("\n");
   }
+
+  generateBlockCode(block: BlockDescription) {
+    this.addLine(`class ${block.blockName} extends ContentBlock {`);
+    this.indentLevel++;
+    this.addLine(`static el = elem(\`${block.dom ? domToString(block.dom) : ""}\`);`);
+    if (block.childNumber) {
+      this.addLine(`children = new Array(${block.childNumber});`);
+    }
+    if (block.dataNumber) {
+      this.addLine(`data = new Array(${block.dataNumber});`);
+    }
+    if (block.handlerNumber) {
+      this.addLine(`handlers = new Array(${block.handlerNumber});`);
+    }
+    if (block.updateFn.length) {
+      const updateInfo = block.updateFn;
+      this.addLine(`update() {`);
+      this.indentLevel++;
+      if (updateInfo.length === 1) {
+        const { path, inserter } = updateInfo[0];
+        const target = `this.${path.join(".")}`;
+        this.addLine(inserter(target));
+      } else {
+        this.generateFunctionCode(block.updateFn);
+      }
+      this.indentLevel--;
+      this.addLine(`}`);
+    }
+
+    if (block.handlerFn.length) {
+      const updateInfo = block.handlerFn;
+      this.addLine(`setupHandlers() {`);
+      this.indentLevel++;
+      if (updateInfo.length === 1) {
+        const { path, inserter } = updateInfo[0];
+        const target = `this.${path.join(".")}`;
+        this.addLine(inserter(target));
+      } else {
+        this.generateFunctionCode(block.handlerFn);
+      }
+      this.indentLevel--;
+      this.addLine(`}`);
+    }
+
+    this.indentLevel--;
+    this.addLine(`}`);
+  }
+
+  generateFunctionCode(lines: FunctionLine[]) {
+    // build tree of paths
+    const tree: any = {};
+    let i = 1;
+    for (let line of lines) {
+      let current: any = tree;
+      let el: string = `this`;
+      for (let p of line.path.slice()) {
+        if (current[p]) {
+        } else {
+          current[p] = { firstChild: null, nextSibling: null };
+        }
+        if (current.firstChild && current.nextSibling && !current.name) {
+          current.name = `el${i++}`;
+          this.addLine(`const ${current.name} = ${el};`);
+        }
+        el = `${current.name ? current.name : el}.${p}`;
+        current = current[p];
+        if (current.target && !current.name) {
+          current.name = `el${i++}`;
+          this.addLine(`const ${current.name} = ${el};`);
+        }
+      }
+      current.target = true;
+    }
+    for (let line of lines) {
+      const { path, inserter } = line;
+      let current: any = tree;
+      let el = `this`;
+      for (let p of path.slice()) {
+        current = current[p];
+        if (current) {
+          if (current.name) {
+            el = current.name;
+          } else {
+            el = `${el}.${p}`;
+          }
+        } else {
+          el = `${el}.${p}`;
+        }
+      }
+      this.addLine(inserter(el));
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
 // Compiler code
 // -----------------------------------------------------------------------------
-
-function addToBlockDom(block: BlockDescription, dom: Dom) {
-  if (block.currentDom) {
-    block.currentDom.content.push(dom);
-  } else {
-    block.dom = dom;
-  }
-}
-
-function updateBlockFn(block: BlockDescription, inserter: (target: string) => string) {
-  block.updateFn.push({ path: block.currentPath.slice(), inserter });
-}
-
-function updateHandlerFn(block: BlockDescription, inserter: (target: string) => string) {
-  block.handlerFn.push({ path: block.currentPath.slice(), inserter });
-}
 
 function compileAST(
   ast: AST,
@@ -293,7 +299,7 @@ function compileAST(
         });
       }
       const text: Dom = { type: DomType.Comment, value: ast.value };
-      addToBlockDom(currentBlock, text);
+      currentBlock.insert(text);
       break;
     }
     case ASTType.Text: {
@@ -312,7 +318,7 @@ function compileAST(
       } else {
         const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
         const text: Dom = { type, value: ast.value };
-        addToBlockDom(currentBlock, text);
+        currentBlock.insert(text);
       }
       break;
     }
@@ -346,14 +352,10 @@ function compileAST(
           currentBlock.dataNumber++;
           ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${dynAttrs[key]};`);
           if (key === "class") {
-            updateBlockFn(
-              currentBlock,
-              (targetEl) => `this.updateClass(${targetEl}, this.data[${idx}]);`
-            );
+            currentBlock.insertUpdate((el) => `this.updateClass(${el}, this.data[${idx}]);`);
           } else {
-            updateBlockFn(
-              currentBlock,
-              (targetEl) => `this.updateAttr(${targetEl}, \`${key}\`, this.data[${idx}]);`
+            currentBlock.insertUpdate(
+              (el) => `this.updateAttr(${el}, \`${key}\`, this.data[${idx}]);`
             );
           }
         }
@@ -363,7 +365,7 @@ function compileAST(
       for (let event in ast.on) {
         const index = currentBlock.handlerNumber;
         currentBlock.handlerNumber++;
-        updateHandlerFn(currentBlock, (el) => `this.setupHandler(${el}, ${index});`);
+        currentBlock.insertHandler((el) => `this.setupHandler(${el}, ${index});`);
         ctx.addLine(
           `${currentBlock.varName}.handlers[${index}] = [\`${event}\`, () => ${compileExpr(
             ast.on[event]
@@ -372,7 +374,7 @@ function compileAST(
       }
 
       const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: staticAttrs, content: [] };
-      addToBlockDom(currentBlock, dom);
+      currentBlock.insert(dom);
       if (ast.content.length) {
         const initialDom = currentBlock.currentDom;
         currentBlock.currentDom = dom;
@@ -415,14 +417,14 @@ function compileAST(
         }
       } else {
         const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
-        addToBlockDom(currentBlock, text);
+        currentBlock.insert(text);
         const idx = currentBlock.dataNumber;
         currentBlock.dataNumber++;
         ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${expr};`);
         if (ast.expr === "0") {
-          updateBlockFn(currentBlock, (el) => `${el}.textContent = this.data[${idx}];`);
+          currentBlock.insertUpdate((el) => `${el}.textContent = this.data[${idx}];`);
         } else {
-          updateBlockFn(currentBlock, (el) => `${el}.textContent = toString(this.data[${idx}]);`);
+          currentBlock.insertUpdate((el) => `${el}.textContent = toString(this.data[${idx}]);`);
         }
       }
       break;
@@ -436,7 +438,7 @@ function compileAST(
         currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });
       }
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      addToBlockDom(currentBlock, anchor);
+      currentBlock.insert(anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
       let expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr);
@@ -460,7 +462,7 @@ function compileAST(
       ctx.addLine(`if (${compileExpr(ast.condition)}) {`);
       ctx.indentLevel++;
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      addToBlockDom(currentBlock, anchor);
+      currentBlock.insert(anchor);
       currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
       currentBlock.childNumber++;
       compileAST(ast.content, currentBlock, currentIndex, true, ctx);
@@ -470,7 +472,7 @@ function compileAST(
           ctx.addLine(`} else if (${compileExpr(clause.condition)}) {`);
           ctx.indentLevel++;
           const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-          addToBlockDom(currentBlock, anchor);
+          currentBlock.insert(anchor);
           currentBlock.childNumber++;
           compileAST(clause.content, currentBlock, currentBlock.childNumber - 1, true, ctx);
           ctx.indentLevel--;
@@ -480,7 +482,7 @@ function compileAST(
         ctx.addLine(`} else {`);
         ctx.indentLevel++;
         const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-        addToBlockDom(currentBlock, anchor);
+        currentBlock.insert(anchor);
         currentBlock.childNumber++;
         compileAST(ast.tElse, currentBlock, currentBlock.childNumber - 1, true, ctx);
 
@@ -505,7 +507,7 @@ function compileAST(
 
       if (currentBlock) {
         const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-        addToBlockDom(currentBlock, anchor);
+        currentBlock.insert(anchor);
         currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
         currentBlock.childNumber++;
 
@@ -529,16 +531,7 @@ function compileAST(
       ctx.addLine(`ctx[\`${ast.elem}_index\`] = ${loopVar};`);
       ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[${loopVar}];`);
 
-      const collectionBlock: BlockDescription = {
-        name: "Collection",
-        varName: id,
-        updateFn: [],
-        handlerFn: [],
-        currentPath: [],
-        dataNumber: 0,
-        childNumber: 0,
-        handlerNumber: 0,
-      };
+      const collectionBlock = new BlockDescription(id, "Collection");
       compileAST(ast.body, collectionBlock, loopVar, true, ctx);
       ctx.indentLevel--;
       ctx.addLine(`}`);
@@ -618,7 +611,7 @@ function compileAST(
       if (currentBlock) {
         if (!forceNewBlock) {
           const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-          addToBlockDom(currentBlock, anchor);
+          currentBlock.insert(anchor);
           currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
           currentBlock.childNumber++;
         }
