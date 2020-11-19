@@ -1,10 +1,11 @@
+import { BDom } from "./bdom";
 import { TemplateSet } from "./qweb_compiler";
 export class Component {
   static template: string;
 
-  __owl__: any;
+  __owl__: InternalData | null = null;
   get el(): HTMLElement | Text | null {
-    return this.__owl__.bdom.el;
+    return (this.__owl__ as any).bdom.el;
   }
 }
 
@@ -45,6 +46,11 @@ interface Type<T> extends Function {
   new (...args: any[]): T;
 }
 
+interface InternalData {
+  bdom: null | BDom;
+  render: () => BDom;
+}
+
 export function mount<T extends Type<Component>>(
   C: T,
   params: MountParameters
@@ -65,10 +71,15 @@ export async function mount(C: any, params: MountParameters) {
     component = new FComponent(C);
     template = C.template;
   }
-  const renderFunction = globalTemplates.getFunction(template);
-  const bdom = renderFunction(component);
-  const __owl__ = { renderFunction, bdom };
+  const render: () => BDom = globalTemplates.getFunction(template).bind(null, component);
+  const __owl__: InternalData = { render: render, bdom: null };
   component.__owl__ = __owl__;
-  bdom.mount(target);
-  return component as any;
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      const bdom = render();
+      bdom.mount(target);
+      __owl__.bdom = bdom;
+      resolve(component as any);
+    });
+  });
 }
