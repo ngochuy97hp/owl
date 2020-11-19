@@ -42,6 +42,7 @@ describe("qweb parser", () => {
       tag: "div",
       content: [],
       attrs: {},
+      on: {},
     });
   });
 
@@ -64,6 +65,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [],
     });
   });
@@ -73,6 +75,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [{ type: ASTType.Text, value: "some text" }],
     });
   });
@@ -82,12 +85,14 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [
         { type: ASTType.Text, value: "some text" },
         {
           type: ASTType.DomNode,
           tag: "span",
           attrs: {},
+          on: {},
           content: [{ type: ASTType.Text, value: "inside" }],
         },
       ],
@@ -98,8 +103,8 @@ describe("qweb parser", () => {
     expect(parse("<div></div><span></span>")).toEqual({
       type: ASTType.Multi,
       content: [
-        { type: ASTType.DomNode, tag: "div", attrs: {}, content: [] },
-        { type: ASTType.DomNode, tag: "span", attrs: {}, content: [] },
+        { type: ASTType.DomNode, tag: "div", attrs: {}, on: {}, content: [] },
+        { type: ASTType.DomNode, tag: "span", attrs: {}, on: {}, content: [] },
       ],
     });
   });
@@ -109,7 +114,7 @@ describe("qweb parser", () => {
       type: ASTType.Multi,
       content: [
         { type: ASTType.Text, value: "some text" },
-        { type: ASTType.DomNode, tag: "span", attrs: {}, content: [] },
+        { type: ASTType.DomNode, tag: "span", attrs: {}, on: {}, content: [] },
       ],
     });
   });
@@ -119,6 +124,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: { class: "abc" },
+      on: {},
       content: [{ type: ASTType.Text, value: "foo" }],
     });
   });
@@ -145,6 +151,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "span",
       attrs: {},
+      on: {},
       content: [{ type: ASTType.TEsc, expr: "text", defaultValue: "" }],
     });
   });
@@ -162,6 +169,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [{ type: ASTType.TEsc, expr: "text", defaultValue: "hey" }],
     });
   });
@@ -183,6 +191,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [{ type: ASTType.TRaw, expr: "text", body: null }],
     });
   });
@@ -192,6 +201,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [
         { type: ASTType.TRaw, expr: "text", body: [{ type: ASTType.Text, value: "body" }] },
       ],
@@ -207,6 +217,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [
         {
           type: ASTType.TIf,
@@ -230,6 +241,7 @@ describe("qweb parser", () => {
         type: ASTType.DomNode,
         tag: "div",
         attrs: {},
+        on: {},
         content: [{ type: ASTType.Text, value: "hey" }],
       },
       tElif: null,
@@ -302,6 +314,7 @@ describe("qweb parser", () => {
         type: ASTType.DomNode,
         tag: "div",
         attrs: {},
+        on: {},
         content: [
           {
             type: ASTType.Text,
@@ -316,6 +329,7 @@ describe("qweb parser", () => {
             type: ASTType.DomNode,
             tag: "h1",
             attrs: {},
+            on: {},
             content: [{ type: ASTType.Text, value: "elif" }],
           },
         },
@@ -324,6 +338,7 @@ describe("qweb parser", () => {
         type: ASTType.DomNode,
         tag: "h2",
         attrs: {},
+        on: {},
         content: [
           {
             type: ASTType.Text,
@@ -366,6 +381,7 @@ describe("qweb parser", () => {
         {
           type: ASTType.DomNode,
           attrs: {},
+          on: {},
           tag: "div",
           content: [{ type: ASTType.Text, value: "ok" }],
         },
@@ -381,6 +397,7 @@ describe("qweb parser", () => {
         {
           type: ASTType.DomNode,
           attrs: {},
+          on: {},
           tag: "div",
           content: [{ type: ASTType.Text, value: "ok" }],
         },
@@ -412,6 +429,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [
         {
           type: ASTType.TIf,
@@ -446,6 +464,7 @@ describe("qweb parser", () => {
         type: ASTType.DomNode,
         tag: "span",
         attrs: {},
+        on: {},
         content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
       },
     });
@@ -472,6 +491,7 @@ describe("qweb parser", () => {
         content: {
           type: ASTType.DomNode,
           tag: "span",
+          on: {},
           attrs: {},
           content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
         },
@@ -504,6 +524,7 @@ describe("qweb parser", () => {
       type: ASTType.DomNode,
       tag: "div",
       attrs: {},
+      on: {},
       content: [
         {
           type: ASTType.TCall,
@@ -511,6 +532,20 @@ describe("qweb parser", () => {
           body: null,
         },
       ],
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // t-on
+  // ---------------------------------------------------------------------------
+
+  test("simple t-on expression", async () => {
+    expect(parse(`<button t-on-click="add">Click</button>`)).toEqual({
+      type: ASTType.DomNode,
+      tag: "button",
+      attrs: {},
+      on: { click: "add" },
+      content: [{ type: ASTType.Text, value: "Click" }],
     });
   });
 });

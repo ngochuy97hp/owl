@@ -95,8 +95,9 @@ export class ContentBlock extends Block {
   static el: HTMLElement | Text;
   // el?: HTMLElement | Text;
   children: (ContentBlock | null)[] | null = null;
-  anchors?: Text[];
-  data: any[] = [];
+  anchors?: Text[] | null = null;
+  data?: any[] | null = null;
+  handlers?: any[] | null = null;
 
   toString(): string {
     const div = document.createElement("div");
@@ -132,6 +133,13 @@ export class ContentBlock extends Block {
     } else {
       elem.removeAttribute(attr);
     }
+  }
+
+  setupHandler(el: HTMLElement, index: number) {
+    const eventType = this.handlers![index][0];
+    el.addEventListener(eventType, () => {
+      this.handlers![index][1]();
+    });
   }
 
   protected build() {

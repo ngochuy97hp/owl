@@ -1,6 +1,7 @@
 import { BDom, ContentBlock, HTMLBlock, MultiBlock, CollectionBlock, TextBlock } from "./bdom";
 import { compileExpr } from "./expression_parser";
 import { AST, ASTType, parse } from "./qweb_parser";
+import { UTILS } from "./qweb_utils";
 
 export const INTERP_REGEXP = /\{\{.*?\}\}/g;
 
@@ -22,15 +23,6 @@ const Blocks = { ContentBlock, MultiBlock, HTMLBlock, CollectionBlock, TextBlock
 
 export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (blocks: typeof Blocks, utils: typeof UTILS) => RenderFunction;
-
-const UTILS = {
-  elem,
-  toString,
-  withDefault,
-  call,
-  zero: Symbol("zero"),
-  getValues,
-};
 
 export function compile(template: string, utils: typeof UTILS = UTILS): RenderFunction {
   const templateFunction = compileTemplate(template);
@@ -83,12 +75,18 @@ export class TemplateSet {
 // Compilation Context
 // -----------------------------------------------------------------------------
 
+interface FunctionLine {
+  path: string[];
+  inserter(el: string): string;
+}
 interface BlockDescription {
   name: string;
-  updateFn: { path: string[]; inserter(target: string): string }[];
+  updateFn: FunctionLine[];
+  handlerFn: FunctionLine[];
   varName: string;
   currentPath: string[];
-  textNumber: number;
+  dataNumber: number;
+  handlerNumber: number;
   dom?: Dom;
   currentDom?: DomNode;
   childNumber: number;
@@ -124,6 +122,51 @@ interface MakeBlockParams {
   parentIndex?: number | string | null;
 }
 
+function writeBlockFunction(ctx: CompilationContext, lines: FunctionLine[]) {
+  // build tree of paths
+  const tree: any = {};
+  let i = 1;
+  for (let line of lines) {
+    let current: any = tree;
+    let el: string = `this`;
+    for (let p of line.path.slice()) {
+      if (current[p]) {
+      } else {
+        current[p] = { firstChild: null, nextSibling: null };
+      }
+      if (current.firstChild && current.nextSibling && !current.name) {
+        current.name = `el${i++}`;
+        ctx.addLine(`const ${current.name} = ${el};`);
+      }
+      el = `${current.name ? current.name : el}.${p}`;
+      current = current[p];
+      if (current.target && !current.name) {
+        current.name = `el${i++}`;
+        ctx.addLine(`const ${current.name} = ${el};`);
+      }
+    }
+    current.target = true;
+  }
+  for (let line of lines) {
+    const { path, inserter } = line;
+    let current: any = tree;
+    let el = `this`;
+    for (let p of path.slice()) {
+      current = current[p];
+      if (current) {
+        if (current.name) {
+          el = current.name;
+        } else {
+          el = `${el}.${p}`;
+        }
+      } else {
+        el = `${el}.${p}`;
+      }
+    }
+    ctx.addLine(inserter(el));
+  }
+}
+
 class CompilationContext {
   code: string[] = [];
   indentLevel: number = 0;
@@ -149,8 +192,10 @@ class CompilationContext {
       name,
       varName: this.generateId("b"),
       updateFn: [],
+      handlerFn: [],
       currentPath: ["el"],
-      textNumber: 0,
+      dataNumber: 0,
+      handlerNumber: 0,
       childNumber: 0,
     };
     if (!multi) {
@@ -181,8 +226,11 @@ class CompilationContext {
       if (block.childNumber) {
         this.addLine(`children = new Array(${block.childNumber});`);
       }
-      if (block.textNumber) {
-        this.addLine(`data = new Array(${block.textNumber});`);
+      if (block.dataNumber) {
+        this.addLine(`data = new Array(${block.dataNumber});`);
+      }
+      if (block.handlerNumber) {
+        this.addLine(`handlers = new Array(${block.handlerNumber});`);
       }
       if (block.updateFn.length) {
         const updateInfo = block.updateFn;
@@ -193,52 +241,27 @@ class CompilationContext {
           const target = `this.${path.join(".")}`;
           this.addLine(inserter(target));
         } else {
-          // build tree of paths
-          const tree: any = {};
-          let i = 1;
-          for (let line of block.updateFn) {
-            let current: any = tree;
-            let el: string = `this`;
-            for (let p of line.path.slice()) {
-              if (current[p]) {
-              } else {
-                current[p] = { firstChild: null, nextSibling: null };
-              }
-              if (current.firstChild && current.nextSibling && !current.name) {
-                current.name = `el${i++}`;
-                this.addLine(`const ${current.name} = ${el};`);
-              }
-              el = `${current.name ? current.name : el}.${p}`;
-              current = current[p];
-              if (current.target && !current.name) {
-                current.name = `el${i++}`;
-                this.addLine(`const ${current.name} = ${el};`);
-              }
-            }
-            current.target = true;
-          }
-          for (let line of block.updateFn) {
-            const { path, inserter } = line;
-            let current: any = tree;
-            let el = `this`;
-            for (let p of path.slice()) {
-              current = current[p];
-              if (current) {
-                if (current.name) {
-                  el = current.name;
-                } else {
-                  el = `${el}.${p}`;
-                }
-              } else {
-                el = `${el}.${p}`;
-              }
-            }
-            this.addLine(inserter(el));
-          }
+          writeBlockFunction(this, block.updateFn);
         }
         this.indentLevel--;
         this.addLine(`}`);
       }
+
+      if (block.handlerFn.length) {
+        const updateInfo = block.handlerFn;
+        this.addLine(`update() {`);
+        this.indentLevel++;
+        if (updateInfo.length === 1) {
+          const { path, inserter } = updateInfo[0];
+          const target = `this.${path.join(".")}`;
+          this.addLine(inserter(target));
+        } else {
+          writeBlockFunction(this, block.updateFn);
+        }
+        this.indentLevel--;
+        this.addLine(`}`);
+      }
+
       this.indentLevel--;
       this.addLine(`}`);
     }
@@ -300,6 +323,10 @@ function updateBlockFn(block: BlockDescription, inserter: (target: string) => st
   block.updateFn.push({ path: block.currentPath.slice(), inserter });
 }
 
+function updateHandlerFn(block: BlockDescription, inserter: (target: string) => string) {
+  block.handlerFn.push({ path: block.currentPath.slice(), inserter });
+}
+
 function compileAST(
   ast: AST,
   currentBlock: BlockDescription | null,
@@ -353,6 +380,8 @@ function compileAST(
           parentBlock: currentBlock ? currentBlock.varName : undefined,
         });
       }
+
+      // attributes
       const staticAttrs: { [key: string]: string } = {};
       const dynAttrs: { [key: string]: string } = {};
       for (let key in ast.attrs) {
@@ -364,11 +393,10 @@ function compileAST(
           staticAttrs[key] = ast.attrs[key];
         }
       }
-
       if (Object.keys(dynAttrs).length) {
         for (let key in dynAttrs) {
-          const idx = currentBlock.textNumber;
-          currentBlock.textNumber++;
+          const idx = currentBlock.dataNumber;
+          currentBlock.dataNumber++;
           ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${dynAttrs[key]};`);
           if (key === "class") {
             updateBlockFn(
@@ -382,6 +410,18 @@ function compileAST(
             );
           }
         }
+      }
+
+      // event handlers
+      for (let event in ast.on) {
+        const index = currentBlock.handlerNumber;
+        currentBlock.handlerNumber++;
+        updateHandlerFn(currentBlock, (el) => `this.setupHandler(${el}, ${index});`);
+        ctx.addLine(
+          `${currentBlock.varName}.handlers[${index}] = [\`${event}\`, () => ${compileExpr(
+            ast.on[event]
+          )}()];`
+        );
       }
 
       const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: staticAttrs, content: [] };
@@ -429,8 +469,8 @@ function compileAST(
       } else {
         const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
         addToBlockDom(currentBlock, text);
-        const idx = currentBlock.textNumber;
-        currentBlock.textNumber++;
+        const idx = currentBlock.dataNumber;
+        currentBlock.dataNumber++;
         ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${expr};`);
         if (ast.expr === "0") {
           updateBlockFn(currentBlock, (el) => `${el}.textContent = this.data[${idx}];`);
@@ -546,9 +586,11 @@ function compileAST(
         name: "Collection",
         varName: id,
         updateFn: [],
+        handlerFn: [],
         currentPath: [],
-        textNumber: 0,
+        dataNumber: 0,
         childNumber: 0,
+        handlerNumber: 0,
       };
       compileAST(ast.body, collectionBlock, loopVar, true, ctx);
       ctx.indentLevel--;
@@ -675,76 +717,4 @@ function compileAST(
       break;
     }
   }
-}
-
-// -----------------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------------
-
-function toDom(node: ChildNode): HTMLElement | Text | Comment {
-  switch (node.nodeType) {
-    case 1: {
-      // HTMLElement
-      if ((node as Element).tagName === "owl-text") {
-        return document.createTextNode("");
-      }
-      const result = document.createElement((node as Element).tagName);
-      const attrs = (node as Element).attributes;
-      for (let i = 0; i < attrs.length; i++) {
-        result.setAttribute(attrs[i].name, attrs[i].value);
-      }
-      for (let child of (node as Element).childNodes) {
-        result.appendChild(toDom(child));
-      }
-      return result;
-    }
-    case 3: {
-      // text node
-      return document.createTextNode(node.textContent!);
-    }
-    case 8: {
-      // comment node
-      return document.createComment(node.textContent!);
-    }
-  }
-  throw new Error("boom");
-}
-
-function elem(html: string): HTMLElement | Text | Comment {
-  const doc = new DOMParser().parseFromString(html, "text/xml");
-  return toDom(doc.firstChild!);
-}
-
-function toString(value: any): string {
-  switch (typeof value) {
-    case "string":
-      return value;
-    case "number":
-      return String(value);
-    case "boolean":
-      return value ? "true" : "false";
-    case "undefined":
-      return "";
-    case "object":
-      return value ? value.toString() : "";
-  }
-  throw new Error("not yet working" + value);
-}
-
-function withDefault(value: any, defaultValue: any): any {
-  return value === undefined || value === null || value === false ? defaultValue : value;
-}
-
-function call(name: string): BDom {
-  throw new Error(`Missing template: "${name}"`);
-}
-
-function getValues(collection: any): [any[], any[], number] {
-  if (Array.isArray(collection)) {
-    return [collection, collection, collection.length];
-  } else if (collection) {
-    const keys = Object.keys(collection);
-    return [keys, Object.values(collection), keys.length];
-  }
-  throw new Error("Invalid loop expression");
 }

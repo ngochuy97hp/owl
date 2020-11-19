@@ -1657,3 +1657,21 @@ describe("misc", () => {
     expect(result).toBe(expected);
   });
 });
+
+// -----------------------------------------------------------------------------
+// t-on
+// -----------------------------------------------------------------------------
+
+describe("t-on", () => {
+  test("can bind event handler", () => {
+    const template = `<button t-on-click="add">Click</button>`;
+    snapshotTemplateCode(template);
+    let a = 1;
+    const block = renderToBdom(template, { add: () => (a = 3) });
+    const fixture = makeTestFixture();
+    block.mount(fixture);
+    expect(a).toBe(1);
+    fixture.querySelector("button")!.click();
+    expect(a).toBe(3);
+  });
+});

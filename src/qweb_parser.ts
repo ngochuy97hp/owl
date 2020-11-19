@@ -31,6 +31,7 @@ export interface ASTDomNode {
   tag: string;
   attrs: { [key: string]: string };
   content: AST[];
+  on: { [key: string]: string };
 }
 
 export interface ASTMulti {
@@ -204,13 +205,21 @@ function parseDOMNode(node: Element, ctx: ParsingContext): AST | null {
   }
 
   const attrs: ASTDomNode["attrs"] = {};
+  const on: ASTDomNode["on"] = {};
+
   for (let attr of node.getAttributeNames()) {
-    attrs[attr] = node.getAttribute(attr)!;
+    const value = node.getAttribute(attr)!;
+    if (attr.startsWith("t-on-")) {
+      on[attr.slice(5)] = value;
+    } else {
+      attrs[attr] = value;
+    }
   }
   return {
     type: ASTType.DomNode,
     tag: node.tagName,
     attrs,
+    on,
     content: children,
   };
 }
@@ -239,6 +248,7 @@ function parseTEscNode(node: Element, ctx: ParsingContext): AST | null {
       type: ASTType.DomNode,
       tag: ast.tag,
       attrs: ast.attrs,
+      on: ast.on,
       content: [tesc],
     };
   }
@@ -267,6 +277,7 @@ function parseTRawNode(node: Element, ctx: ParsingContext): AST | null {
       type: ASTType.DomNode,
       tag: ast.tag,
       attrs: ast.attrs,
+      on: ast.on,
       content: [tRaw],
     };
   }
