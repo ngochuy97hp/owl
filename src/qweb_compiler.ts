@@ -1,6 +1,22 @@
 import { BDom, Blocks } from "./bdom";
 import { compileExpr, compileExprToArray, interpolate, INTERP_REGEXP } from "./qweb_expressions";
-import { AST, ASTType, parse } from "./qweb_parser";
+import {
+  AST,
+  ASTComment,
+  ASTComponent,
+  ASTDomNode,
+  ASTMulti,
+  ASTTCall,
+  ASTTEsc,
+  ASTText,
+  ASTTForEach,
+  ASTTif,
+  ASTTKey,
+  ASTTRaw,
+  ASTTSet,
+  ASTType,
+  parse,
+} from "./qweb_parser";
 import { Dom, DomNode, domToString, DomType, UTILS } from "./qweb_utils";
 
 // -----------------------------------------------------------------------------
@@ -18,9 +34,9 @@ export function compile(template: string, utils: typeof UTILS = UTILS): RenderFu
 export function compileTemplate(template: string): TemplateFunction {
   const ast = parse(template);
   // console.warn(ast);
-  const ctx = new CompilationContext();
-  compileAST(ast, null, 0, false, ctx);
-  const code = ctx.generateCode();
+  const compiler = new QWebCompiler();
+  compiler.compile(ast);
+  const code = compiler.generateCode();
   // console.warn(code);
   return new Function("Blocks, utils", code) as TemplateFunction;
 }
@@ -101,8 +117,15 @@ class BlockDescription {
 }
 
 // -----------------------------------------------------------------------------
-// Compilation Context
+// Compiler code
 // -----------------------------------------------------------------------------
+const FNAMEREGEXP = /^[$A-Z_][0-9A-Z_$]*$/i;
+
+interface Context {
+  block: BlockDescription | null;
+  index: number | string;
+  forceNewBlock: boolean;
+}
 
 interface MakeBlockParams {
   multi?: number;
@@ -110,7 +133,7 @@ interface MakeBlockParams {
   parentIndex?: number | string | null;
 }
 
-class CompilationContext {
+class QWebCompiler {
   code: string[] = [];
   indentLevel: number = 0;
   blocks: BlockDescription[] = [];
@@ -295,430 +318,441 @@ class CompilationContext {
       })
       .join("");
   }
-}
 
-// -----------------------------------------------------------------------------
-// Compiler code
-// -----------------------------------------------------------------------------
-const FNAMEREGEXP = /^[$A-Z_][0-9A-Z_$]*$/i;
+  compile(ast: AST) {
+    this.compileAST(ast, { block: null, index: 0, forceNewBlock: false });
+  }
 
-function compileAST(
-  ast: AST,
-  currentBlock: BlockDescription | null,
-  currentIndex: number | string,
-  forceNewBlock: boolean,
-  ctx: CompilationContext
-) {
-  switch (ast.type) {
-    // -------------------------------------------------------------------------
-    // Comment/Text
-    // -------------------------------------------------------------------------
-    case ASTType.Comment: {
-      if (!currentBlock || forceNewBlock) {
-        currentBlock = ctx.makeBlock({
-          parentIndex: currentIndex,
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
-        });
-      }
-      const text: Dom = { type: DomType.Comment, value: ast.value };
-      currentBlock.insert(text);
-      break;
+  compileAST(ast: AST, ctx: Context) {
+    switch (ast.type) {
+      case ASTType.Comment:
+        this.compileComment(ast, ctx);
+        break;
+      case ASTType.Text:
+        this.compileText(ast, ctx);
+        break;
+      case ASTType.DomNode:
+        this.compileTDomNode(ast, ctx);
+        break;
+      case ASTType.TEsc:
+        this.compileTEsc(ast, ctx);
+        break;
+      case ASTType.TRaw:
+        this.compileTRaw(ast, ctx);
+        break;
+      case ASTType.TIf:
+        this.compileTIf(ast, ctx);
+        break;
+      case ASTType.TForEach:
+        this.compileTForeach(ast, ctx);
+        break;
+      case ASTType.TKey:
+        this.compileTKey(ast, ctx);
+        break;
+      case ASTType.Multi:
+        this.compileMulti(ast, ctx);
+        break;
+      case ASTType.TCall:
+        this.compileTCall(ast, ctx);
+        break;
+      case ASTType.TSet:
+        this.compileTSet(ast);
+        break;
+      case ASTType.TComponent:
+        this.compileComponent(ast, ctx.block);
+        break;
     }
-    case ASTType.Text: {
-      if (!currentBlock || forceNewBlock) {
-        if (currentBlock) {
-          ctx.addLine(
-            `${currentBlock.varName}.children[${currentIndex}] = new TextBlock(\`${ast.value}\`)`
-          );
+  }
+
+  compileComment(ast: ASTComment, ctx: Context) {
+    let { block, index, forceNewBlock } = ctx;
+    if (!block || forceNewBlock) {
+      block = this.makeBlock({
+        parentIndex: index,
+        parentBlock: block ? block.varName : undefined,
+      });
+    }
+    const text: Dom = { type: DomType.Comment, value: ast.value };
+    block.insert(text);
+  }
+
+  compileText(ast: ASTText, ctx: Context) {
+    let { block, index, forceNewBlock } = ctx;
+    if (!block || forceNewBlock) {
+      if (block) {
+        this.addLine(`${block.varName}.children[${index}] = new TextBlock(\`${ast.value}\`)`);
+      } else {
+        const id = this.generateId("b");
+        this.addLine(`const ${id} = new TextBlock(\`${ast.value}\`)`);
+        if (!this.rootBlock) {
+          this.rootBlock = id;
+        }
+      }
+    } else {
+      const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
+      const text: Dom = { type, value: ast.value };
+      block.insert(text);
+    }
+  }
+
+  compileTDomNode(ast: ASTDomNode, ctx: Context) {
+    let { block, index, forceNewBlock } = ctx;
+    if (!block || forceNewBlock) {
+      block = this.makeBlock({
+        parentIndex: index,
+        parentBlock: block ? block.varName : undefined,
+      });
+    }
+
+    // attributes
+    const staticAttrs: { [key: string]: string } = {};
+    const dynAttrs: { [key: string]: string } = {};
+    for (let key in ast.attrs) {
+      if (key.startsWith("t-attf")) {
+        dynAttrs[key.slice(7)] = interpolate(ast.attrs[key]);
+      } else if (key.startsWith("t-att")) {
+        dynAttrs[key.slice(6)] = compileExpr(ast.attrs[key]);
+      } else {
+        staticAttrs[key] = ast.attrs[key];
+      }
+    }
+    if (Object.keys(dynAttrs).length) {
+      for (let key in dynAttrs) {
+        const idx = block.dataNumber;
+        block.dataNumber++;
+        this.addLine(`${block.varName}.data[${idx}] = ${dynAttrs[key]};`);
+        if (key === "class") {
+          block.insertUpdate((el) => `this.updateClass(${el}, this.data[${idx}]);`);
         } else {
-          const id = ctx.generateId("b");
-          ctx.addLine(`const ${id} = new TextBlock(\`${ast.value}\`)`);
-          if (!ctx.rootBlock) {
-            ctx.rootBlock = id;
-          }
+          block.insertUpdate((el) => `this.updateAttr(${el}, \`${key}\`, this.data[${idx}]);`);
+        }
+      }
+    }
+
+    // event handlers
+    for (let event in ast.on) {
+      this.shouldDefineOwner = true;
+      const index = block.handlerNumber;
+      block.handlerNumber++;
+      block.insertHandler((el) => `this.setupHandler(${el}, ${index});`);
+      const value = ast.on[event];
+      let args: string = "";
+      let code: string = "";
+      const name: string = value.replace(/\(.*\)/, function (_args) {
+        args = _args.slice(1, -1);
+        return "";
+      });
+      const isMethodCall = name.match(FNAMEREGEXP);
+      if (isMethodCall) {
+        if (args) {
+          const argId = this.generateId("arg");
+          this.addLine(`const ${argId} = [${compileExpr(args)}];`);
+          code = `owner(ctx)['${name}'](...${argId}, e)`;
+        } else {
+          code = `owner(ctx)['${name}'](e)`;
         }
       } else {
-        const type = ast.type === ASTType.Text ? DomType.Text : DomType.Comment;
-        const text: Dom = { type, value: ast.value };
-        currentBlock.insert(text);
+        code = this.captureExpression(value);
       }
-      break;
+      this.addLine(`${block.varName}.handlers[${index}] = [\`${event}\`, (e) => ${code}];`);
     }
 
-    // -------------------------------------------------------------------------
-    // Dom Node
-    // -------------------------------------------------------------------------
-    case ASTType.DomNode: {
-      if (!currentBlock || forceNewBlock) {
-        currentBlock = ctx.makeBlock({
-          parentIndex: currentIndex,
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
-        });
-      }
-
-      // attributes
-      const staticAttrs: { [key: string]: string } = {};
-      const dynAttrs: { [key: string]: string } = {};
-      for (let key in ast.attrs) {
-        if (key.startsWith("t-attf")) {
-          dynAttrs[key.slice(7)] = interpolate(ast.attrs[key]);
-        } else if (key.startsWith("t-att")) {
-          dynAttrs[key.slice(6)] = compileExpr(ast.attrs[key]);
-        } else {
-          staticAttrs[key] = ast.attrs[key];
+    const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: staticAttrs, content: [] };
+    block.insert(dom);
+    if (ast.content.length) {
+      const initialDom = block.currentDom;
+      block.currentDom = dom;
+      const path = block.currentPath.slice();
+      block.currentPath.push("firstChild");
+      for (let child of ast.content) {
+        const subCtx: Context = {
+          block: block,
+          index: block.childNumber,
+          forceNewBlock: false,
+        };
+        this.compileAST(child, subCtx);
+        if (child.type !== ASTType.TSet) {
+          block.currentPath.push("nextSibling");
         }
       }
-      if (Object.keys(dynAttrs).length) {
-        for (let key in dynAttrs) {
-          const idx = currentBlock.dataNumber;
-          currentBlock.dataNumber++;
-          ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${dynAttrs[key]};`);
-          if (key === "class") {
-            currentBlock.insertUpdate((el) => `this.updateClass(${el}, this.data[${idx}]);`);
-          } else {
-            currentBlock.insertUpdate(
-              (el) => `this.updateAttr(${el}, \`${key}\`, this.data[${idx}]);`
-            );
-          }
-        }
-      }
-
-      // event handlers
-      for (let event in ast.on) {
-        ctx.shouldDefineOwner = true;
-        const index = currentBlock.handlerNumber;
-        currentBlock.handlerNumber++;
-        currentBlock.insertHandler((el) => `this.setupHandler(${el}, ${index});`);
-        const value = ast.on[event];
-        let args: string = "";
-        let code: string = "";
-        const name: string = value.replace(/\(.*\)/, function (_args) {
-          args = _args.slice(1, -1);
-          return "";
-        });
-        const isMethodCall = name.match(FNAMEREGEXP);
-        if (isMethodCall) {
-          if (args) {
-            const argId = ctx.generateId("arg");
-            ctx.addLine(`const ${argId} = [${compileExpr(args)}];`);
-            code = `owner(ctx)['${name}'](...${argId}, e)`;
-          } else {
-            code = `owner(ctx)['${name}'](e)`;
-          }
-        } else {
-          code = ctx.captureExpression(value);
-        }
-        ctx.addLine(`${currentBlock.varName}.handlers[${index}] = [\`${event}\`, (e) => ${code}];`);
-      }
-
-      const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: staticAttrs, content: [] };
-      currentBlock.insert(dom);
-      if (ast.content.length) {
-        const initialDom = currentBlock.currentDom;
-        currentBlock.currentDom = dom;
-        const path = currentBlock.currentPath.slice();
-        currentBlock.currentPath.push("firstChild");
-        for (let child of ast.content) {
-          compileAST(child, currentBlock, currentBlock.childNumber, false, ctx);
-          if (child.type !== ASTType.TSet) {
-            currentBlock.currentPath.push("nextSibling");
-          }
-        }
-        currentBlock.currentPath = path;
-        currentBlock.currentDom = initialDom;
-      }
-      break;
+      block.currentPath = path;
+      block.currentDom = initialDom;
     }
+  }
 
-    // -------------------------------------------------------------------------
-    // t-esc
-    // -------------------------------------------------------------------------
-    case ASTType.TEsc: {
-      let expr: string;
+  compileTEsc(ast: ASTTEsc, ctx: Context) {
+    let { block, index, forceNewBlock } = ctx;
+    let expr: string;
+    if (ast.expr === "0") {
+      expr = `ctx[zero]`;
+    } else {
+      expr = compileExpr(ast.expr);
+      if (ast.defaultValue) {
+        expr = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
+      }
+    }
+    if (!block || forceNewBlock) {
+      if (block) {
+        this.addLine(`${block.varName}.children[${index}] = new TextBlock(${expr})`);
+      } else {
+        const id = this.generateId("b");
+        this.addLine(`const ${id} = new TextBlock(${expr})`);
+        if (!this.rootBlock) {
+          this.rootBlock = id;
+        }
+      }
+    } else {
+      const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
+      block.insert(text);
+      const idx = block.dataNumber;
+      block.dataNumber++;
+      this.addLine(`${block.varName}.data[${idx}] = ${expr};`);
       if (ast.expr === "0") {
-        expr = `ctx[zero]`;
+        block.insertUpdate((el) => `${el}.textContent = this.data[${idx}];`);
       } else {
-        expr = compileExpr(ast.expr);
-        if (ast.defaultValue) {
-          expr = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
-        }
+        block.insertUpdate((el) => `${el}.textContent = toString(this.data[${idx}]);`);
       }
-      if (!currentBlock || forceNewBlock) {
-        if (currentBlock) {
-          ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new TextBlock(${expr})`);
-        } else {
-          const id = ctx.generateId("b");
-          ctx.addLine(`const ${id} = new TextBlock(${expr})`);
-          if (!ctx.rootBlock) {
-            ctx.rootBlock = id;
-          }
-        }
-      } else {
-        const text: Dom = { type: DomType.Node, tag: "owl-text", attrs: {}, content: [] };
-        currentBlock.insert(text);
-        const idx = currentBlock.dataNumber;
-        currentBlock.dataNumber++;
-        ctx.addLine(`${currentBlock.varName}.data[${idx}] = ${expr};`);
-        if (ast.expr === "0") {
-          currentBlock.insertUpdate((el) => `${el}.textContent = this.data[${idx}];`);
-        } else {
-          currentBlock.insertUpdate((el) => `${el}.textContent = toString(this.data[${idx}]);`);
-        }
-      }
-      break;
     }
+  }
 
-    // -------------------------------------------------------------------------
-    // t-raw
-    // -------------------------------------------------------------------------
-    case ASTType.TRaw: {
-      if (!currentBlock) {
-        currentBlock = ctx.makeBlock({ multi: 1, parentBlock: null, parentIndex: currentIndex });
+  compileTRaw(ast: ASTTRaw, ctx: Context) {
+    let { block, index } = ctx;
+    if (!block) {
+      block = this.makeBlock({ multi: 1, parentBlock: null, parentIndex: index });
+    }
+    const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+    block.insert(anchor);
+    block.currentPath = [`anchors[${block.childNumber}]`];
+    block.childNumber++;
+    let expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr);
+    if (ast.body) {
+      const nextId = this.nextId;
+      const subCtx: Context = { block: null, index: 0, forceNewBlock: true };
+      this.compileAST({ type: ASTType.Multi, content: ast.body }, subCtx);
+      expr = `withDefault(${expr}, b${nextId})`;
+    }
+    this.addLine(`${block.varName}.children[${index}] = new HTMLBlock(${expr});`);
+  }
+
+  compileTIf(ast: ASTTif, ctx: Context) {
+    let { block, index } = ctx;
+    if (!block) {
+      const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
+      block = this.makeBlock({ multi: n, parentBlock: null, parentIndex: index });
+    }
+    this.addLine(`if (${compileExpr(ast.condition)}) {`);
+    this.indentLevel++;
+    const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+    block.insert(anchor);
+    block.currentPath = [`anchors[${block.childNumber}]`];
+    block.childNumber++;
+    const subCtx: Context = { block: block, index: index, forceNewBlock: true };
+
+    this.compileAST(ast.content, subCtx);
+    this.indentLevel--;
+    if (ast.tElif) {
+      for (let clause of ast.tElif) {
+        this.addLine(`} else if (${compileExpr(clause.condition)}) {`);
+        this.indentLevel++;
+        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+        block.insert(anchor);
+        block.childNumber++;
+        const subCtx: Context = {
+          block: block,
+          index: block.childNumber - 1,
+          forceNewBlock: true,
+        };
+        this.compileAST(clause.content, subCtx);
+        this.indentLevel--;
       }
+    }
+    if (ast.tElse) {
+      this.addLine(`} else {`);
+      this.indentLevel++;
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      currentBlock.insert(anchor);
-      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-      currentBlock.childNumber++;
-      let expr = ast.expr === "0" ? "ctx[zero]" : compileExpr(ast.expr);
-      if (ast.body) {
-        const nextId = ctx.nextId;
-        compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
-        expr = `withDefault(${expr}, b${nextId})`;
-      }
-      ctx.addLine(`${currentBlock.varName}.children[${currentIndex}] = new HTMLBlock(${expr});`);
-      break;
-    }
+      block.insert(anchor);
+      block.childNumber++;
+      const subCtx: Context = {
+        block: block,
+        index: block.childNumber - 1,
+        forceNewBlock: true,
+      };
+      this.compileAST(ast.tElse, subCtx);
 
-    // -------------------------------------------------------------------------
-    // t-if
-    // -------------------------------------------------------------------------
-    case ASTType.TIf: {
-      if (!currentBlock) {
-        const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
-        currentBlock = ctx.makeBlock({ multi: n, parentBlock: null, parentIndex: currentIndex });
-      }
-      ctx.addLine(`if (${compileExpr(ast.condition)}) {`);
-      ctx.indentLevel++;
+      this.indentLevel--;
+    }
+    this.addLine("}");
+  }
+
+  compileTForeach(ast: ASTTForEach, ctx: Context) {
+    const { block, index } = ctx;
+    const cId = this.generateId();
+    const vals = `v${cId}`;
+    const keys = `k${cId}`;
+    const l = `l${cId}`;
+    this.addLine(`const [${vals}, ${keys}, ${l}] = getValues(${compileExpr(ast.collection)});`);
+
+    const id = this.generateId("b");
+
+    if (block) {
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-      currentBlock.insert(anchor);
-      currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-      currentBlock.childNumber++;
-      compileAST(ast.content, currentBlock, currentIndex, true, ctx);
-      ctx.indentLevel--;
-      if (ast.tElif) {
-        for (let clause of ast.tElif) {
-          ctx.addLine(`} else if (${compileExpr(clause.condition)}) {`);
-          ctx.indentLevel++;
-          const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-          currentBlock.insert(anchor);
-          currentBlock.childNumber++;
-          compileAST(clause.content, currentBlock, currentBlock.childNumber - 1, true, ctx);
-          ctx.indentLevel--;
-        }
-      }
-      if (ast.tElse) {
-        ctx.addLine(`} else {`);
-        ctx.indentLevel++;
-        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-        currentBlock.insert(anchor);
-        currentBlock.childNumber++;
-        compileAST(ast.tElse, currentBlock, currentBlock.childNumber - 1, true, ctx);
+      block.insert(anchor);
+      block.currentPath = [`anchors[${block.childNumber}]`];
+      block.childNumber++;
 
-        ctx.indentLevel--;
+      this.addLine(
+        `const ${id} = ${block.varName}.children[${index}] = new CollectionBlock(${l});`
+      );
+    } else {
+      this.addLine(`const ${id} = new CollectionBlock(${l});`);
+      if (!this.rootBlock) {
+        this.rootBlock = id;
       }
-      ctx.addLine("}");
-      break;
+    }
+    this.loopLevel++;
+    const loopVar = `i${this.loopLevel}`;
+    this.addLine(`ctx = Object.create(ctx);`);
+    this.addLine(`for (let ${loopVar} = 0; ${loopVar} < ${l}; ${loopVar}++) {`);
+    this.indentLevel++;
+    this.addLine(`ctx[\`${ast.elem}\`] = ${vals}[${loopVar}];`);
+    this.addLine(`ctx[\`${ast.elem}_first\`] = ${loopVar} === 0;`);
+    this.addLine(`ctx[\`${ast.elem}_last\`] = ${loopVar} === ${vals}.length - 1;`);
+    this.addLine(`ctx[\`${ast.elem}_index\`] = ${loopVar};`);
+    this.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[${loopVar}];`);
+
+    const collectionBlock = new BlockDescription(id, "Collection");
+    const subCtx: Context = {
+      block: collectionBlock,
+      index: loopVar,
+      forceNewBlock: true,
+    };
+    this.compileAST(ast.body, subCtx);
+    this.indentLevel--;
+    this.addLine(`}`);
+    this.loopLevel--;
+    this.addLine(`ctx = ctx.__proto__;`);
+  }
+
+  compileTKey(ast: ASTTKey, ctx: Context) {
+    const id = this.generateId("k");
+    this.addLine(`const ${id} = ${compileExpr(ast.expr)};`);
+    const currentKey = this.key;
+    this.key = id;
+    this.compileAST(ast.content, ctx);
+    this.key = currentKey;
+  }
+
+  compileMulti(ast: ASTMulti, ctx: Context) {
+    let { block, index: currentIndex, forceNewBlock } = ctx;
+    if (!block || forceNewBlock) {
+      const n = ast.content.filter((c) => c.type !== ASTType.TSet).length;
+      if (n === 1) {
+        for (let child of ast.content) {
+          this.compileAST(child, ctx);
+        }
+        return;
+      }
+      block = this.makeBlock({
+        multi: n,
+        parentBlock: block ? block.varName : undefined,
+        parentIndex: currentIndex,
+      });
     }
 
-    // -------------------------------------------------------------------------
-    // t-foreach
-    // -------------------------------------------------------------------------
+    let index = 0;
+    for (let i = 0; i < ast.content.length; i++) {
+      const child = ast.content[i];
+      const isTSet = child.type === ASTType.TSet;
+      const subCtx: Context = { block: block, index: index, forceNewBlock: !isTSet };
+      this.compileAST(child, subCtx);
+      if (!isTSet) {
+        index++;
+      }
+    }
+  }
 
-    case ASTType.TForEach: {
-      const cId = ctx.generateId();
-      const vals = `v${cId}`;
-      const keys = `k${cId}`;
-      const l = `l${cId}`;
-      ctx.addLine(`const [${vals}, ${keys}, ${l}] = getValues(${compileExpr(ast.collection)});`);
-
-      const id = ctx.generateId("b");
-
-      if (currentBlock) {
-        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-        currentBlock.insert(anchor);
-        currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-        currentBlock.childNumber++;
-
-        ctx.addLine(
-          `const ${id} = ${currentBlock.varName}.children[${currentIndex}] = new CollectionBlock(${l});`
-        );
+  compileTCall(ast: ASTTCall, ctx: Context) {
+    const { block, index, forceNewBlock } = ctx;
+    this.shouldDefineOwner = true;
+    if (ast.body) {
+      this.addLine(`ctx = Object.create(ctx);`);
+      // check if all content is t-set
+      const hasContent = ast.body.filter((elem) => elem.type !== ASTType.TSet).length;
+      if (hasContent) {
+        const nextId = this.nextId;
+        const subCtx: Context = { block: null, index: 0, forceNewBlock: true };
+        this.compileAST({ type: ASTType.Multi, content: ast.body }, subCtx);
+        this.addLine(`ctx[zero] = b${nextId};`);
       } else {
-        ctx.addLine(`const ${id} = new CollectionBlock(${l});`);
-        if (!ctx.rootBlock) {
-          ctx.rootBlock = id;
+        for (let elem of ast.body) {
+          const subCtx: Context = { block: block, index: 0, forceNewBlock: false };
+          this.compileAST(elem, subCtx);
         }
       }
-      ctx.loopLevel++;
-      const loopVar = `i${ctx.loopLevel}`;
-      ctx.addLine(`ctx = Object.create(ctx);`);
-      ctx.addLine(`for (let ${loopVar} = 0; ${loopVar} < ${l}; ${loopVar}++) {`);
-      ctx.indentLevel++;
-      ctx.addLine(`ctx[\`${ast.elem}\`] = ${vals}[${loopVar}];`);
-      ctx.addLine(`ctx[\`${ast.elem}_first\`] = ${loopVar} === 0;`);
-      ctx.addLine(`ctx[\`${ast.elem}_last\`] = ${loopVar} === ${vals}.length - 1;`);
-      ctx.addLine(`ctx[\`${ast.elem}_index\`] = ${loopVar};`);
-      ctx.addLine(`ctx[\`${ast.elem}_value\`] = ${keys}[${loopVar}];`);
-
-      const collectionBlock = new BlockDescription(id, "Collection");
-      compileAST(ast.body, collectionBlock, loopVar, true, ctx);
-      ctx.indentLevel--;
-      ctx.addLine(`}`);
-      ctx.loopLevel--;
-      ctx.addLine(`ctx = ctx.__proto__;`);
-      break;
     }
 
-    // -------------------------------------------------------------------------
-    // t-key
-    // -------------------------------------------------------------------------
+    const isDynamic = INTERP_REGEXP.test(ast.name);
+    const subTemplate = isDynamic ? interpolate(ast.name) : "`" + ast.name + "`";
 
-    case ASTType.TKey: {
-      const id = ctx.generateId("k");
-      ctx.addLine(`const ${id} = ${compileExpr(ast.expr)};`);
-      const currentKey = ctx.key;
-      ctx.key = id;
-      compileAST(ast.content, currentBlock, currentIndex, forceNewBlock, ctx);
-      ctx.key = currentKey;
-      break;
-    }
-
-    // -------------------------------------------------------------------------
-    // multi block
-    // -------------------------------------------------------------------------
-
-    case ASTType.Multi: {
-      if (!currentBlock || forceNewBlock) {
-        const n = ast.content.filter((c) => c.type !== ASTType.TSet).length;
-        if (n === 1) {
-          for (let child of ast.content) {
-            compileAST(child, currentBlock, currentIndex, forceNewBlock, ctx);
-          }
-          return;
-        }
-        currentBlock = ctx.makeBlock({
-          multi: n,
-          parentBlock: currentBlock ? currentBlock.varName : undefined,
-          parentIndex: currentIndex,
-        });
+    if (block) {
+      if (!forceNewBlock) {
+        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+        block.insert(anchor);
+        block.currentPath = [`anchors[${block.childNumber}]`];
+        block.childNumber++;
       }
 
-      let index = 0;
-      for (let i = 0; i < ast.content.length; i++) {
-        const child = ast.content[i];
-        const isTSet = child.type === ASTType.TSet;
-        compileAST(child, currentBlock, index, !isTSet, ctx);
-        if (!isTSet) {
-          index++;
-        }
-      }
-      break;
+      this.addLine(`${block.varName}.children[${index}] = call(${subTemplate}, ctx);`);
+    } else {
+      const id = this.generateId("b");
+      this.rootBlock = id;
+      this.addLine(`const ${id} = call(${subTemplate}, ctx);`);
     }
+    if (ast.body) {
+      this.addLine(`ctx = ctx.__proto__;`);
+    }
+  }
 
-    // -------------------------------------------------------------------------
-    // t-call
-    // -------------------------------------------------------------------------
-    case ASTType.TCall: {
-      ctx.shouldDefineOwner = true;
-      if (ast.body) {
-        ctx.addLine(`ctx = Object.create(ctx);`);
-        // check if all content is t-set
-        const hasContent = ast.body.filter((elem) => elem.type !== ASTType.TSet).length;
-        if (hasContent) {
-          const nextId = ctx.nextId;
-          compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
-          ctx.addLine(`ctx[zero] = b${nextId};`);
+  compileTSet(ast: ASTTSet) {
+    this.shouldProtectScope = true;
+    const expr = ast.value ? compileExpr(ast.value || "") : "null";
+    if (ast.body) {
+      const nextId = this.nextId;
+      const subCtx: Context = { block: null, index: 0, forceNewBlock: true };
+      this.compileAST({ type: ASTType.Multi, content: ast.body }, subCtx);
+      const value = ast.value ? `withDefault(${expr}, b${nextId})` : `b${nextId}`;
+      this.addLine(`ctx[\`${ast.name}\`] = ${value};`);
+    } else {
+      let value: string;
+      if (ast.defaultValue) {
+        if (ast.value) {
+          value = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
         } else {
-          for (let elem of ast.body) {
-            compileAST(elem, currentBlock, 0, false, ctx);
-          }
+          value = `\`${ast.defaultValue}\``;
         }
-      }
-
-      const isDynamic = INTERP_REGEXP.test(ast.name);
-      const subTemplate = isDynamic ? interpolate(ast.name) : "`" + ast.name + "`";
-
-      if (currentBlock) {
-        if (!forceNewBlock) {
-          const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-          currentBlock.insert(anchor);
-          currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-          currentBlock.childNumber++;
-        }
-
-        ctx.addLine(
-          `${currentBlock.varName}.children[${currentIndex}] = call(${subTemplate}, ctx);`
-        );
       } else {
-        const id = ctx.generateId("b");
-        ctx.rootBlock = id;
-        ctx.addLine(`const ${id} = call(${subTemplate}, ctx);`);
+        value = expr;
       }
-      if (ast.body) {
-        ctx.addLine(`ctx = ctx.__proto__;`);
-      }
-      break;
+      this.addLine(`ctx[\`${ast.name}\`] = ${value};`);
     }
+  }
 
-    // -------------------------------------------------------------------------
-    // t-set/t-value
-    // -------------------------------------------------------------------------
-    case ASTType.TSet: {
-      ctx.shouldProtectScope = true;
-      const expr = ast.value ? compileExpr(ast.value || "") : "null";
-      if (ast.body) {
-        const nextId = ctx.nextId;
-        compileAST({ type: ASTType.Multi, content: ast.body }, null, 0, true, ctx);
-        const value = ast.value ? `withDefault(${expr}, b${nextId})` : `b${nextId}`;
-        ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
-      } else {
-        let value: string;
-        if (ast.defaultValue) {
-          if (ast.value) {
-            value = `withDefault(${expr}, \`${ast.defaultValue}\`)`;
-          } else {
-            value = `\`${ast.defaultValue}\``;
-          }
-        } else {
-          value = expr;
-        }
-        ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
+  compileComponent(ast: ASTComponent, block: BlockDescription | null) {
+    if (block) {
+      const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+      block.insert(anchor);
+      block.currentPath = [`anchors[${block.childNumber}]`];
+      const index = block.childNumber;
+      block.childNumber++;
+      this.addLine(
+        `${block.varName}.children[${index}] = new ComponentBlock(ctx, \`${ast.name}\`)`
+      );
+    } else {
+      const id = this.generateId("b");
+      if (!this.rootBlock) {
+        this.rootBlock = id;
       }
-      break;
-    }
-
-    // -------------------------------------------------------------------------
-    // multi block
-    // -------------------------------------------------------------------------
-
-    case ASTType.TComponent: {
-      if (currentBlock) {
-        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
-        currentBlock.insert(anchor);
-        currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
-        const index = currentBlock.childNumber;
-        currentBlock.childNumber++;
-        ctx.addLine(
-          `${currentBlock.varName}.children[${index}] = new ComponentBlock(ctx, \`${ast.name}\`)`
-        );
-      } else {
-        const id = ctx.generateId("b");
-        if (!ctx.rootBlock) {
-          ctx.rootBlock = id;
-        }
-        ctx.addLine(`const ${id} = new ComponentBlock(ctx, \`${ast.name}\`)`);
-      }
-
-      break;
+      this.addLine(`const ${id} = new ComponentBlock(ctx, \`${ast.name}\`)`);
     }
   }
 }
