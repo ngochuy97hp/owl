@@ -102,7 +102,6 @@ class BlockDescription {
   }
 }
 
-
 // -----------------------------------------------------------------------------
 // Compilation Context
 // -----------------------------------------------------------------------------
@@ -120,6 +119,7 @@ class CompilationContext {
   rootBlock: string | null = null;
   nextId = 1;
   shouldProtectScope: boolean = false;
+  shouldDefineOwner: boolean = false;
   key: string | null = null;
   loopLevel: number = 0;
 
@@ -169,6 +169,9 @@ class CompilationContext {
     this.indentLevel = 0;
     this.addLine(``);
     this.addLine(`return ctx => {`);
+    if (this.shouldDefineOwner) {
+      this.addLine(`  const owner = ctx;`);
+    }
     if (this.shouldProtectScope) {
       this.addLine(`  ctx = Object.create(ctx);`);
     }
@@ -279,6 +282,7 @@ class CompilationContext {
 // -----------------------------------------------------------------------------
 // Compiler code
 // -----------------------------------------------------------------------------
+const FNAMEREGEXP = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 function compileAST(
   ast: AST,
@@ -366,11 +370,25 @@ function compileAST(
         const index = currentBlock.handlerNumber;
         currentBlock.handlerNumber++;
         currentBlock.insertHandler((el) => `this.setupHandler(${el}, ${index});`);
-        ctx.addLine(
-          `${currentBlock.varName}.handlers[${index}] = [\`${event}\`, () => ${compileExpr(
-            ast.on[event]
-          )}()];`
-        );
+        const value = ast.on[event];
+        let args: string = "";
+        let code: string = "";
+        const name: string = value.replace(/\(.*\)/, function (_args) {
+          args = _args.slice(1, -1);
+          return "";
+        });
+        const isMethodCall = name.match(FNAMEREGEXP);
+        if (isMethodCall) {
+          ctx.shouldDefineOwner = true;
+          if (args) {
+            const argId = ctx.generateId("arg");
+            ctx.addLine(`const ${argId} = [${compileExpr(args)}];`);
+            code = `owner['${name}'](...${argId}, e)`;
+          } else {
+            code = `owner['${name}'](e)`;
+          }
+        }
+        ctx.addLine(`${currentBlock.varName}.handlers[${index}] = [\`${event}\`, (e) => ${code}];`);
       }
 
       const dom: Dom = { type: DomType.Node, tag: ast.tag, attrs: staticAttrs, content: [] };

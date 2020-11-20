@@ -1663,13 +1663,18 @@ describe("misc", () => {
 // -----------------------------------------------------------------------------
 
 describe("t-on", () => {
+  function mountToFixture(template: string, ctx: any): HTMLDivElement {
+    const block = renderToBdom(template, ctx);
+    const fixture = makeTestFixture();
+    block.mount(fixture);
+    return fixture;
+  }
+
   test("can bind event handler", () => {
     const template = `<button t-on-click="add">Click</button>`;
     snapshotTemplateCode(template);
     let a = 1;
-    const block = renderToBdom(template, { add: () => (a = 3) });
-    const fixture = makeTestFixture();
-    block.mount(fixture);
+    const fixture = mountToFixture(template, { add: () => (a = 3) });
     expect(a).toBe(1);
     fixture.querySelector("button")!.click();
     expect(a).toBe(3);
@@ -1680,7 +1685,7 @@ describe("t-on", () => {
       <button t-on-click="handleClick" t-on-dblclick="handleDblClick">Click</button>`;
     snapshotTemplateCode(template);
     let steps: string[] = [];
-    const block = renderToBdom(template, {
+    const fixture = mountToFixture(template, {
       handleClick() {
         steps.push("click");
       },
@@ -1688,12 +1693,100 @@ describe("t-on", () => {
         steps.push("dblclick");
       },
     });
-    const fixture = makeTestFixture();
-    block.mount(fixture);
     expect(steps).toEqual([]);
     fixture.querySelector("button")!.click();
     expect(steps).toEqual(["click"]);
     fixture.querySelector("button")!.dispatchEvent(new Event("dblclick"));
     expect(steps).toEqual(["click", "dblclick"]);
+  });
+
+  test("can bind handlers with arguments", () => {
+    const template = `<button t-on-click="add(5)">Click</button>`;
+    snapshotTemplateCode(template);
+    let a = 1;
+    const fixture = mountToFixture(template, { add: (n: number) => (a = a + n) });
+    expect(a).toBe(1);
+    fixture.querySelector("button")!.click();
+    expect(a).toBe(6);
+  });
+
+  test("can bind handlers with object arguments", () => {
+    const template = `<button t-on-click="add({val: 5})">Click</button>`;
+    snapshotTemplateCode(template);
+    let a = 1;
+    const fixture = mountToFixture(template, { add: ({ val }: any) => (a = a + val) });
+    expect(a).toBe(1);
+    fixture.querySelector("button")!.click();
+    expect(a).toBe(6);
+  });
+
+  test("can bind handlers with empty  object", () => {
+    expect.assertions(2);
+    const template = `<button t-on-click="doSomething({})">Click</button>`;
+    snapshotTemplateCode(template);
+    const fixture = mountToFixture(template, {
+      doSomething(arg: any) {
+        expect(arg).toEqual({});
+      },
+    });
+    fixture.querySelector("button")!.click();
+  });
+
+  test("can bind handlers with empty object (with non empty inner string)", () => {
+    expect.assertions(2);
+    const template = `<button t-on-click="doSomething({ })">Click</button>`;
+    snapshotTemplateCode(template);
+    const fixture = mountToFixture(template, {
+      doSomething(arg: any) {
+        expect(arg).toEqual({});
+      },
+    });
+    fixture.querySelector("button")!.click();
+  });
+
+  test("can bind handlers with empty object (with non empty inner string)", () => {
+    expect.assertions(2);
+    const template = `
+      <ul>
+        <li t-foreach="['someval']" t-as="action" t-key="action_index">
+          <a t-on-click="activate(action)">link</a>
+        </li>
+      </ul>`;
+    snapshotTemplateCode(template);
+    const fixture = mountToFixture(template, {
+      activate(action: string) {
+        expect(action).toBe("someval");
+      },
+    });
+    fixture.querySelector("a")!.click();
+  });
+
+  test("handler is bound to proper owner", () => {
+    expect.assertions(2);
+    const template = `<button t-on-click="add">Click</button>`;
+    snapshotTemplateCode(template);
+    let owner = {
+      add() {
+        expect(this).toBe(owner);
+      },
+    };
+    const fixture = mountToFixture(template, owner);
+    fixture.querySelector("button")!.click();
+  });
+
+  test("handler is bound to proper owner, part 2", () => {
+    expect.assertions(2);
+    const template = `
+      <t t-foreach="[1]" t-as="value">
+        <button t-on-click="add">Click</button>
+      </t>`;
+    snapshotTemplateCode(template);
+    let owner = {
+      add() {
+        expect(this).toBe(owner);
+      },
+    };
+    const fixture = mountToFixture(template, owner);
+    fixture.querySelector("button")!.click();
   });
 });
