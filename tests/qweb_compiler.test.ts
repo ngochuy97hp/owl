@@ -1836,4 +1836,113 @@ describe("t-on", () => {
     bdom.mount(fixture);
     fixture.querySelector("button")!.click();
   });
+
+  test("t-on with inline statement", () => {
+    const template = `<button t-on-click="state.counter++">Click</button>`;
+    snapshotTemplateCode(template);
+    let owner = { state: { counter: 0 } };
+    const fixture = mountToFixture(template, owner);
+    expect(owner.state.counter).toBe(0);
+    fixture.querySelector("button")!.click();
+    expect(owner.state.counter).toBe(1);
+  });
+
+  test("t-on with inline statement (function call)", () => {
+    const template = `<button t-on-click="state.incrementCounter(2)">Click</button>`;
+    snapshotTemplateCode(template);
+    let owner = {
+      state: {
+        counter: 0,
+        incrementCounter: (inc: number) => {
+          owner.state.counter += inc;
+        },
+      },
+    };
+    const fixture = mountToFixture(template, owner);
+    expect(owner.state.counter).toBe(0);
+    fixture.querySelector("button")!.click();
+    expect(owner.state.counter).toBe(2);
+  });
+
+  test("t-on with inline statement, part 2", () => {
+    const template = `<button t-on-click="state.flag = !state.flag">Toggle</button>`;
+    snapshotTemplateCode(template);
+    let owner = {
+      state: {
+        flag: true,
+      },
+    };
+    const fixture = mountToFixture(template, owner);
+    expect(owner.state.flag).toBe(true);
+    fixture.querySelector("button")!.click();
+    expect(owner.state.flag).toBe(false);
+    fixture.querySelector("button")!.click();
+    expect(owner.state.flag).toBe(true);
+  });
+
+  test("t-on with inline statement, part 3", () => {
+    const template = `<button t-on-click="state.n = someFunction(3)">Toggle</button>`;
+    snapshotTemplateCode(template);
+    let owner = {
+      someFunction(n: number) {
+        return n + 1;
+      },
+      state: {
+        n: 11,
+      },
+    };
+
+    const fixture = mountToFixture(template, owner);
+    expect(owner.state.n).toBe(11);
+    fixture.querySelector("button")!.click();
+    expect(owner.state.n).toBe(4);
+  });
+
+  test("t-on with t-call", async () => {
+    expect.assertions(3);
+    const templateSet = new TemplateSet();
+    const sub = `<p t-on-click="update">lucas</p>`;
+    const main = `<div><t t-call="sub"/></div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+    snapshotTemplateCode(sub);
+    snapshotTemplateCode(main);
+
+    let owner = {
+      update() {
+        expect(this).toBe(owner);
+      },
+    };
+
+    const fixture = makeTestFixture();
+    const render = templateSet.getFunction("main");
+    const bdom = render(owner);
+    bdom.mount(fixture);
+    fixture.querySelector("p")!.click();
+  });
+
+  test("t-on, with arguments and t-call", async () => {
+    expect.assertions(4);
+    const templateSet = new TemplateSet();
+    const sub = `<p t-on-click="update(value)">lucas</p>`;
+    const main = `<div><t t-call="sub"/></div>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+    snapshotTemplateCode(sub);
+    snapshotTemplateCode(main);
+
+    let owner = {
+      update(val: number) {
+        expect(this).toBe(owner);
+        expect(val).toBe(444);
+      },
+      value: 444,
+    };
+
+    const fixture = makeTestFixture();
+    const render = templateSet.getFunction("main");
+    const bdom = render(owner);
+    bdom.mount(fixture);
+    fixture.querySelector("p")!.click();
+  });
 });

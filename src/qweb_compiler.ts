@@ -1,5 +1,5 @@
 import { BDom, CollectionBlock, ContentBlock, HTMLBlock, MultiBlock, TextBlock } from "./bdom";
-import { compileExpr, interpolate, INTERP_REGEXP } from "./qweb_expressions";
+import { compileExpr, compileExprToArray, interpolate, INTERP_REGEXP } from "./qweb_expressions";
 import { AST, ASTType, parse } from "./qweb_parser";
 import { UTILS, Dom, DomNode, domToString, DomType } from "./qweb_utils";
 
@@ -277,6 +277,24 @@ class CompilationContext {
       this.addLine(inserter(el));
     }
   }
+
+  captureExpression(expr: string): string {
+    const tokens = compileExprToArray(expr);
+    const mapping = new Map<string, string>();
+    return tokens
+      .map((tok) => {
+        if (tok.varName) {
+          if (!mapping.has(tok.varName)) {
+            const varId = this.generateId("v");
+            mapping.set(tok.varName, varId);
+            this.addLine(`const ${varId} = ${tok.value};`);
+          }
+          tok.value = mapping.get(tok.varName)!;
+        }
+        return tok.value;
+      })
+      .join("");
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -387,6 +405,8 @@ function compileAST(
           } else {
             code = `owner(ctx)['${name}'](e)`;
           }
+        } else {
+          code = ctx.captureExpression(value);
         }
         ctx.addLine(`${currentBlock.varName}.handlers[${index}] = [\`${event}\`, (e) => ${code}];`);
       }
