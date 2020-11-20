@@ -72,13 +72,17 @@ function getValues(collection: any): [any[], any[], number] {
   throw new Error("Invalid loop expression");
 }
 
+const scope = Symbol("scope");
+
 export const UTILS = {
   elem,
   toString,
   withDefault,
   call,
   zero: Symbol("zero"),
+  scope,
   getValues,
+  owner,
 };
 
 export const enum DomType {
@@ -125,4 +129,11 @@ export function domToString(dom: Dom): string {
         return `<${dom.tag}${attrs.length ? " " + attrs.join(" ") : ""}/>`;
       }
   }
+}
+
+export function owner(obj: any): any | null {
+  while (obj && obj[scope]) {
+    obj = obj.__proto__;
+  }
+  return obj;
 }

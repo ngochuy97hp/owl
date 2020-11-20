@@ -152,7 +152,7 @@ class CompilationContext {
     this.indentLevel = 0;
     // define blocks and utility functions
     this.addLine(`let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;`);
-    this.addLine(`let {elem, toString, withDefault, call, zero, getValues} = utils;`);
+    this.addLine(`let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;`);
     this.addLine(``);
 
     // define all blocks
@@ -169,11 +169,11 @@ class CompilationContext {
     this.indentLevel = 0;
     this.addLine(``);
     this.addLine(`return ctx => {`);
-    if (this.shouldDefineOwner) {
-      this.addLine(`  const owner = ctx;`);
-    }
-    if (this.shouldProtectScope) {
+    if (this.shouldProtectScope || this.shouldDefineOwner) {
       this.addLine(`  ctx = Object.create(ctx);`);
+    }
+    if (this.shouldDefineOwner) {
+      this.addLine(`  ctx[scope] = 1;`);
     }
     for (let line of mainCode) {
       this.addLine(line);
@@ -367,6 +367,7 @@ function compileAST(
 
       // event handlers
       for (let event in ast.on) {
+        ctx.shouldDefineOwner = true;
         const index = currentBlock.handlerNumber;
         currentBlock.handlerNumber++;
         currentBlock.insertHandler((el) => `this.setupHandler(${el}, ${index});`);
@@ -379,13 +380,12 @@ function compileAST(
         });
         const isMethodCall = name.match(FNAMEREGEXP);
         if (isMethodCall) {
-          ctx.shouldDefineOwner = true;
           if (args) {
             const argId = ctx.generateId("arg");
             ctx.addLine(`const ${argId} = [${compileExpr(args)}];`);
-            code = `owner['${name}'](...${argId}, e)`;
+            code = `owner(ctx)['${name}'](...${argId}, e)`;
           } else {
-            code = `owner['${name}'](e)`;
+            code = `owner(ctx)['${name}'](e)`;
           }
         }
         ctx.addLine(`${currentBlock.varName}.handlers[${index}] = [\`${event}\`, (e) => ${code}];`);
@@ -608,6 +608,7 @@ function compileAST(
     // t-call
     // -------------------------------------------------------------------------
     case ASTType.TCall: {
+      ctx.shouldDefineOwner = true;
       if (ast.body) {
         ctx.addLine(`ctx = Object.create(ctx);`);
         // check if all content is t-set

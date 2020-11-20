@@ -4,7 +4,7 @@ exports[`basics Multi root component 1`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
-  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
     static el = elem(\`<span>1</span>\`);
@@ -27,7 +27,7 @@ exports[`basics can mount a simple class component 1`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
-  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
@@ -41,7 +41,7 @@ exports[`basics can mount a simple class component 2`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
-  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
     static el = elem(\`<span>simple vnode</span>\`);
@@ -58,7 +58,7 @@ exports[`basics class component with dynamic text 1`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
-  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
     static el = elem(\`<span>My value: <owl-text/></span>\`);
@@ -80,7 +80,7 @@ exports[`basics functional component: setup return value is context 1`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
-  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
     static el = elem(\`<span>My value: <owl-text/></span>\`);
@@ -102,7 +102,7 @@ exports[`basics simple functional component with text node 1`] = `
 "function anonymous(Blocks, utils
 ) {
   let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
-  let {elem, toString, withDefault, call, zero, getValues} = utils;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {

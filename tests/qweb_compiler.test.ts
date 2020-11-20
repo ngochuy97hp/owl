@@ -1789,4 +1789,51 @@ describe("t-on", () => {
     const fixture = mountToFixture(template, owner);
     fixture.querySelector("button")!.click();
   });
+
+  test("handler is bound to proper owner, part 3", () => {
+    expect.assertions(3);
+    const templateSet = new TemplateSet();
+    const sub = `<button t-on-click="add">Click</button>`;
+    const main = `<t t-call="sub"/>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotTemplateCode(sub);
+    snapshotTemplateCode(main);
+    let owner = {
+      add() {
+        expect(this).toBe(owner);
+      },
+    };
+    const fixture = makeTestFixture();
+    const render = templateSet.getFunction("main");
+    const bdom = render(owner);
+    bdom.mount(fixture);
+    fixture.querySelector("button")!.click();
+  });
+
+  test("handler is bound to proper owner, part 4", () => {
+    expect.assertions(3);
+    const templateSet = new TemplateSet();
+    const sub = `<button t-on-click="add">Click</button>`;
+    const main = `
+      <t t-foreach="[1]" t-as="value">
+        <t t-call="sub"/>
+      </t>`;
+    templateSet.add("sub", sub);
+    templateSet.add("main", main);
+
+    snapshotTemplateCode(sub);
+    snapshotTemplateCode(main);
+    let owner = {
+      add() {
+        expect(this).toBe(owner);
+      },
+    };
+    const fixture = makeTestFixture();
+    const render = templateSet.getFunction("main");
+    const bdom = render(owner);
+    bdom.mount(fixture);
+    fixture.querySelector("button")!.click();
+  });
 });
