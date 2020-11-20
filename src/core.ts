@@ -1,11 +1,17 @@
-import { BDom } from "./bdom";
+import { BDom, Block, Blocks } from "./bdom";
 import { TemplateSet } from "./qweb_compiler";
+
 export class Component {
   static template: string;
 
   __owl__: InternalData | null = null;
   get el(): HTMLElement | Text | null {
     return (this.__owl__ as any).bdom.el;
+  }
+
+  render() {
+    const __owl__ = this.__owl__!;
+    __owl__.bdom = __owl__.render();
   }
 }
 
@@ -61,7 +67,17 @@ export function mount<T>(
 ): Promise<Component & T>;
 export async function mount(C: any, params: MountParameters) {
   const { target } = params;
+  const component = prepare(C);
+  component.render();
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      internalMount(component, target);
+      resolve(component as any);
+    });
+  });
+}
 
+function prepare(C: any): Component {
   let component: Component;
   let template: string;
   if (C.prototype instanceof Component) {
@@ -74,12 +90,28 @@ export async function mount(C: any, params: MountParameters) {
   const render: () => BDom = globalTemplates.getFunction(template).bind(null, component);
   const __owl__: InternalData = { render: render, bdom: null };
   component.__owl__ = __owl__;
-  return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      const bdom = render();
-      bdom.mount(target);
-      __owl__.bdom = bdom;
-      resolve(component as any);
-    });
-  });
+  return component;
 }
+
+function internalMount(c: Component, target: any) {
+  c.__owl__!.bdom!.mount(target);
+}
+
+class ComponentBlock extends Block {
+  component: Component;
+  constructor(ctx: any, name: string) {
+    super();
+    const C = ctx.constructor.components[name];
+    const component = prepare(C);
+    this.component = component;
+    // console.warn(component);
+    // console.warn(ctx.constructor.components, name);
+    component.render();
+  }
+  mountBefore(anchor: Text) {
+    this.component.__owl__!.bdom!.mountBefore(anchor);
+  }
+  patch() {}
+}
+
+Blocks.ComponentBlock = ComponentBlock;

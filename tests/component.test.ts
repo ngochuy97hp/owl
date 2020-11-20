@@ -76,4 +76,34 @@ describe("basics", () => {
     expect(fixture.innerHTML).toBe(`<span>1</span>text<span>2</span>`);
     snapshotTemplateCode(fromName(Test.template));
   });
+
+  test("a class component inside a class component", async () => {
+    class Child extends Component {
+      static template = xml`<div>simple vnode</div>`;
+    }
+
+    class Parent extends Component {
+      static template = xml`<span><Child/></span>`;
+      static components = { Child };
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<span><div>simple vnode</div></span>");
+  });
+
+  test("a class component inside a class component, no external dom", async () => {
+    class Child extends Component {
+      static template = xml`<div>simple vnode</div>`;
+    }
+
+    class Parent extends Component {
+      static template = xml`<Child/>`;
+      static components = { Child };
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>simple vnode</div>");
+  });
 });

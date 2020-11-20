@@ -3,7 +3,7 @@
 exports[`basics Multi root component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
@@ -23,10 +23,43 @@ exports[`basics Multi root component 1`] = `
 }"
 `;
 
+exports[`basics a class component inside a class component 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor/></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`)
+    return b1;
+  }
+}"
+`;
+
+exports[`basics a class component inside a class component, no external dom 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  
+  return ctx => {
+    const b1 = new ComponentBlock(ctx, \`Child\`)
+    return b1;
+  }
+}"
+`;
+
 exports[`basics can mount a simple class component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
@@ -40,7 +73,7 @@ exports[`basics can mount a simple class component 1`] = `
 exports[`basics can mount a simple class component 2`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
@@ -57,7 +90,7 @@ exports[`basics can mount a simple class component 2`] = `
 exports[`basics class component with dynamic text 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
@@ -79,7 +112,7 @@ exports[`basics class component with dynamic text 1`] = `
 exports[`basics functional component: setup return value is context 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   class Block1 extends ContentBlock {
@@ -101,7 +134,7 @@ exports[`basics functional component: setup return value is context 1`] = `
 exports[`basics simple functional component with text node 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   

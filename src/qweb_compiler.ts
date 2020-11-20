@@ -1,13 +1,11 @@
-import { BDom, CollectionBlock, ContentBlock, HTMLBlock, MultiBlock, TextBlock } from "./bdom";
+import { BDom, Blocks } from "./bdom";
 import { compileExpr, compileExprToArray, interpolate, INTERP_REGEXP } from "./qweb_expressions";
 import { AST, ASTType, parse } from "./qweb_parser";
-import { UTILS, Dom, DomNode, domToString, DomType } from "./qweb_utils";
+import { Dom, DomNode, domToString, DomType, UTILS } from "./qweb_utils";
 
 // -----------------------------------------------------------------------------
 // Compile functions
 // -----------------------------------------------------------------------------
-
-const Blocks = { ContentBlock, MultiBlock, HTMLBlock, CollectionBlock, TextBlock };
 
 export type RenderFunction = (context: any) => BDom;
 export type TemplateFunction = (blocks: typeof Blocks, utils: typeof UTILS) => RenderFunction;
@@ -151,7 +149,9 @@ class CompilationContext {
     this.code = [];
     this.indentLevel = 0;
     // define blocks and utility functions
-    this.addLine(`let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock} = Blocks;`);
+    this.addLine(
+      `let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;`
+    );
     this.addLine(`let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;`);
     this.addLine(``);
 
@@ -693,6 +693,31 @@ function compileAST(
         }
         ctx.addLine(`ctx[\`${ast.name}\`] = ${value};`);
       }
+      break;
+    }
+
+    // -------------------------------------------------------------------------
+    // multi block
+    // -------------------------------------------------------------------------
+
+    case ASTType.TComponent: {
+      if (currentBlock) {
+        const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
+        currentBlock.insert(anchor);
+        currentBlock.currentPath = [`anchors[${currentBlock.childNumber}]`];
+        const index = currentBlock.childNumber;
+        currentBlock.childNumber++;
+        ctx.addLine(
+          `${currentBlock.varName}.children[${index}] = new ComponentBlock(ctx, \`${ast.name}\`)`
+        );
+      } else {
+        const id = ctx.generateId("b");
+        if (!ctx.rootBlock) {
+          ctx.rootBlock = id;
+        }
+        ctx.addLine(`const ${id} = new ComponentBlock(ctx, \`${ast.name}\`)`);
+      }
+
       break;
     }
   }

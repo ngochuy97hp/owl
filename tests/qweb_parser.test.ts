@@ -548,4 +548,15 @@ describe("qweb parser", () => {
       content: [{ type: ASTType.Text, value: "Click" }],
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // t-component
+  // ---------------------------------------------------------------------------
+
+  test("just a plain component", async () => {
+    expect(parse(`<MyComponent />`)).toEqual({
+      type: ASTType.TComponent,
+      name: "MyComponent",
+    });
+  });
 });

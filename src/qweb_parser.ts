@@ -14,6 +14,7 @@ export const enum ASTType {
   TRaw,
   TForEach,
   TKey,
+  TComponent,
 }
 
 export interface ASTText {
@@ -86,6 +87,11 @@ export interface ASTTCall {
   body: AST[] | null;
 }
 
+export interface ASTComponent {
+  type: ASTType.TComponent;
+  name: string;
+}
+
 export type AST =
   | ASTText
   | ASTComment
@@ -97,7 +103,8 @@ export type AST =
   | ASTTCall
   | ASTTRaw
   | ASTTForEach
-  | ASTTKey;
+  | ASTTKey
+  | ASTComponent;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -128,6 +135,7 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     parseTForEach(node, ctx) ||
     parseTKey(node, ctx) ||
     parseTRawNode(node, ctx) ||
+    parseComponent(node, ctx) ||
     parseDOMNode(node, ctx) ||
     parseTSetNode(node, ctx) ||
     parseTNode(node, ctx)
@@ -424,6 +432,21 @@ function parseTSetNode(node: Element, ctx: ParsingContext): AST | null {
     }
   }
   return { type: ASTType.TSet, name, value, defaultValue, body };
+}
+
+// -----------------------------------------------------------------------------
+// Components
+// -----------------------------------------------------------------------------
+
+function parseComponent(node: ChildNode, ctx: ParsingContext): AST | null {
+  if (!(node instanceof Element)) {
+    return null;
+  }
+  const firstLetter = node.tagName[0];
+  if (firstLetter !== firstLetter.toUpperCase()) {
+    return null;
+  }
+  return { type: ASTType.TComponent, name: node.tagName };
 }
 
 // -----------------------------------------------------------------------------

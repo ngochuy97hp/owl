@@ -7,7 +7,7 @@
 
 export type BDom = ContentBlock | MultiBlock | HTMLBlock;
 
-abstract class Block {
+export abstract class Block {
   mount(parent: HTMLElement) {
     const anchor = document.createTextNode("");
     parent.appendChild(anchor);
@@ -264,3 +264,15 @@ export class CollectionBlock extends Block {
 
   patch() {}
 }
+
+interface Type<T> extends Function {
+  new (...args: any[]): T;
+}
+
+export const Blocks: { [key: string]: Type<Block> } = {
+  ContentBlock,
+  MultiBlock,
+  HTMLBlock,
+  CollectionBlock,
+  TextBlock,
+};

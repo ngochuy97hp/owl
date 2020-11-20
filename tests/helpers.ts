@@ -15,6 +15,9 @@ export function snapshotTemplateCode(template: string) {
   expect(compileTemplate(template).toString()).toMatchSnapshot();
 }
 
+/**
+ * Return the global template xml string corresponding to the given name
+ */
 export function fromName(name: string): string {
   return globalTemplates.templates[name];
 }
