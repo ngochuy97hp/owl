@@ -15,6 +15,8 @@ export const enum ASTType {
   TForEach,
   TKey,
   TComponent,
+  TDebug,
+  TLog,
 }
 
 export interface ASTText {
@@ -93,6 +95,17 @@ export interface ASTComponent {
   props: { [name: string]: string };
 }
 
+export interface ASTDebug {
+  type: ASTType.TDebug;
+  content: AST | null;
+}
+
+export interface ASTLog {
+  type: ASTType.TLog;
+  expr: string;
+  content: AST | null;
+}
+
 export type AST =
   | ASTText
   | ASTComment
@@ -105,7 +118,9 @@ export type AST =
   | ASTTRaw
   | ASTTForEach
   | ASTTKey
-  | ASTComponent;
+  | ASTComponent
+  | ASTLog
+  | ASTDebug;
 
 // -----------------------------------------------------------------------------
 // Parser
@@ -130,6 +145,7 @@ function parseNode(node: ChildNode, ctx: ParsingContext): AST | null {
     return parseTextCommentNode(node, ctx);
   }
   return (
+    parseTDebugLog(node, ctx) ||
     parseTIf(node, ctx) ||
     parseTEscNode(node, ctx) ||
     parseTCall(node, ctx) ||
@@ -190,6 +206,31 @@ function parseTextCommentNode(node: ChildNode, ctx: ParsingContext): AST | null 
     return { type: ASTType.Text, value };
   } else if (node.nodeType === 8) {
     return { type: ASTType.Comment, value: node.textContent || "" };
+  }
+  return null;
+}
+
+// -----------------------------------------------------------------------------
+// debugging
+// -----------------------------------------------------------------------------
+
+function parseTDebugLog(node: Element, ctx: ParsingContext): AST | null {
+  if (node.hasAttribute("t-debug")) {
+    node.removeAttribute("t-debug");
+    return {
+      type: ASTType.TDebug,
+      content: parseNode(node, ctx),
+    };
+  }
+
+  if (node.hasAttribute("t-log")) {
+    const expr = node.getAttribute("t-log")!;
+    node.removeAttribute("t-log");
+    return {
+      type: ASTType.TLog,
+      expr,
+      content: parseNode(node, ctx),
+    };
   }
   return null;
 }

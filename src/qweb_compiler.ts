@@ -4,7 +4,9 @@ import {
   AST,
   ASTComment,
   ASTComponent,
+  ASTDebug,
   ASTDomNode,
+  ASTLog,
   ASTMulti,
   ASTTCall,
   ASTTEsc,
@@ -143,6 +145,7 @@ class QWebCompiler {
   shouldDefineOwner: boolean = false;
   key: string | null = null;
   loopLevel: number = 0;
+  isDebug: boolean = false;
 
   addLine(line: string) {
     const prefix = new Array(this.indentLevel + 2).join("  ");
@@ -206,7 +209,13 @@ class QWebCompiler {
     }
     this.addLine(`  return ${this.rootBlock};`);
     this.addLine("}");
-    return this.code.join("\n");
+    const code = this.code.join("\n");
+
+    if (this.isDebug) {
+      const msg = `[Owl Debug]\n${code}`;
+      console.log(msg);
+    }
+    return code;
   }
 
   generateBlockCode(block: BlockDescription) {
@@ -320,6 +329,7 @@ class QWebCompiler {
   }
 
   compile(ast: AST) {
+    this.isDebug = ast.type === ASTType.TDebug;
     this.compileAST(ast, { block: null, index: 0, forceNewBlock: false });
   }
 
@@ -361,9 +371,28 @@ class QWebCompiler {
       case ASTType.TComponent:
         this.compileComponent(ast, ctx.block);
         break;
+      case ASTType.TDebug:
+        this.compileDebug(ast, ctx);
+        break;
+      case ASTType.TLog:
+        this.compileLog(ast, ctx);
+        break;
     }
   }
 
+  compileDebug(ast: ASTDebug, ctx: Context) {
+    this.addLine(`debugger;`);
+    if (ast.content) {
+      this.compileAST(ast.content, ctx);
+    }
+  }
+
+  compileLog(ast: ASTLog, ctx: Context) {
+    this.addLine(`console.log(${compileExpr(ast.expr)});`);
+    if (ast.content) {
+      this.compileAST(ast.content, ctx);
+    }
+  }
   compileComment(ast: ASTComment, ctx: Context) {
     let { block, index, forceNewBlock } = ctx;
     if (!block || forceNewBlock) {

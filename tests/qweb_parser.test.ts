@@ -568,4 +568,35 @@ describe("qweb parser", () => {
       props: { a: "1", b: "'b'" },
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // t-debug
+  // ---------------------------------------------------------------------------
+
+  test("a t-debug on a dom node", async () => {
+    expect(parse(`<div t-debug="">hey</div>`)).toEqual({
+      type: ASTType.TDebug,
+      content: {
+        type: ASTType.DomNode,
+        tag: "div",
+        attrs: {},
+        on: {},
+        content: [{ type: ASTType.Text, value: "hey" }],
+      },
+    });
+  });
+
+  test("a t-log on a dom node", async () => {
+    expect(parse(`<div t-log="bla">hey</div>`)).toEqual({
+      type: ASTType.TLog,
+      expr: "bla",
+      content: {
+        type: ASTType.DomNode,
+        tag: "div",
+        attrs: {},
+        on: {},
+        content: [{ type: ASTType.Text, value: "hey" }],
+      },
+    });
+  });
 });

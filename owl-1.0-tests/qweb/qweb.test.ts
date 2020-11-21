@@ -2002,19 +2002,19 @@ describe("t-key", () => {
 });
 
 describe("debugging", () => {
-  test("t-debug", () => {
-    const consoleLog = console.log;
-    console.log = jest.fn();
-    qweb.addTemplate(
-      "test",
-      `<div t-debug=""><t t-if="true"><span t-debug="">hey</span></t></div>`
-    );
-    qweb.render("test");
-    expect(qweb.templates.test.fn.toString()).toMatchSnapshot();
+  // test("t-debug", () => {
+  //   const consoleLog = console.log;
+  //   console.log = jest.fn();
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div t-debug=""><t t-if="true"><span t-debug="">hey</span></t></div>`
+  //   );
+  //   qweb.render("test");
+  //   expect(qweb.templates.test.fn.toString()).toMatchSnapshot();
 
-    expect(console.log).toHaveBeenCalledTimes(1);
-    console.log = consoleLog;
-  });
+  //   expect(console.log).toHaveBeenCalledTimes(1);
+  //   console.log = consoleLog;
+  // });
 
   test("t-debug on sub template", () => {
     const consoleLog = console.log;
