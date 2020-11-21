@@ -56,6 +56,44 @@ exports[`basics a class component inside a class component, no external dom 1`] 
 }"
 `;
 
+exports[`basics a functional component inside a class component 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor/></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`)
+    return b1;
+  }
+}"
+`;
+
+exports[`basics a functional component inside a functional component 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<span><owl-anchor/></span>\`);
+    children = new Array(1);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`)
+    return b1;
+  }
+}"
+`;
+
 exports[`basics can mount a simple class component 1`] = `
 "function anonymous(Blocks, utils
 ) {

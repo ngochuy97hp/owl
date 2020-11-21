@@ -107,6 +107,50 @@ describe("basics", () => {
     expect(fixture.innerHTML).toBe("<div>simple vnode</div>");
   });
 
+  test("a functional component inside a class component", async () => {
+    const Child = {
+      template: xml`<div>simple vnode</div>`,
+    };
+
+    class Parent extends Component {
+      static template = xml`<span><Child/></span>`;
+      static components = { Child };
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<span><div>simple vnode</div></span>");
+  });
+
+  test("a functional component inside a functional component", async () => {
+    const Child = {
+      template: xml`<div>simple vnode</div>`,
+    };
+
+    const Parent = {
+      template: xml`<span><Child/></span>`,
+      components: { Child },
+    };
+    snapshotTemplateCode(fromName(Parent.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<span><div>simple vnode</div></span>");
+  });
+
+  test("a class component inside a functional component", async () => {
+    class Child extends Component {
+      static template = xml`<div>simple vnode</div>`;
+    }
+
+    const Parent = {
+      template: xml`<span><Child/></span>`,
+      components: { Child },
+    };
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<span><div>simple vnode</div></span>");
+  });
+
   test("simple component with a dynamic text", async () => {
     class Test extends Component {
       static template = xml`<div><t t-esc="value" /></div>`;

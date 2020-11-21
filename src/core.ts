@@ -45,14 +45,17 @@ export class Component {
 //  Functional Component stuff
 // -----------------------------------------------------------------------------
 
-export interface FunctionalComponent<T> {
+export interface FunctionalComponent<T = any> {
   template: string;
+  components?: { [name: string]: Type<Component> | FunctionalComponent };
   setup?(): T;
 }
 
 export class FComponent<T> extends Component {
+  components: { [name: string]: Type<Component> | FunctionalComponent };
   constructor(FC: FunctionalComponent<T>) {
     super();
+    this.components = FC.components || {};
     const value = FC.setup ? FC.setup() : null;
     if (value) {
       Object.assign(this, value);
@@ -68,7 +71,8 @@ class ComponentBlock extends Block {
   component: Component;
   constructor(ctx: any, name: string) {
     super();
-    const C = ctx.constructor.components[name];
+    const components = ctx.constructor.components || ctx.components;
+    const C = components[name];
     const component = prepare(C);
     this.component = component;
     internalRender(component);
