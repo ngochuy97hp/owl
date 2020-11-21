@@ -15,6 +15,11 @@ export function snapshotTemplateCode(template: string) {
   expect(compileTemplate(template).toString()).toMatchSnapshot();
 }
 
+export async function nextTick(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve));
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+}
+
 /**
  * Return the global template xml string corresponding to the given name
  */

@@ -1,5 +1,5 @@
-import { fromName, makeTestFixture, snapshotTemplateCode } from "./helpers";
-import { mount, Component, xml } from "../src/core";
+import { fromName, makeTestFixture, snapshotTemplateCode, nextTick } from "./helpers";
+import { mount, Component, xml, useState } from "../src/core";
 
 let fixture: HTMLElement;
 
@@ -161,6 +161,19 @@ describe("basics", () => {
     expect(fixture.innerHTML).toBe("<div>3</div>");
     test.value = 5;
     await test.render();
+    expect(fixture.innerHTML).toBe("<div>5</div>");
+  });
+
+  test("simple component, useState", async () => {
+    class Test extends Component {
+      static template = xml`<div><t t-esc="state.value" /></div>`;
+      state = useState({ value: 3 });
+    }
+
+    const test = await mount(Test, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>3</div>");
+    test.state.value = 5;
+    await nextTick();
     expect(fixture.innerHTML).toBe("<div>5</div>");
   });
 });

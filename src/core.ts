@@ -1,5 +1,6 @@
 import { BDom, Block, Blocks } from "./bdom";
 import { TemplateSet } from "./qweb_compiler";
+import { observe } from "./reactivity";
 
 // -----------------------------------------------------------------------------
 //  Global templates
@@ -27,6 +28,10 @@ interface InternalData {
 
 export class Component {
   static template: string;
+
+  constructor() {
+    current = this;
+  }
 
   __owl__: InternalData | null = null;
   get el(): HTMLElement | Text | null {
@@ -87,6 +92,15 @@ class ComponentBlock extends Block {
 Blocks.ComponentBlock = ComponentBlock;
 
 // -----------------------------------------------------------------------------
+//  useState
+// -----------------------------------------------------------------------------
+
+export function useState<T>(state: T): T {
+  const component: Component = current!;
+  return observe(state, () => component.render());
+}
+
+// -----------------------------------------------------------------------------
 //  Internal rendering stuff
 // -----------------------------------------------------------------------------
 
@@ -105,6 +119,8 @@ interface MountParameters {
 interface Type<T> extends Function {
   new (...args: any[]): T;
 }
+
+let current: Component | null = null;
 
 export function mount<T extends Type<Component>>(
   C: T,
