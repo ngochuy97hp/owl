@@ -409,18 +409,18 @@ describe("basic widget properties", () => {
 });
 
 describe("lifecycle hooks", () => {
-  test("willStart hook is called", async () => {
-    let willstart = false;
-    class HookWidget extends Component {
-      static template = xml`<div/>`;
-      async willStart() {
-        willstart = true;
-      }
-    }
-    const widget = new HookWidget();
-    await widget.mount(fixture);
-    expect(willstart).toBe(true);
-  });
+  // test("willStart hook is called", async () => {
+  //   let willstart = false;
+  //   class HookWidget extends Component {
+  //     static template = xml`<div/>`;
+  //     async willStart() {
+  //       willstart = true;
+  //     }
+  //   }
+  //   const widget = new HookWidget();
+  //   await widget.mount(fixture);
+  //   expect(willstart).toBe(true);
+  // });
 
   test("mounted hook is not called if not in DOM", async () => {
     let mounted = false;

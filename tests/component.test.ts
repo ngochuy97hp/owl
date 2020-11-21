@@ -281,4 +281,38 @@ describe("basics", () => {
     await mount(Parent, { target: fixture });
     expect(fixture.innerHTML).toBe("<div>hey</div>");
   });
+
+  test("zero or one child components", async () => {
+    class Child extends Component {
+      static template = xml`<div>simple vnode</div>`;
+    }
+
+    class Parent extends Component {
+      static template = xml`<Child t-if="state.hasChild"/>`;
+      static components = { Child };
+      state = useState({ hasChild: false });
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+
+    const parent = await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("");
+    parent.state.hasChild = true;
+    await nextTick();
+    expect(fixture.innerHTML).toBe("<div>simple vnode</div>");
+  });
+});
+
+describe("lifecycle hooks", () => {
+  test("willStart hook is called", async () => {
+    let willstart = false;
+    class Test extends Component {
+      static template = xml`<span>simple vnode</span>`;
+      async willStart() {
+        willstart = true;
+      }
+    }
+
+    await mount(Test, { target: fixture });
+    expect(willstart).toBe(true);
+  });
 });

@@ -2032,23 +2032,23 @@ describe("debugging", () => {
     console.log = consoleLog;
   });
 
-  test("t-log", () => {
-    const consoleLog = console.log;
-    console.log = jest.fn();
+  // test("t-log", () => {
+  //   const consoleLog = console.log;
+  //   console.log = jest.fn();
 
-    qweb.addTemplate(
-      "test",
-      `<div>
-          <t t-set="foo" t-value="42"/>
-          <t t-log="foo + 3"/>
-        </div>`
-    );
-    qweb.render("test");
-    expect(qweb.templates.test.fn.toString()).toMatchSnapshot();
+  //   qweb.addTemplate(
+  //     "test",
+  //     `<div>
+  //         <t t-set="foo" t-value="42"/>
+  //         <t t-log="foo + 3"/>
+  //       </div>`
+  //   );
+  //   qweb.render("test");
+  //   expect(qweb.templates.test.fn.toString()).toMatchSnapshot();
 
-    expect(console.log).toHaveBeenCalledWith(45);
-    console.log = consoleLog;
-  });
+  //   expect(console.log).toHaveBeenCalledWith(45);
+  //   console.log = consoleLog;
+  // });
 });
 
 describe("update on event bus", () => {

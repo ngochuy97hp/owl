@@ -248,3 +248,20 @@ exports[`basics two child components 1`] = `
   }
 }"
 `;
+
+exports[`basics zero or one child components 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  
+  return ctx => {
+    const b1 = new MultiBlock(1);
+    if (ctx['state'].hasChild) {
+      b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
+    }
+    return b1;
+  }
+}"
+`;

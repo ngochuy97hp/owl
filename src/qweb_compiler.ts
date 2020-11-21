@@ -369,7 +369,7 @@ class QWebCompiler {
         this.compileTSet(ast);
         break;
       case ASTType.TComponent:
-        this.compileComponent(ast, ctx.block);
+        this.compileComponent(ast, ctx);
         break;
       case ASTType.TDebug:
         this.compileDebug(ast, ctx);
@@ -766,7 +766,8 @@ class QWebCompiler {
     }
   }
 
-  compileComponent(ast: ASTComponent, block: BlockDescription | null) {
+  compileComponent(ast: ASTComponent, ctx: Context) {
+    const { block, index } = ctx;
     // props
     const props: string[] = [];
     for (let p in ast.props) {
@@ -779,7 +780,6 @@ class QWebCompiler {
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       block.insert(anchor);
       block.currentPath = [`anchors[${block.childNumber}]`];
-      const index = block.childNumber;
       block.childNumber++;
 
       this.addLine(`${block.varName}.children[${index}] = ${blockString}`);

@@ -24,6 +24,7 @@ interface InternalData {
   bdom: null | BDom;
   render: () => BDom;
   fiber: Fiber | null;
+  willStartCB: Function;
 }
 
 export class Component {
@@ -40,8 +41,10 @@ export class Component {
     return (this.__owl__ as any).bdom.el;
   }
 
+  async willStart(): Promise<void> {}
+
   async render(): Promise<void> {
-    internalRender(this);
+    await internalRender(this);
 
     const __owl__ = this.__owl__!;
     __owl__.bdom!.patch(__owl__.fiber!.bdom!);
@@ -155,15 +158,21 @@ function prepare(C: any, props: any): Component {
     template = C.template;
   }
   const render: () => BDom = globalTemplates.getFunction(template).bind(null, component);
-  const __owl__: InternalData = { render: render, bdom: null, fiber: null };
+  const __owl__: InternalData = {
+    render: render,
+    bdom: null,
+    fiber: null,
+    willStartCB: component.willStart,
+  };
   component.__owl__ = __owl__;
   return component;
 }
 
-function internalRender(c: Component) {
+async function internalRender(c: Component) {
   const fiber = new Fiber();
   const __owl__ = c.__owl__!;
   __owl__.fiber = fiber;
+  await __owl__.willStartCB.call(c);
   fiber.bdom = __owl__.render();
 }
 
