@@ -164,6 +164,18 @@ describe("basics", () => {
     expect(fixture.innerHTML).toBe("<div>5</div>");
   });
 
+  test("functional component with dynamic content", async () => {
+    const Test = {
+      template: xml`<div>Hello <t t-esc="name"/></div>`,
+      setup() {
+        return { name: "Alex" };
+      },
+    };
+
+    await mount(Test, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>Hello Alex</div>");
+  });
+
   test("simple component, useState", async () => {
     class Test extends Component {
       static template = xml`<div><t t-esc="state.value" /></div>`;
@@ -248,5 +260,25 @@ describe("basics", () => {
 
     await mount(Parent, { target: fixture });
     expect(fixture.innerHTML).toBe("<div>42</div>");
+  });
+
+  test("parent, child and grandchild", async () => {
+    class GrandChild extends Component {
+      static template = xml`<div>hey</div>`;
+    }
+
+    class Child extends Component {
+      static template = xml`<GrandChild />`;
+      static components = { GrandChild };
+    }
+
+    class Parent extends Component {
+      static template = xml`<Child/>`;
+      static components = { Child };
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>hey</div>");
   });
 });

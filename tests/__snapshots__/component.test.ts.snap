@@ -205,6 +205,20 @@ exports[`basics functional component: setup return value is context 1`] = `
 }"
 `;
 
+exports[`basics parent, child and grandchild 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  
+  return ctx => {
+    const b1 = new ComponentBlock(ctx, \`Child\`, {})
+    return b1;
+  }
+}"
+`;
+
 exports[`basics simple functional component with text node 1`] = `
 "function anonymous(Blocks, utils
 ) {
