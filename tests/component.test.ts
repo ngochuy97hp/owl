@@ -106,4 +106,17 @@ describe("basics", () => {
     await mount(Parent, { target: fixture });
     expect(fixture.innerHTML).toBe("<div>simple vnode</div>");
   });
+
+  test("simple component with a dynamic text", async () => {
+    class Test extends Component {
+      static template = xml`<div><t t-esc="value" /></div>`;
+      value = 3;
+    }
+
+    const test = await mount(Test, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>3</div>");
+    test.value = 5;
+    await test.render();
+    expect(fixture.innerHTML).toBe("<div>5</div>");
+  });
 });

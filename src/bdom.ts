@@ -7,6 +7,10 @@
 
 export type BDom = ContentBlock | MultiBlock | HTMLBlock;
 
+// -----------------------------------------------------------------------------
+//  Block
+// -----------------------------------------------------------------------------
+
 export abstract class Block {
   mount(parent: HTMLElement) {
     const anchor = document.createTextNode("");
@@ -23,6 +27,10 @@ export abstract class Block {
 
   el: HTMLElement | Text | null = null;
 }
+
+// -----------------------------------------------------------------------------
+//  Html Block
+// -----------------------------------------------------------------------------
 
 export class HTMLBlock extends Block {
   html: string;
@@ -71,6 +79,10 @@ export class HTMLBlock extends Block {
   }
 }
 
+// -----------------------------------------------------------------------------
+//  Text Block
+// -----------------------------------------------------------------------------
+
 export class TextBlock extends Block {
   el: Text;
   constructor(text: string) {
@@ -90,6 +102,10 @@ export class TextBlock extends Block {
     return this.el.textContent;
   }
 }
+
+// -----------------------------------------------------------------------------
+//  Content Block
+// -----------------------------------------------------------------------------
 
 export class ContentBlock extends Block {
   static el: HTMLElement | Text;
@@ -192,6 +208,10 @@ export class ContentBlock extends Block {
   }
 }
 
+// -----------------------------------------------------------------------------
+//  Multi Block
+// -----------------------------------------------------------------------------
+
 export class MultiBlock extends Block {
   children: (ContentBlock | undefined | null)[];
   anchors?: Text[];
@@ -243,6 +263,10 @@ export class MultiBlock extends Block {
     return this.children.map((c) => (c ? c.toString() : "")).join("");
   }
 }
+
+// -----------------------------------------------------------------------------
+//  Collection Block
+// -----------------------------------------------------------------------------
 
 export class CollectionBlock extends Block {
   children: Block[];
