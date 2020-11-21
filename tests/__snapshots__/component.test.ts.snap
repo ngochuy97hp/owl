@@ -36,7 +36,7 @@ exports[`basics a class component inside a class component 1`] = `
   
   return ctx => {
     const b1 = new Block1();
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`)
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -50,7 +50,7 @@ exports[`basics a class component inside a class component, no external dom 1`] 
   
   
   return ctx => {
-    const b1 = new ComponentBlock(ctx, \`Child\`)
+    const b1 = new ComponentBlock(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -69,7 +69,7 @@ exports[`basics a functional component inside a class component 1`] = `
   
   return ctx => {
     const b1 = new Block1();
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`)
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -88,7 +88,7 @@ exports[`basics a functional component inside a functional component 1`] = `
   
   return ctx => {
     const b1 = new Block1();
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`)
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -147,6 +147,42 @@ exports[`basics class component with dynamic text 1`] = `
 }"
 `;
 
+exports[`basics class parent, class child component with props 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  
+  return ctx => {
+    const b1 = new ComponentBlock(ctx, \`Child\`, {value: 42})
+    return b1;
+  }
+}"
+`;
+
+exports[`basics class parent, class child component with props 2`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  class Block1 extends ContentBlock {
+    static el = elem(\`<div><owl-text/></div>\`);
+    data = new Array(1);
+    update() {
+      this.el.firstChild.textContent = toString(this.data[0]);
+    }
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = ctx['props'].value;
+    return b1;
+  }
+}"
+`;
+
 exports[`basics functional component: setup return value is context 1`] = `
 "function anonymous(Blocks, utils
 ) {
@@ -178,6 +214,22 @@ exports[`basics simple functional component with text node 1`] = `
   
   return ctx => {
     const b1 = new TextBlock(\`look, just text!\`)
+    return b1;
+  }
+}"
+`;
+
+exports[`basics two child components 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
+  
+  
+  return ctx => {
+    const b1 = new MultiBlock(2);
+    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
+    b1.children[1] = new ComponentBlock(ctx, \`Child\`, {})
     return b1;
   }
 }"

@@ -90,6 +90,7 @@ export interface ASTTCall {
 export interface ASTComponent {
   type: ASTType.TComponent;
   name: string;
+  props: { [name: string]: string };
 }
 
 export type AST =
@@ -446,7 +447,11 @@ function parseComponent(node: ChildNode, ctx: ParsingContext): AST | null {
   if (firstLetter !== firstLetter.toUpperCase()) {
     return null;
   }
-  return { type: ASTType.TComponent, name: node.tagName };
+  const props: ASTComponent["props"] = {};
+  for (let name of node.getAttributeNames()) {
+    props[name] = node.getAttribute(name)!;
+  }
+  return { type: ASTType.TComponent, name: node.tagName, props };
 }
 
 // -----------------------------------------------------------------------------

@@ -176,4 +176,77 @@ describe("basics", () => {
     await nextTick();
     expect(fixture.innerHTML).toBe("<div>5</div>");
   });
+
+  test("two child components", async () => {
+    class Child extends Component {
+      static template = xml`<div>simple vnode</div>`;
+    }
+
+    class Parent extends Component {
+      static template = xml`<Child/><Child/>`;
+      static components = { Child };
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>simple vnode</div><div>simple vnode</div>");
+  });
+
+  test("class parent, class child component with props", async () => {
+    class Child extends Component {
+      static template = xml`<div><t t-esc="props.value" /></div>`;
+    }
+
+    class Parent extends Component {
+      static template = xml`<Child value="42" />`;
+      static components = { Child };
+    }
+    snapshotTemplateCode(fromName(Parent.template));
+    snapshotTemplateCode(fromName(Child.template));
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>42</div>");
+  });
+
+  test("fun comp parent, class child component with props", async () => {
+    class Child extends Component {
+      static template = xml`<div><t t-esc="props.value" /></div>`;
+    }
+
+    const Parent = {
+      template: xml`<Child value="42" />`,
+      components: { Child },
+    };
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>42</div>");
+  });
+
+  test("class parent, func child component with props", async () => {
+    const Child = {
+      template: xml`<div><t t-esc="props.value" /></div>`,
+    };
+
+    class Parent extends Component {
+      static template = xml`<Child value="42" />`;
+      static components = { Child };
+    }
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>42</div>");
+  });
+
+  test("func parent, func child component with props", async () => {
+    const Child = {
+      template: xml`<div><t t-esc="props.value" /></div>`,
+    };
+
+    const Parent = {
+      template: xml`<Child value="42" />`,
+      components: { Child },
+    };
+
+    await mount(Parent, { target: fixture });
+    expect(fixture.innerHTML).toBe("<div>42</div>");
+  });
 });

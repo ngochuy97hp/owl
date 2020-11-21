@@ -28,9 +28,11 @@ interface InternalData {
 
 export class Component {
   static template: string;
+  props: any;
 
-  constructor() {
+  constructor(props: any) {
     current = this;
+    this.props = props;
   }
 
   __owl__: InternalData | null = null;
@@ -58,8 +60,8 @@ export interface FunctionalComponent<T = any> {
 
 export class FComponent<T> extends Component {
   components: { [name: string]: Type<Component> | FunctionalComponent };
-  constructor(FC: FunctionalComponent<T>) {
-    super();
+  constructor(FC: FunctionalComponent<T>, props: any) {
+    super(props);
     this.components = FC.components || {};
     const value = FC.setup ? FC.setup() : null;
     if (value) {
@@ -74,11 +76,11 @@ export class FComponent<T> extends Component {
 
 class ComponentBlock extends Block {
   component: Component;
-  constructor(ctx: any, name: string) {
+  constructor(ctx: any, name: string, props: any) {
     super();
     const components = ctx.constructor.components || ctx.components;
     const C = components[name];
-    const component = prepare(C);
+    const component = prepare(C, props);
     this.component = component;
     internalRender(component);
   }
@@ -132,7 +134,7 @@ export function mount<T>(
 ): Promise<Component & T>;
 export async function mount(C: any, params: MountParameters) {
   const { target } = params;
-  const component = prepare(C);
+  const component = prepare(C, params.props || {});
   internalRender(component);
   return new Promise((resolve) => {
     requestAnimationFrame(() => {
@@ -142,14 +144,14 @@ export async function mount(C: any, params: MountParameters) {
   });
 }
 
-function prepare(C: any): Component {
+function prepare(C: any, props: any): Component {
   let component: Component;
   let template: string;
   if (C.prototype instanceof Component) {
-    component = new C();
+    component = new C(props);
     template = (C as any).template;
   } else {
-    component = new FComponent(C);
+    component = new FComponent(C, props);
     template = C.template;
   }
   const render: () => BDom = globalTemplates.getFunction(template).bind(null, component);

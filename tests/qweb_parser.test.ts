@@ -557,6 +557,15 @@ describe("qweb parser", () => {
     expect(parse(`<MyComponent />`)).toEqual({
       type: ASTType.TComponent,
       name: "MyComponent",
+      props: {},
+    });
+  });
+
+  test("component with props", async () => {
+    expect(parse(`<MyComponent a="1" b="'b'"/>`)).toEqual({
+      type: ASTType.TComponent,
+      name: "MyComponent",
+      props: { a: "1", b: "'b'" },
     });
   });
 });

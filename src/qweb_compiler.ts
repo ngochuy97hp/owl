@@ -738,21 +738,28 @@ class QWebCompiler {
   }
 
   compileComponent(ast: ASTComponent, block: BlockDescription | null) {
+    // props
+    const props: string[] = [];
+    for (let p in ast.props) {
+      props.push(`${p}: ${compileExpr(ast.props[p])}`);
+    }
+    const propString = `{${props.join(",")}}`;
+    const blockString = `new ComponentBlock(ctx, \`${ast.name}\`, ${propString})`;
+
     if (block) {
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };
       block.insert(anchor);
       block.currentPath = [`anchors[${block.childNumber}]`];
       const index = block.childNumber;
       block.childNumber++;
-      this.addLine(
-        `${block.varName}.children[${index}] = new ComponentBlock(ctx, \`${ast.name}\`)`
-      );
+
+      this.addLine(`${block.varName}.children[${index}] = ${blockString}`);
     } else {
       const id = this.generateId("b");
       if (!this.rootBlock) {
         this.rootBlock = id;
       }
-      this.addLine(`const ${id} = new ComponentBlock(ctx, \`${ast.name}\`)`);
+      this.addLine(`const ${id} = ${blockString}`);
     }
   }
 }
