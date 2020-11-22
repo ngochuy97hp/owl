@@ -3,20 +3,20 @@
 exports[`basics Multi root component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span>1</span>\`);
   }
-  class Block2 extends ContentBlock {
+  class Block2 extends BNode {
     static el = elem(\`<span>2</span>\`);
   }
   
   return ctx => {
-    const b1 = new MultiBlock(3);
+    const b1 = new BMulti(3);
     const b2 = b1.children[0] = new Block1();
-    b1.children[1] = new TextBlock(\`text\`)
+    b1.children[1] = new BText(\`text\`)
     const b3 = b1.children[2] = new Block2();
     return b1;
   }
@@ -26,17 +26,17 @@ exports[`basics Multi root component 1`] = `
 exports[`basics a class component inside a class component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
   return ctx => {
     const b1 = new Block1();
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
+    b1.children[0] = new BComponent(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -45,12 +45,12 @@ exports[`basics a class component inside a class component 1`] = `
 exports[`basics a class component inside a class component, no external dom 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new ComponentBlock(ctx, \`Child\`, {})
+    const b1 = new BComponent(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -59,17 +59,17 @@ exports[`basics a class component inside a class component, no external dom 1`] 
 exports[`basics a functional component inside a class component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
   return ctx => {
     const b1 = new Block1();
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
+    b1.children[0] = new BComponent(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -78,17 +78,17 @@ exports[`basics a functional component inside a class component 1`] = `
 exports[`basics a functional component inside a functional component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span><owl-anchor/></span>\`);
     children = new Array(1);
   }
   
   return ctx => {
     const b1 = new Block1();
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
+    b1.children[0] = new BComponent(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -97,12 +97,12 @@ exports[`basics a functional component inside a functional component 1`] = `
 exports[`basics can mount a simple class component 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new TextBlock(\`__template__1\`)
+    const b1 = new BText(\`__template__1\`)
     return b1;
   }
 }"
@@ -111,10 +111,10 @@ exports[`basics can mount a simple class component 1`] = `
 exports[`basics can mount a simple class component 2`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span>simple vnode</span>\`);
   }
   
@@ -128,10 +128,10 @@ exports[`basics can mount a simple class component 2`] = `
 exports[`basics class component with dynamic text 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span>My value: <owl-text/></span>\`);
     data = new Array(1);
     update() {
@@ -150,12 +150,12 @@ exports[`basics class component with dynamic text 1`] = `
 exports[`basics class parent, class child component with props 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new ComponentBlock(ctx, \`Child\`, {value: 42})
+    const b1 = new BComponent(ctx, \`Child\`, {value: 42})
     return b1;
   }
 }"
@@ -164,10 +164,10 @@ exports[`basics class parent, class child component with props 1`] = `
 exports[`basics class parent, class child component with props 2`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<div><owl-text/></div>\`);
     data = new Array(1);
     update() {
@@ -186,10 +186,10 @@ exports[`basics class parent, class child component with props 2`] = `
 exports[`basics functional component: setup return value is context 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
-  class Block1 extends ContentBlock {
+  class Block1 extends BNode {
     static el = elem(\`<span>My value: <owl-text/></span>\`);
     data = new Array(1);
     update() {
@@ -208,12 +208,12 @@ exports[`basics functional component: setup return value is context 1`] = `
 exports[`basics parent, child and grandchild 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new ComponentBlock(ctx, \`Child\`, {})
+    const b1 = new BComponent(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -222,12 +222,12 @@ exports[`basics parent, child and grandchild 1`] = `
 exports[`basics simple functional component with text node 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new TextBlock(\`look, just text!\`)
+    const b1 = new BText(\`look, just text!\`)
     return b1;
   }
 }"
@@ -236,14 +236,14 @@ exports[`basics simple functional component with text node 1`] = `
 exports[`basics two child components 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new MultiBlock(2);
-    b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
-    b1.children[1] = new ComponentBlock(ctx, \`Child\`, {})
+    const b1 = new BMulti(2);
+    b1.children[0] = new BComponent(ctx, \`Child\`, {})
+    b1.children[1] = new BComponent(ctx, \`Child\`, {})
     return b1;
   }
 }"
@@ -252,14 +252,14 @@ exports[`basics two child components 1`] = `
 exports[`basics zero or one child components 1`] = `
 "function anonymous(Blocks, utils
 ) {
-  let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;
+  let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;
   let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;
   
   
   return ctx => {
-    const b1 = new MultiBlock(1);
+    const b1 = new BMulti(1);
     if (ctx['state'].hasChild) {
-      b1.children[0] = new ComponentBlock(ctx, \`Child\`, {})
+      b1.children[0] = new BComponent(ctx, \`Child\`, {})
     }
     return b1;
   }

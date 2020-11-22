@@ -5,7 +5,7 @@
  * "block" instead of just a html (v)node.
  */
 
-export type BDom = ContentBlock | MultiBlock | HTMLBlock;
+export type BDom = BNode | BMulti | BHtml;
 
 // -----------------------------------------------------------------------------
 //  Block
@@ -32,7 +32,7 @@ export abstract class Block {
 //  Html Block
 // -----------------------------------------------------------------------------
 
-export class HTMLBlock extends Block {
+export class BHtml extends Block {
   html: string;
   content: ChildNode[] = [];
   anchor: Text;
@@ -83,7 +83,7 @@ export class HTMLBlock extends Block {
 //  Text Block
 // -----------------------------------------------------------------------------
 
-export class TextBlock extends Block {
+export class BText extends Block {
   el: Text;
   constructor(text: string) {
     super();
@@ -107,10 +107,10 @@ export class TextBlock extends Block {
 //  Content Block
 // -----------------------------------------------------------------------------
 
-export class ContentBlock extends Block {
+export class BNode extends Block {
   static el: HTMLElement | Text;
   // el?: HTMLElement | Text;
-  children: (ContentBlock | null)[] | null = null;
+  children: (BNode | null)[] | null = null;
   anchors?: Text[] | null = null;
   data?: any[] | null = null;
   handlers?: any[] | null = null;
@@ -212,8 +212,8 @@ export class ContentBlock extends Block {
 //  Multi Block
 // -----------------------------------------------------------------------------
 
-export class MultiBlock extends Block {
-  children: (ContentBlock | undefined | null)[];
+export class BMulti extends Block {
+  children: (BNode | undefined | null)[];
   anchors?: Text[];
 
   constructor(n: number) {
@@ -268,7 +268,7 @@ export class MultiBlock extends Block {
 //  Collection Block
 // -----------------------------------------------------------------------------
 
-export class CollectionBlock extends Block {
+export class BCollection extends Block {
   children: Block[];
   anchor?: Text;
 
@@ -294,9 +294,9 @@ interface Type<T> extends Function {
 }
 
 export const Blocks: { [key: string]: Type<Block> } = {
-  ContentBlock,
-  MultiBlock,
-  HTMLBlock,
-  CollectionBlock,
-  TextBlock,
+  BNode,
+  BMulti,
+  BHtml,
+  BCollection,
+  BText,
 };

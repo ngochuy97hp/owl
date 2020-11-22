@@ -157,7 +157,7 @@ class QWebCompiler {
   }
 
   makeBlock({ multi, parentBlock, parentIndex }: MakeBlockParams = {}): BlockDescription {
-    const name = multi ? "MultiBlock" : `Block${this.blocks.length + 1}`;
+    const name = multi ? "BMulti" : `Block${this.blocks.length + 1}`;
     const block = new BlockDescription(this.generateId("b"), name);
     if (!multi) {
       this.blocks.push(block);
@@ -175,9 +175,7 @@ class QWebCompiler {
     this.code = [];
     this.indentLevel = 0;
     // define blocks and utility functions
-    this.addLine(
-      `let {MultiBlock, TextBlock, ContentBlock, CollectionBlock, HTMLBlock, ComponentBlock} = Blocks;`
-    );
+    this.addLine(`let {BCollection, BComponent, BHtml, BMulti, BNode, BText} = Blocks;`);
     this.addLine(`let {elem, toString, withDefault, call, zero, scope, getValues, owner} = utils;`);
     this.addLine(``);
 
@@ -219,7 +217,7 @@ class QWebCompiler {
   }
 
   generateBlockCode(block: BlockDescription) {
-    this.addLine(`class ${block.blockName} extends ContentBlock {`);
+    this.addLine(`class ${block.blockName} extends BNode {`);
     this.indentLevel++;
     this.addLine(`static el = elem(\`${block.dom ? domToString(block.dom) : ""}\`);`);
     if (block.childNumber) {
@@ -409,10 +407,10 @@ class QWebCompiler {
     let { block, index, forceNewBlock } = ctx;
     if (!block || forceNewBlock) {
       if (block) {
-        this.addLine(`${block.varName}.children[${index}] = new TextBlock(\`${ast.value}\`)`);
+        this.addLine(`${block.varName}.children[${index}] = new BText(\`${ast.value}\`)`);
       } else {
         const id = this.generateId("b");
-        this.addLine(`const ${id} = new TextBlock(\`${ast.value}\`)`);
+        this.addLine(`const ${id} = new BText(\`${ast.value}\`)`);
         if (!this.rootBlock) {
           this.rootBlock = id;
         }
@@ -522,10 +520,10 @@ class QWebCompiler {
     }
     if (!block || forceNewBlock) {
       if (block) {
-        this.addLine(`${block.varName}.children[${index}] = new TextBlock(${expr})`);
+        this.addLine(`${block.varName}.children[${index}] = new BText(${expr})`);
       } else {
         const id = this.generateId("b");
-        this.addLine(`const ${id} = new TextBlock(${expr})`);
+        this.addLine(`const ${id} = new BText(${expr})`);
         if (!this.rootBlock) {
           this.rootBlock = id;
         }
@@ -560,7 +558,7 @@ class QWebCompiler {
       this.compileAST({ type: ASTType.Multi, content: ast.body }, subCtx);
       expr = `withDefault(${expr}, b${nextId})`;
     }
-    this.addLine(`${block.varName}.children[${index}] = new HTMLBlock(${expr});`);
+    this.addLine(`${block.varName}.children[${index}] = new BHtml(${expr});`);
   }
 
   compileTIf(ast: ASTTif, ctx: Context) {
@@ -629,11 +627,9 @@ class QWebCompiler {
       block.currentPath = [`anchors[${block.childNumber}]`];
       block.childNumber++;
 
-      this.addLine(
-        `const ${id} = ${block.varName}.children[${index}] = new CollectionBlock(${l});`
-      );
+      this.addLine(`const ${id} = ${block.varName}.children[${index}] = new BCollection(${l});`);
     } else {
-      this.addLine(`const ${id} = new CollectionBlock(${l});`);
+      this.addLine(`const ${id} = new BCollection(${l});`);
       if (!this.rootBlock) {
         this.rootBlock = id;
       }
@@ -774,7 +770,7 @@ class QWebCompiler {
       props.push(`${p}: ${compileExpr(ast.props[p])}`);
     }
     const propString = `{${props.join(",")}}`;
-    const blockString = `new ComponentBlock(ctx, \`${ast.name}\`, ${propString})`;
+    const blockString = `new BComponent(ctx, \`${ast.name}\`, ${propString})`;
 
     if (block) {
       const anchor: Dom = { type: DomType.Node, tag: "owl-anchor", attrs: {}, content: [] };

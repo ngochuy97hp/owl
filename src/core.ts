@@ -77,7 +77,7 @@ export class FComponent<T> extends Component {
 //  Component Block
 // -----------------------------------------------------------------------------
 
-class ComponentBlock extends Block {
+class BComponent extends Block {
   component: Component;
   constructor(ctx: any, name: string, props: any) {
     super();
@@ -94,7 +94,7 @@ class ComponentBlock extends Block {
   patch() {}
 }
 
-Blocks.ComponentBlock = ComponentBlock;
+Blocks.BComponent = BComponent;
 
 // -----------------------------------------------------------------------------
 //  useState
