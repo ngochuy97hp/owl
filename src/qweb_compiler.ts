@@ -246,8 +246,9 @@ class QWebCompiler {
 
     if (block.handlerFn.length) {
       const updateInfo = block.handlerFn;
-      this.addLine(`setupHandlers() {`);
+      this.addLine(`build() {`);
       this.indentLevel++;
+      this.addLine(`super.build();`);
       if (updateInfo.length === 1) {
         const { path, inserter } = updateInfo[0];
         const target = `this.${path.join(".")}`;

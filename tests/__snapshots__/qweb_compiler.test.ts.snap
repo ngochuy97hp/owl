@@ -3097,7 +3097,8 @@ exports[`t-on can bind event handler 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3121,7 +3122,8 @@ exports[`t-on can bind handlers with arguments 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3146,7 +3148,8 @@ exports[`t-on can bind handlers with empty  object 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3171,7 +3174,8 @@ exports[`t-on can bind handlers with empty object (with non empty inner string) 
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3200,7 +3204,8 @@ exports[`t-on can bind handlers with empty object (with non empty inner string) 
   class Block2 extends BNode {
     static el = elem(\`<li><a>link</a></li>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el.firstChild, 0);
     }
   }
@@ -3237,7 +3242,8 @@ exports[`t-on can bind handlers with object arguments 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3262,7 +3268,8 @@ exports[`t-on can bind two event handlers 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(2);
-    setupHandlers() {
+    build() {
+      super.build();
       const el1 = this.el;
       this.setupHandler(el1, 0);
       this.setupHandler(el1, 1);
@@ -3289,7 +3296,8 @@ exports[`t-on handler is bound to proper owner 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3313,7 +3321,8 @@ exports[`t-on handler is bound to proper owner, part 2 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3347,7 +3356,8 @@ exports[`t-on handler is bound to proper owner, part 3 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3387,7 +3397,8 @@ exports[`t-on handler is bound to proper owner, part 4 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3437,7 +3448,8 @@ exports[`t-on t-on with inline statement (function call) 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3462,7 +3474,8 @@ exports[`t-on t-on with inline statement 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Click</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3487,7 +3500,8 @@ exports[`t-on t-on with inline statement, part 2 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Toggle</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3512,7 +3526,8 @@ exports[`t-on t-on with inline statement, part 3 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<button>Toggle</button>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3538,7 +3553,8 @@ exports[`t-on t-on with t-call 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<p>lucas</p>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }
@@ -3583,7 +3599,8 @@ exports[`t-on t-on, with arguments and t-call 1`] = `
   class Block1 extends BNode {
     static el = elem(\`<p>lucas</p>\`);
     handlers = new Array(1);
-    setupHandlers() {
+    build() {
+      super.build();
       this.setupHandler(this.el, 0);
     }
   }

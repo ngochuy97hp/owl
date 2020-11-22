@@ -171,12 +171,7 @@ export class BNode extends Block {
       this.anchors = anchors;
     }
     this.update();
-    if (this.handlers) {
-      this.setupHandlers();
-    }
   }
-
-  setupHandlers() {}
 
   patch(newTree: any) {
     this.data = newTree.data;
