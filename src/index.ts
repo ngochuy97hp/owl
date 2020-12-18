@@ -6,11 +6,14 @@
  */
 import * as _hooks from "./hooks";
 import { useComponent } from "./core";
+export { App } from "./app";
 
 export { Component, mount, useComponent } from "./core";
 export { xml } from "./tags";
 
 export { useState } from "./hooks";
+
+
 
 export const hooks = Object.assign(_hooks, { useComponent: useComponent });
 

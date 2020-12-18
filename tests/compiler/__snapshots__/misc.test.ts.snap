@@ -1,5 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`misc complex template 1`] = `
+"function anonymous(Blocks, utils
+) {
+  let {BCollection, BComponent, BComponentH, BHtml, BMulti, BNode, BStatic, BText} = Blocks;
+  let {elem, toString, withDefault, call, zero, scope, getValues, owner, callSlot} = utils;
+  
+  class Block1 extends BNode {
+    static el = elem(\`<div class=\\"batch_header\\"><a title=\\"View Batch\\"><owl-text/><owl-anchor/><i class=\\"arrow fa fa-window-maximize\\"/></a></div>\`);
+    children = new Array(1);
+    anchors = new Array(1);
+    data = new Array(3);
+    build() {
+      this.anchors[0] = this.el.firstChild.firstChild.nextSibling;
+    }
+    update() {
+      const el1 = this.el.firstChild;
+      this.updateAttr(el1, \`href\`, this.data[0]);
+      this.updateClass(el1, this.data[1]);
+      el1.firstChild.textContent = toString(this.data[2]);
+    }
+  }
+  
+  class Block2 extends BStatic {
+    static el = elem(\`<i class=\\"fa fa-exclamation-triangle\\"/>\`);
+  }
+  
+  return ctx => {
+    const b1 = new Block1();
+    b1.data[0] = \`/runbot/batch/\${ctx['batch'].id}\`;
+    b1.data[1] = \`badge badge-\${ctx['batch'].has_warning?'warning':'light'}\`;
+    b1.data[2] = ctx['batch'].formated_age;
+    if (ctx['batch'].has_warning) {
+      const b2 = b1.children[0] = new Block2();
+    }
+    return b1;
+  }
+}"
+`;
+
 exports[`misc global 1`] = `
 "function anonymous(Blocks, utils
 ) {

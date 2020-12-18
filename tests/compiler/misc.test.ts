@@ -64,4 +64,21 @@ describe("misc", () => {
       `);
     expect(result).toBe(expected);
   });
+
+
+  test("complex template", () => {
+    const template = `
+      <div class="batch_header">
+        <a t-attf-href="/runbot/batch/{{batch.id}}" t-attf-class="badge badge-{{batch.has_warning ? 'warning' : 'light'}}" title="View Batch">
+            <t t-esc="batch.formated_age"/>
+            <i class="fa fa-exclamation-triangle" t-if="batch.has_warning"/>
+            <i class="arrow fa fa-window-maximize"/>
+        </a>
+      </div>`;
+    
+      snapshotTemplateCode(template);
+      // const expected = `<div> - first (0)  - (1)  - (2)  - (3)  - last (4) </div>`;
+      // expect(renderToString(template)).toBe(expected);
+  });
 });
+
