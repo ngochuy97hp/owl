@@ -501,6 +501,23 @@ describe("qweb parser", () => {
     });
   });
 
+  test("more complex t-foreach expression on an option", async () => {
+    expect(parse(`<option t-foreach="categories" t-as="category" t-att-value="category.id" t-esc="category.name" t-att-selected="category.id==options.active_category_id"/>`)).toEqual({
+      type: ASTType.TForEach,
+      collection: "list",
+      elem: "item",
+      key: null,
+      body: {
+        type: ASTType.DomNode,
+        tag: "span",
+        attrs: {},
+        on: {},
+        ref: null,
+        content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+      },
+    });
+  });
+
   test("simple t-key expression", async () => {
     expect(parse(`<t t-key="k">abc</t>`)).toEqual({
       type: ASTType.TKey,
