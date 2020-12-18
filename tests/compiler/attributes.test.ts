@@ -141,7 +141,7 @@ describe("attributes", () => {
 
   test("t-attf-class with multiple classes", () => {
     const template = `<div t-attf-class="hello {{word}}"/>`;
-    const result = renderToString(template, {word: "world"});
+    const result = renderToString(template, { word: "world" });
     snapshotTemplateCode(template);
     expect(result).toBe(`<div class="hello world"></div>`);
   });

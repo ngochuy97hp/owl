@@ -408,7 +408,9 @@ export class BCollection extends Block {
     anchor.before(_anchor);
     this.anchor = _anchor;
     for (let child of this.children) {
-      child.mountBefore(_anchor);
+      if (child) {
+        child.mountBefore(_anchor);
+      }
     }
   }
 
@@ -417,7 +419,9 @@ export class BCollection extends Block {
     anchor.before(_anchor);
     this.anchor = _anchor;
     for (let child of this.children) {
-      child.moveBefore(_anchor);
+      if (child) {
+        child.moveBefore(_anchor);
+      }
     }
   }
   patch(other: any) {

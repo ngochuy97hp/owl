@@ -529,7 +529,9 @@ describe("qweb parser", () => {
   });
 
   test("t-foreach expression on a span", async () => {
-    expect(parse(`<span t-foreach="list" t-if="condition" t-as="item"><t t-esc="item"/></span>`)).toEqual({
+    expect(
+      parse(`<span t-foreach="list" t-if="condition" t-as="item"><t t-esc="item"/></span>`)
+    ).toEqual({
       type: ASTType.TForEach,
       collection: "list",
       elem: "item",
@@ -546,7 +548,11 @@ describe("qweb parser", () => {
   });
 
   test("more complex t-foreach expression on an option", async () => {
-    expect(parse(`<option t-foreach="categories" t-as="category" t-att-value="category.id" t-esc="category.name" t-att-selected="category.id==options.active_category_id"/>`)).toEqual({
+    expect(
+      parse(
+        `<option t-foreach="categories" t-as="category" t-att-value="category.id" t-esc="category.name" t-att-selected="category.id==options.active_category_id"/>`
+      )
+    ).toEqual({
       type: ASTType.TForEach,
       collection: "categories",
       elem: "category",
@@ -554,7 +560,10 @@ describe("qweb parser", () => {
       body: {
         type: ASTType.DomNode,
         tag: "option",
-        attrs: {"t-att-selected": "category.id==options.active_category_id", "t-att-value": "category.id"},
+        attrs: {
+          "t-att-selected": "category.id==options.active_category_id",
+          "t-att-value": "category.id",
+        },
         on: {},
         ref: null,
         content: [{ type: ASTType.TEsc, expr: "category.name", defaultValue: "" }],
