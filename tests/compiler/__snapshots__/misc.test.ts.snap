@@ -7,18 +7,28 @@ exports[`misc complex template 1`] = `
   let {elem, toString, withDefault, call, zero, scope, getValues, owner, callSlot} = utils;
   
   class Block1 extends BNode {
-    static el = elem(\`<div class=\\"batch_header\\"><a title=\\"View Batch\\"><owl-text/><owl-anchor/><i class=\\"arrow fa fa-window-maximize\\"/></a></div>\`);
-    children = new Array(1);
-    anchors = new Array(1);
-    data = new Array(3);
+    static el = elem(\`<div><div><div class=\\"batch_header\\"><a title=\\"View Batch\\"><owl-text/><owl-anchor/><i class=\\"arrow fa fa-window-maximize\\"/></a></div><owl-anchor/><div class=\\"batch_slots\\"><owl-anchor/><owl-anchor/></div><div class=\\"batch_commits\\"><owl-anchor/></div></div></div>\`);
+    children = new Array(5);
+    anchors = new Array(5);
+    data = new Array(5);
     build() {
-      this.anchors[0] = this.el.firstChild.firstChild.nextSibling;
+      const el1 = this.el.firstChild.firstChild;
+      this.anchors[0] = el1.firstChild.firstChild.nextSibling;
+      this.anchors[1] = el1.nextSibling;
+      const el2 = this.anchors[1].nextSibling;
+      this.anchors[2] = el2.firstChild;
+      this.anchors[3] = this.anchors[2].nextSibling;
+      this.anchors[4] = el2.nextSibling.firstChild;
     }
     update() {
-      const el1 = this.el.firstChild;
-      this.updateAttr(el1, \`href\`, this.data[0]);
-      this.updateClass(el1, this.data[1]);
-      el1.firstChild.textContent = toString(this.data[2]);
+      const el1 = this.el;
+      this.updateClass(el1, this.data[0]);
+      const el2 = el1.firstChild;
+      this.updateClass(el2, this.data[1]);
+      const el3 = el2.firstChild.firstChild;
+      this.updateAttr(el3, \`href\`, this.data[2]);
+      this.updateClass(el3, this.data[3]);
+      el3.firstChild.textContent = toString(this.data[4]);
     }
   }
   
@@ -26,13 +36,122 @@ exports[`misc complex template 1`] = `
     static el = elem(\`<i class=\\"fa fa-exclamation-triangle\\"/>\`);
   }
   
+  class Block3 extends BStatic {
+    static el = elem(\`<span><i class=\\"fa fa-cog fa-spin fa-fw\\"/> preparing</span>\`);
+  }
+  
+  class Block4 extends BStatic {
+    static el = elem(\`<div class=\\"slot_filler\\"/>\`);
+  }
+  
+  class Block5 extends BNode {
+    static el = elem(\`<div class=\\"one_line\\"><a><owl-anchor/><owl-anchor/><owl-anchor/><owl-anchor/><owl-text/></a><a class=\\"badge badge-light\\" title=\\"View Commit on Github\\"><i class=\\"fa fa-github\\"/></a><span><owl-text/></span></div>\`);
+    children = new Array(4);
+    anchors = new Array(4);
+    data = new Array(5);
+    build() {
+      this.anchors[0] = this.el.firstChild.firstChild;
+      this.anchors[1] = this.anchors[0].nextSibling;
+      this.anchors[2] = this.anchors[1].nextSibling;
+      this.anchors[3] = this.anchors[2].nextSibling;
+    }
+    update() {
+      const el1 = this.el.firstChild;
+      this.updateAttr(el1, \`href\`, this.data[0]);
+      this.updateClass(el1, this.data[1]);
+      this.anchors[3].nextSibling.textContent = toString(this.data[2]);
+      const el2 = el1.nextSibling;
+      this.updateAttr(el2, \`href\`, this.data[3]);
+      el2.nextSibling.firstChild.textContent = toString(this.data[4]);
+    }
+  }
+  
+  class Block6 extends BStatic {
+    static el = elem(\`<i class=\\"fa fa-fw fa-hashtag\\" title=\\"This commit is a new head\\"/>\`);
+  }
+  
+  class Block7 extends BStatic {
+    static el = elem(\`<i class=\\"fa fa-fw fa-link\\" title=\\"This commit is an existing head from bundle branches\\"/>\`);
+  }
+  
+  class Block8 extends BStatic {
+    static el = elem(\`<i class=\\"fa fa-fw fa-code-fork\\" title=\\"This commit is matched from a base batch with matching merge_base\\"/>\`);
+  }
+  
+  class Block9 extends BStatic {
+    static el = elem(\`<i class=\\"fa fa-fw fa-clock-o\\" title=\\"This commit is the head of a base branch\\"/>\`);
+  }
+  
   return ctx => {
     const b1 = new Block1();
-    b1.data[0] = \`/runbot/batch/\${ctx['batch'].id}\`;
-    b1.data[1] = \`badge badge-\${ctx['batch'].has_warning?'warning':'light'}\`;
-    b1.data[2] = ctx['batch'].formated_age;
+    b1.data[0] = \`batch_tile \${ctx['options'].more?'more':'nomore'}\`;
+    b1.data[1] = \`card bg-\${ctx['klass']}-light\`;
+    b1.data[2] = \`/runbot/batch/\${ctx['batch'].id}\`;
+    b1.data[3] = \`badge badge-\${ctx['batch'].has_warning?'warning':'light'}\`;
+    b1.data[4] = ctx['batch'].formated_age;
     if (ctx['batch'].has_warning) {
       const b2 = b1.children[0] = new Block2();
+    }
+    if (ctx['batch'].state=='preparing') {
+      const b3 = b1.children[1] = new Block3();
+    }
+    const [v1, k1, l1] = getValues(ctx['batch'].slot_ids.filter(slot=>slot.build_id.id&&!slot.trigger_id.manual&&(ctx['options'].trigger_display[slot.trigger_id.id])));
+    const b4 = b1.children[2] = new BCollection(l1);
+    ctx = Object.create(ctx);
+    for (let i1 = 0; i1 < l1; i1++) {
+      ctx[\`slot\`] = v1[i1];
+      ctx[\`slot_first\`] = i1 === 0;
+      ctx[\`slot_last\`] = i1 === v1.length - 1;
+      ctx[\`slot_index\`] = i1;
+      ctx[\`slot_value\`] = k1[i1];
+      let key1 = ctx['slot'].id;
+      b4.children[i1] = new BComponent(\`SlotButton\`, {class: ctx['slot_container'],slot: ctx['slot']}, \`__2__\${key1}\`, ctx);
+      b4.keys[i1] = key1;
+    }
+    ctx = ctx.__proto__;
+    const [v3, k3, l3] = getValues([1,2,3,4]);
+    const b5 = b1.children[3] = new BCollection(l3);
+    ctx = Object.create(ctx);
+    for (let i1 = 0; i1 < l3; i1++) {
+      ctx[\`x\`] = v3[i1];
+      ctx[\`x_first\`] = i1 === 0;
+      ctx[\`x_last\`] = i1 === v3.length - 1;
+      ctx[\`x_index\`] = i1;
+      ctx[\`x_value\`] = k3[i1];
+      let key1 = ctx['x'];
+      const b6 = b5.children[i1] = new Block4();
+      b5.keys[i1] = key1;
+    }
+    ctx = ctx.__proto__;
+    const [v4, k4, l4] = getValues(ctx['commit_links']);
+    const b7 = b1.children[4] = new BCollection(l4);
+    ctx = Object.create(ctx);
+    for (let i1 = 0; i1 < l4; i1++) {
+      ctx[\`commit_link\`] = v4[i1];
+      ctx[\`commit_link_first\`] = i1 === 0;
+      ctx[\`commit_link_last\`] = i1 === v4.length - 1;
+      ctx[\`commit_link_index\`] = i1;
+      ctx[\`commit_link_value\`] = k4[i1];
+      let key1 = ctx['commit_link'].id;
+      const b8 = b7.children[i1] = new Block5();
+      b8.data[0] = \`/runbot/commit/\${ctx['commit_link'].commit_id}\`;
+      b8.data[1] = \`badge badge-light batch_commit match_type_\${ctx['commit_link'].match_type}\`;
+      if (ctx['commit_link'].match_type=='new') {
+        const b9 = b8.children[0] = new Block6();
+      }
+      if (ctx['commit_link'].match_type=='head') {
+        const b10 = b8.children[1] = new Block7();
+      }
+      if (ctx['commit_link'].match_type=='base_match') {
+        const b11 = b8.children[2] = new Block8();
+      }
+      if (ctx['commit_link'].match_type=='base_head') {
+        const b12 = b8.children[3] = new Block9();
+      }
+      b8.data[2] = ctx['commit_link'].commit_dname;
+      b8.data[3] = 'https://%s/commit/%s'%(ctx['commit_link'].commit_remote_url,ctx['commit_link'].commit_name);
+      b8.data[4] = ctx['commit_link'].commit_subject;
+      b7.keys[i1] = key1;
     }
     return b1;
   }

@@ -43,6 +43,7 @@ export type TemplateFunction = (blocks: any, utils: any) => Template;
 
 interface FunctionLine {
   path: string[];
+  elemDef?: string;
   inserter(el: string): string;
 }
 
@@ -330,29 +331,37 @@ export class QWebCompiler {
     // build tree of paths
     const tree: any = {};
     let i = 1;
+    // console.warn('lines before', lines)
     for (let line of lines) {
       let current: any = tree;
       let el: string = `this`;
       for (let p of line.path.slice()) {
         if (current[p]) {
         } else {
-          current[p] = { firstChild: null, nextSibling: null };
+          current[p] = { firstChild: null, nextSibling: null, line };
         }
         if (current.firstChild && current.nextSibling && !current.name) {
           current.name = `el${i++}`;
-          this.addLine(`const ${current.name} = ${el};`);
+          current.line.elemDef = `const ${current.name} = ${el};`;
+          // this.addLine(`const ${current.name} = ${el};`);
         }
         el = `${current.name ? current.name : el}.${p}`;
         current = current[p];
         if (current.target && !current.name) {
           current.name = `el${i++}`;
-          this.addLine(`const ${current.name} = ${el};`);
+          current.line.elemDef = `const ${current.name} = ${el};`;
+          // this.addLine(`const ${current.name} = ${el};`);
         }
       }
       current.target = true;
     }
+    // console.warn('lines after', lines)
+    // console.warn(tree);
     for (let line of lines) {
-      const { path, inserter } = line;
+      const { path, inserter, elemDef } = line;
+      if (elemDef) {
+        this.addLine(elemDef);
+      }
       let current: any = tree;
       let el = `this`;
       for (let p of path.slice()) {
