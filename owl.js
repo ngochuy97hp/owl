@@ -344,9 +344,7 @@
             anchor.before(_anchor);
             this.anchor = _anchor;
             for (let child of this.children) {
-                if (child) {
-                    child.mountBefore(_anchor);
-                }
+                child.mountBefore(_anchor);
             }
         }
         moveBefore(anchor) {
@@ -354,9 +352,7 @@
             anchor.before(_anchor);
             this.anchor = _anchor;
             for (let child of this.children) {
-                if (child) {
-                    child.moveBefore(_anchor);
-                }
+                child.moveBefore(_anchor);
             }
         }
         patch(other) {
@@ -371,10 +367,10 @@
             let mapping = undefined;
             const _anchor = this.anchor;
             while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-                if (!oldCh[oldStartIdx]) {
+                if (oldCh[oldStartIdx] === null) {
                     oldStartIdx++;
                 }
-                else if (!oldCh[oldEndIdx]) {
+                else if (oldCh[oldEndIdx] === null) {
                     oldEndIdx--;
                 }
                 else if (oldKeys[oldStartIdx] === newKeys[newStartIdx]) {
@@ -1811,8 +1807,8 @@
             this.addLine(`${block.varName}.children[${index}] = new BHtml(${expr});`);
         }
         compileTIf(ast, ctx, nextNode) {
-            let { block, index } = ctx;
-            if (!block) {
+            let { block, index, forceNewBlock } = ctx;
+            if (!block || (block.blockName !== "BMulti" && forceNewBlock)) {
                 const n = 1 + (ast.tElif ? ast.tElif.length : 0) + (ast.tElse ? 1 : 0);
                 const id = this.insertBlock(`new BMulti(${n})`, ctx);
                 block = new BlockDescription(id, "BMulti");
@@ -2708,8 +2704,8 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T12:16:26.852Z';
-    __info__.hash = 'e2a7ab7';
+    __info__.date = '2020-12-18T12:33:58.985Z';
+    __info__.hash = '7b0d2c8';
     __info__.url = 'https://github.com/odoo/owl';
 
 
