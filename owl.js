@@ -191,13 +191,13 @@
         }
         setupHandler(el, index) {
             const eventType = this.handlers[index][0];
-            el.addEventListener(eventType, () => {
+            el.addEventListener(eventType, ev => {
                 const info = this.handlers[index];
                 const [, callback, ctx] = info;
                 if (ctx.__owl__ && !ctx.__owl__.isMounted) {
                     return;
                 }
-                callback();
+                callback(ev);
             });
         }
         build() { }
@@ -2712,8 +2712,8 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T15:16:00.978Z';
-    __info__.hash = 'f7671c9';
+    __info__.date = '2020-12-18T15:21:24.708Z';
+    __info__.hash = '1a9a3a9';
     __info__.url = 'https://github.com/odoo/owl';
 
 
