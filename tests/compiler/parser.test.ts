@@ -537,12 +537,18 @@ describe("qweb parser", () => {
       elem: "item",
       key: null,
       body: {
-        type: ASTType.DomNode,
-        tag: "span",
-        attrs: {},
-        on: {},
-        ref: null,
-        content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+        type: ASTType.TIf,
+        condition: "condition",
+        tElif: null,
+        tElse: null,
+        content: {
+          type: ASTType.DomNode,
+          tag: "span",
+          attrs: {},
+          on: {},
+          ref: null,
+          content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+        },
       },
     });
   });
