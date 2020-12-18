@@ -2693,6 +2693,71 @@
     };
 
     /**
+     * We define here a simple event bus: it can
+     * - emit events
+     * - add/remove listeners.
+     *
+     * This is a useful pattern of communication in many cases.  For OWL, each
+     * components and stores are event buses.
+     */
+    //------------------------------------------------------------------------------
+    // EventBus
+    //------------------------------------------------------------------------------
+    class EventBus {
+        constructor() {
+            this.subscriptions = {};
+        }
+        /**
+         * Add a listener for the 'eventType' events.
+         *
+         * Note that the 'owner' of this event can be anything, but will more likely
+         * be a component or a class. The idea is that the callback will be called with
+         * the proper owner bound.
+         *
+         * Also, the owner should be kind of unique. This will be used to remove the
+         * listener.
+         */
+        on(eventType, owner, callback) {
+            if (!callback) {
+                throw new Error("Missing callback");
+            }
+            if (!this.subscriptions[eventType]) {
+                this.subscriptions[eventType] = [];
+            }
+            this.subscriptions[eventType].push({
+                owner,
+                callback,
+            });
+        }
+        /**
+         * Remove a listener
+         */
+        off(eventType, owner) {
+            const subs = this.subscriptions[eventType];
+            if (subs) {
+                this.subscriptions[eventType] = subs.filter((s) => s.owner !== owner);
+            }
+        }
+        /**
+         * Emit an event of type 'eventType'.  Any extra arguments will be passed to
+         * the listeners callback.
+         */
+        trigger(eventType, ...args) {
+            const subs = this.subscriptions[eventType] || [];
+            for (let i = 0, iLen = subs.length; i < iLen; i++) {
+                const sub = subs[i];
+                sub.callback.call(sub.owner, ...args);
+            }
+        }
+        /**
+         * Remove all subscriptions.
+         */
+        clear() {
+            this.subscriptions = {};
+        }
+    }
+
+    /**
      * This file is the main file packaged by rollup (see rollup.config.js).  From
      * this file, we export all public owl elements.
      *
@@ -2703,6 +2768,7 @@
 
     exports.App = App;
     exports.Component = Component;
+    exports.EventBus = EventBus;
     exports.__info__ = __info__;
     exports.hooks = hooks;
     exports.mount = mount;
@@ -2712,7 +2778,7 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T15:21:24.708Z';
+    __info__.date = '2020-12-18T15:37:10.841Z';
     __info__.hash = '1a9a3a9';
     __info__.url = 'https://github.com/odoo/owl';
 
