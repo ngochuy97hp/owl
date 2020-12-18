@@ -437,9 +437,9 @@ export class BCollection extends Block {
     const _anchor = this.anchor!;
 
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-      if (oldCh[oldStartIdx] === null) {
+      if (!oldCh[oldStartIdx]) {
         oldStartIdx++;
-      } else if (oldCh[oldEndIdx] === null) {
+      } else if (!oldCh[oldEndIdx]) {
         oldEndIdx--;
       } else if (oldKeys[oldStartIdx] === newKeys[newStartIdx]) {
         oldCh[oldStartIdx].patch(newCh[newStartIdx]);
