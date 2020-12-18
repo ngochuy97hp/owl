@@ -474,6 +474,33 @@ describe("qweb parser", () => {
     });
   });
 
+  test("t-foreach expression with t-esc", async () => {
+    expect(parse(`<t t-foreach="list" t-as="item" t-esc="item"/>`)).toEqual({
+      type: ASTType.TForEach,
+      collection: "list",
+      elem: "item",
+      key: null,
+      body: { type: ASTType.TEsc, expr: "item", defaultValue: "" },
+    });
+  });
+
+  test("t-foreach on a div expression with t-esc", async () => {
+    expect(parse(`<div t-foreach="list" t-as="item" t-esc="item"/>`)).toEqual({
+      type: ASTType.TForEach,
+      collection: "list",
+      elem: "item",
+      key: null,
+      body: {
+        type: ASTType.DomNode,
+        tag: "div",
+        attrs: {},
+        on: {},
+        ref: null,
+        content: [{ type: ASTType.TEsc, expr: "item", defaultValue: "" }],
+      },
+    });
+  });
+
   test("simple keyed t-foreach expression", async () => {
     expect(parse(`<t t-foreach="list" t-as="item" t-key="item.id"><t t-esc="item"/></t>`)).toEqual({
       type: ASTType.TForEach,
