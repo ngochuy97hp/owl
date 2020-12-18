@@ -371,10 +371,10 @@
             let mapping = undefined;
             const _anchor = this.anchor;
             while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-                if (oldCh[oldStartIdx] === null) {
+                if (!oldCh[oldStartIdx]) {
                     oldStartIdx++;
                 }
-                else if (oldCh[oldEndIdx] === null) {
+                else if (!oldCh[oldEndIdx]) {
                     oldEndIdx--;
                 }
                 else if (oldKeys[oldStartIdx] === newKeys[newStartIdx]) {
@@ -753,9 +753,9 @@
             return parseTextCommentNode(node, ctx);
         }
         return (parseTDebugLog(node, ctx) ||
-            parseTCall(node, ctx) ||
             parseTForEach(node, ctx) ||
             parseTIf(node, ctx) ||
+            parseTCall(node, ctx) ||
             parseTEscNode(node, ctx) ||
             parseTKey(node, ctx) ||
             parseTSlot(node, ctx) ||
@@ -2708,8 +2708,8 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T12:08:09.170Z';
-    __info__.hash = 'a85084b';
+    __info__.date = '2020-12-18T12:16:26.852Z';
+    __info__.hash = 'e2a7ab7';
     __info__.url = 'https://github.com/odoo/owl';
 
 
