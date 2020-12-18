@@ -157,7 +157,7 @@
                     break;
                 case "string":
                     if (_class) {
-                        for (let cl of _class.trim().split(" ")) {
+                        for (let cl of _class.trim().split(/\s+/)) {
                             elem.classList.add(cl);
                         }
                     }
@@ -2712,8 +2712,8 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T15:11:02.384Z';
-    __info__.hash = '50526d1';
+    __info__.date = '2020-12-18T15:16:00.978Z';
+    __info__.hash = 'f7671c9';
     __info__.url = 'https://github.com/odoo/owl';
 
 
