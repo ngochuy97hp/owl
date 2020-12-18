@@ -192,7 +192,9 @@ export class BNode extends Block {
         break;
       case "string":
         if (_class) {
-          elem.classList.add(_class);
+          for (let cl of _class.trim().split(" ")) {
+            elem.classList.add(cl);
+          }
         }
         break;
       default:
