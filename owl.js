@@ -1270,10 +1270,10 @@
             }
         }
         insertUpdate(inserter) {
-            this.updateFn.push({ path: this.currentPath.slice(), inserter });
+            this.updateFn.push({ path: this.currentPath.slice(), inserter, elemDefs: [] });
         }
         insertBuild(inserter) {
-            this.buildFn.push({ path: this.currentPath.slice(), inserter });
+            this.buildFn.push({ path: this.currentPath.slice(), inserter, elemDefs: [] });
         }
     }
     // -----------------------------------------------------------------------------
@@ -1499,14 +1499,14 @@
                     }
                     if (current.firstChild && current.nextSibling && !current.name) {
                         current.name = `el${i++}`;
-                        current.line.elemDef = `const ${current.name} = ${el};`;
+                        current.line.elemDefs.push(`const ${current.name} = ${el};`);
                         // this.addLine(`const ${current.name} = ${el};`);
                     }
                     el = `${current.name ? current.name : el}.${p}`;
                     current = current[p];
                     if (current.target && !current.name) {
                         current.name = `el${i++}`;
-                        current.line.elemDef = `const ${current.name} = ${el};`;
+                        current.line.elemDefs.push(`const ${current.name} = ${el};`);
                         // this.addLine(`const ${current.name} = ${el};`);
                     }
                 }
@@ -1515,9 +1515,9 @@
             // console.warn('lines after', lines)
             // console.warn(tree);
             for (let line of lines) {
-                const { path, inserter, elemDef } = line;
-                if (elemDef) {
-                    this.addLine(elemDef);
+                const { path, inserter, elemDefs } = line;
+                for (let elem of elemDefs) {
+                    this.addLine(elem);
                 }
                 let current = tree;
                 let el = `this`;
@@ -2712,8 +2712,8 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T13:21:18.045Z';
-    __info__.hash = '6ce4409';
+    __info__.date = '2020-12-18T15:11:02.384Z';
+    __info__.hash = '50526d1';
     __info__.url = 'https://github.com/odoo/owl';
 
 
