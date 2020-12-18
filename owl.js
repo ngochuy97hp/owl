@@ -2428,6 +2428,10 @@
         patch() {
             this.component.__owl__.bdom.patch(this.component.__owl__.fiber.bdom);
         }
+        remove() {
+            const bdom = this.component.__owl__.bdom;
+            bdom.remove();
+        }
     }
     class BComponentH extends BComponent {
         constructor(handlers, name, props, key, ctx) {
@@ -2778,8 +2782,8 @@
 
 
     __info__.version = '1.0.13';
-    __info__.date = '2020-12-18T15:37:10.841Z';
-    __info__.hash = '1a9a3a9';
+    __info__.date = '2020-12-18T15:56:54.432Z';
+    __info__.hash = 'd34ff67';
     __info__.url = 'https://github.com/odoo/owl';
 
 
