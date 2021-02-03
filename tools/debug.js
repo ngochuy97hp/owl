@@ -101,7 +101,7 @@
     component.render = function(...args) {
       const __owl__ = component.__owl__;
       let msg = `render`;
-      if (!__owl__.isMounted && !__owl__.currentFiber) {
+      if (__owl__.status !== 4 && !__owl__.currentFiber) {
         msg += ` (warning: component is not mounted)`;
       }
       log(msg);
